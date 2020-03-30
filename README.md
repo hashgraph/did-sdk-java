@@ -5,4 +5,4 @@
 This repository contains Java SDK for Hedera Hashgraph Identity framework.
 
 ## DID Method Specification
-The draft version of the Hedera Hashgraph DID Method Specification can be found [here](did-method-specification.md).
+The draft version of the Hedera Hashgraph DID Method Specification can be found [here](https://github.com/hashgraph/identity-did).
