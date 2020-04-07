@@ -66,6 +66,7 @@
         <exclude name="ModifiedCyclomaticComplexity"/>
         <exclude name="SignatureDeclareThrowsException"/>
         <exclude name="StdCyclomaticComplexity"/>
+        <exclude name="AvoidThrowingRawExceptionTypes"/>
     </rule>
     <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
         <properties>
@@ -76,12 +77,13 @@
         <properties>
             <property name="cycloOptions" value="ignoreBooleanPaths"/>
             <property name="classReportLevel" value="81"/>
-            <property name="methodReportLevel" value="11"/>
+            <property name="methodReportLevel" value="13"/>
         </properties>
     </rule>
+
     <rule ref="category/java/design.xml/NcssCount">
         <properties>
-            <property name="methodReportLevel" value="30"/>
+            <property name="methodReportLevel" value="60"/>
             <property name="classReportLevel" value="300"/>
         </properties>
     </rule>
@@ -156,4 +158,19 @@
     <!-- Security (no rules) -->
     <rule ref="category/java/security.xml"/>
 
+	<rule ref="category/java/codestyle.xml/LinguisticNaming">
+	    <properties>
+	        <property name="ignoredAnnotations" value="java.lang.Override" />
+	        <property name="checkBooleanMethod" value="true" />
+	        <property name="checkGetters" value="true" />
+	        <property name="checkSetters" value="false" />
+	        <property name="checkPrefixedTransformMethods" value="true" />
+	        <property name="checkTransformMethods" value="false" />
+	        <property name="booleanMethodPrefixes" value="is|has|can|have|will|should" />
+	        <property name="transformMethodNames" value="to|as" />
+	        <property name="checkFields" value="true" />
+	        <property name="checkVariables" value="true" />
+	        <property name="booleanFieldPrefixes" value="is|has|can|have|will|should" />
+	    </properties>
+	</rule>
 </ruleset>
