@@ -1,9 +1,7 @@
 package com.hedera.hashgraph.identity.hcs;
 
 import com.google.common.base.Strings;
-import com.hedera.hashgraph.identity.DidDocumentBase;
 import com.hedera.hashgraph.identity.DidDocumentOperation;
-import com.hedera.hashgraph.identity.DidDocumentPublishingMode;
 import com.hedera.hashgraph.sdk.Client;
 import com.hedera.hashgraph.sdk.HederaNetworkException;
 import com.hedera.hashgraph.sdk.HederaStatusException;
@@ -15,13 +13,12 @@ import com.hedera.hashgraph.sdk.mirror.MirrorClient;
 import com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicQuery;
 import com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse;
 import com.hedera.hashgraph.sdk.mirror.MirrorSubscriptionHandle;
-import io.grpc.Status;
+import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Base64.Decoder;
-import java.util.Base64.Encoder;
-import java.util.function.BiConsumer;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -29,15 +26,17 @@ import java.util.function.UnaryOperator;
  * The DID document creation, update or deletion transaction.
  * Builds a correct {@link HcsDidMessage} and send it to HCS DID topic.
  */
-public class HcsDidTransaction extends TransactionValidator {
+public class HcsDidTransaction {
+  private final ConsensusTopicId topicId;
+  private final DidDocumentOperation operation;
+
   private String didDocument;
   private UnaryOperator<byte[]> encrypter;
-  private UnaryOperator<byte[]> decrypter;
+  private BiFunction<byte[], Instant, byte[]> decrypter;
   private UnaryOperator<byte[]> signer;
-  private final ConsensusTopicId topicId;
   private Function<ConsensusMessageSubmitTransaction, Transaction> buildTransactionFunction;
-  private BiConsumer<String, String> receiver;
-  private final HcsDidMessage message;
+  private Consumer<HcsDidPlainMessage> receiver;
+  private Consumer<Throwable> errorHandler;
   private MirrorSubscriptionHandle subscriptionHandle;
   private boolean executed;
 
@@ -48,92 +47,81 @@ public class HcsDidTransaction extends TransactionValidator {
    * @param topicId   The HCS DID topic ID where message will be submitted.
    */
   protected HcsDidTransaction(final DidDocumentOperation operation, final ConsensusTopicId topicId) {
-    this.message = new HcsDidMessage();
-    this.message.setDidOperation(operation);
     this.executed = false;
+    this.operation = operation;
     this.topicId = topicId;
   }
 
-  // TODO provide other execution methods as in standard Hedera SDK
   /**
    * Builds and submits the DID message to appnet's DID topic.
    *
-   * @param  client                 The hedera network client.
-   * @param  mirrorClient           The hedera mirror node client.
-   * @return                        Transaction ID.
-   * @throws HederaStatusException  In case querying Hedera File Service fails.
-   * @throws HederaNetworkException In case of querying Hedera File Service fails due to transport calls.
+   * @param  client       The hedera network client.
+   * @param  mirrorClient The hedera mirror node client.
+   * @return              Transaction ID.
    */
-  public TransactionId execute(final Client client, final MirrorClient mirrorClient)
-      throws HederaNetworkException, HederaStatusException {
-    checkValidationErrors("HcsDidTransaction execution failed: ");
+  public TransactionId execute(final Client client, final MirrorClient mirrorClient) {
+    new Validator().checkValidationErrors("HcsDidTransaction execution failed: ", v -> validate(v));
 
-    Encoder base64Enc = Base64.getEncoder();
-    DidDocumentBase didDocumentBase = DidDocumentBase.fromJson(didDocument);
-
-    message.setDid(didDocumentBase.getId());
-    message.setDidDocumentBase64(base64Enc.encodeToString(didDocument.getBytes(StandardCharsets.UTF_8)));
-
-    byte[] signature = signer.apply(didDocument.getBytes(StandardCharsets.UTF_8));
-    message.setSignature(base64Enc.encodeToString(signature));
-
-    // TODO validate did and signature of the message.
-
-    if (encrypter != null) {
-      String encryptedDid = base64Enc
-          .encodeToString(encrypter.apply(message.getDid().getBytes(StandardCharsets.UTF_8)));
-      String encryptedDoc = base64Enc
-          .encodeToString(encrypter.apply(message.getDidDocumentBase64().getBytes(StandardCharsets.UTF_8)));
-
-      message.setDid(encryptedDid);
-      message.setDidDocumentBase64(encryptedDoc);
-      message.setMode(DidDocumentPublishingMode.ENCRYPTED);
-    } else {
-      message.setMode(DidDocumentPublishingMode.PLAIN);
-    }
+    byte[] messageContent = HcsDidMessageBuilder.fromDidDocument(didDocument)
+        .setOperation(operation)
+        .buildAndSign(encrypter, signer);
 
     if (receiver != null) {
       subscriptionHandle = new MirrorConsensusTopicQuery()
           .setTopicId(topicId)
           .subscribe(mirrorClient,
-              resp -> handleDidDocumentFromMirrorNode(resp),
-              err -> {
-                // TODO investigate io.grpc.StatusRuntimeException: CANCELLED: unsubscribed error on unsubscribe() call
-                if (!(err instanceof StatusRuntimeException)) {
-                  throw new RuntimeException(err);
-                }
-
-                StatusRuntimeException e = (StatusRuntimeException) err;
-                if (!Status.CANCELLED.equals(e.getStatus())) {
-                  throw e;
-                }
-              }
-              );
+              resp -> handleDidDocumentFromMirrorNode(resp, messageContent),
+              err -> handleError(err));
     }
 
     ConsensusMessageSubmitTransaction tx = new ConsensusMessageSubmitTransaction()
         .setTopicId(topicId)
-        .setMessage(message.toJson());
+        .setMessage(messageContent);
 
-    TransactionId transactionId = buildTransactionFunction
-        .apply(tx)
-        .execute(client);
-
-    executed = true;
+    TransactionId transactionId = null;
+    try {
+      transactionId = buildTransactionFunction
+          .apply(tx)
+          .execute(client);
+      executed = true;
+    } catch (HederaNetworkException | HederaStatusException e) {
+      handleError(e);
+    }
 
     return transactionId;
   }
 
   /**
+   * Handles the error.
+   * If external error handler is defined, passes the error there, otherwise raises RuntimeException.
+   *
+   * @param  err     The error.
+   * @throws Runtime exception with the given error in case external error handler is not defined.
+   */
+  private void handleError(final Throwable err) {
+    // Ignore Status cancelled error. It happens on unsubscribe.
+    if (err instanceof StatusRuntimeException
+        && Code.CANCELLED.equals(((StatusRuntimeException) err).getStatus().getCode())) {
+      return;
+    }
+
+    if (errorHandler != null) {
+      errorHandler.accept(err);
+    } else {
+      throw new RuntimeException(err);
+    }
+  }
+
+  /**
    * Handles incoming DID messages from DID Topic on a mirror node.
    *
-   * @param resp Response message coming from the mirror node for the DID topic.
+   * @param resp            Response message coming from the mirror node for the DID topic.
+   * @param originalMessage Original message sent to the DID topic.
    */
-  protected void handleDidDocumentFromMirrorNode(final MirrorConsensusTopicResponse resp) {
-    String messageAsString = new String(resp.message, StandardCharsets.UTF_8);
-
-    // Get only the message with the signature calculated above and ignore all others.
-    if (Strings.isNullOrEmpty(messageAsString) || !messageAsString.contains(message.getSignature())) {
+  protected void handleDidDocumentFromMirrorNode(final MirrorConsensusTopicResponse resp,
+      final byte[] originalMessage) {
+    // Get only the message that matches the original one and ignore all others.
+    if (!Arrays.equals(originalMessage, resp.message)) {
       return;
     }
 
@@ -142,28 +130,15 @@ public class HcsDidTransaction extends TransactionValidator {
       subscriptionHandle.unsubscribe();
     }
 
-    Decoder base64Dec = Base64.getDecoder();
+    HcsDidPlainMessage msg = HcsDidMessage.fromDidTopicMirrorResponse(resp).toPlainDidMessage(decrypter);
 
-    HcsDidMessage confirmedMsg = HcsDidMessage.fromJson(messageAsString);
-    String confirmedDid = confirmedMsg.getDid();
-    String confirmedDidDoc = null;
-    byte[] confirmedDidDocBytes = confirmedMsg.getDidDocumentBase64()
-        .getBytes(StandardCharsets.ISO_8859_1);
-
-    // If message was encrypted decrypt the DID and its document.
-    if (DidDocumentPublishingMode.ENCRYPTED.equals(confirmedMsg.getMode()) && decrypter != null) {
-      byte[] encryptedDid = base64Dec.decode(confirmedDid.getBytes(StandardCharsets.ISO_8859_1));
-      byte[] decryptedDid = decrypter.apply(encryptedDid);
-      confirmedDid = new String(decryptedDid, StandardCharsets.UTF_8);
-
-      byte[] decryptedDidDoc = decrypter.apply(base64Dec.decode(confirmedDidDocBytes));
-      confirmedDidDoc = new String(decryptedDidDoc, StandardCharsets.UTF_8);
-    } else {
-      confirmedDidDoc = new String(base64Dec.decode(confirmedDidDocBytes), StandardCharsets.UTF_8);
+    if (!msg.isValid(topicId)) {
+      handleError(new IllegalStateException("Message received from the mirror node is invalid."));
+      return;
     }
 
     // Pass received DID and DID document to the receiver for appnet's processing
-    receiver.accept(confirmedDid, confirmedDidDoc);
+    receiver.accept(msg);
   }
 
   /**
@@ -189,12 +164,24 @@ public class HcsDidTransaction extends TransactionValidator {
   }
 
   /**
+   * Defines a handler for errors when they happen during execution.
+   *
+   * @param  handler The error handler.
+   * @return         This transaction instance.
+   */
+  public HcsDidTransaction onError(final Consumer<Throwable> handler) {
+    this.errorHandler = handler;
+    return this;
+  }
+
+  /**
    * Defines decryption function that decrypts submitted the DID and DID document after consensus is reached.
+   * Decryption function must accept a byte array of encrypted message and an Instant that is its consensus timestamp,
    *
    * @param  decrypter The decrypter to use.
    * @return           This transaction instance.
    */
-  public HcsDidTransaction onDecrypt(final UnaryOperator<byte[]> decrypter) {
+  public HcsDidTransaction onDecrypt(final BiFunction<byte[], Instant, byte[]> decrypter) {
     this.decrypter = decrypter;
     return this;
   }
@@ -229,18 +216,22 @@ public class HcsDidTransaction extends TransactionValidator {
    * @param  receiver The receiver handling incoming DID document message.
    * @return          This transaction instance.
    */
-  public HcsDidTransaction onDidDocumentReceived(final BiConsumer<String, String> receiver) {
+  public HcsDidTransaction onDidDocumentReceived(final Consumer<HcsDidPlainMessage> receiver) {
     this.receiver = receiver;
     return this;
   }
 
-  @Override
-  protected void validate() {
-    require(!executed, "This transaction has already been executed.");
-    require(!Strings.isNullOrEmpty(didDocument), "DID document is mandatory.");
-    require(signer != null, "Signing function with DID root key is missing.");
-    require(buildTransactionFunction != null, "Transaction builder is missing.");
-    require((encrypter != null && decrypter != null) || (encrypter == null && decrypter == null),
+  /**
+   * Runs validation logic.
+   *
+   * @param validator The errors validator.
+   */
+  protected void validate(final Validator validator) {
+    validator.require(!executed, "This transaction has already been executed.");
+    validator.require(!Strings.isNullOrEmpty(didDocument), "DID document is mandatory.");
+    validator.require(signer != null, "Signing function with DID root key is missing.");
+    validator.require(buildTransactionFunction != null, "Transaction builder is missing.");
+    validator.require((encrypter != null && decrypter != null) || (encrypter == null && decrypter == null),
         "Either both encrypter and decrypter must be specified or none.");
   }
 }

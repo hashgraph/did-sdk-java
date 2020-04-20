@@ -3,19 +3,19 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 [![Documentation](https://img.shields.io/badge/javadoc-reference-informational)](docs/index.html)
 
-![LINE](https://img.shields.io/badge/line--coverage-86%25-brightgreen.svg)
-![BRANCH](https://img.shields.io/badge/branch--coverage-63%25-yellow.svg)
-![COMPLEXITY](https://img.shields.io/badge/complexity-1.91-brightgreen.svg)
-![INSTRUCTION](https://img.shields.io/badge/instruction--coverage-86%25-brightgreen.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-84%25-brightgreen.svg)
-![CLASS](https://img.shields.io/badge/class--coverage-83%25-brightgreen.svg)
+![LINE](https://img.shields.io/badge/line--coverage-84%25-brightgreen.svg)
+![BRANCH](https://img.shields.io/badge/branch--coverage-61%25-yellow.svg)
+![COMPLEXITY](https://img.shields.io/badge/complexity-1.98-brightgreen.svg)
+![INSTRUCTION](https://img.shields.io/badge/instruction--coverage-83%25-brightgreen.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-82%25-brightgreen.svg)
+![CLASS](https://img.shields.io/badge/class--coverage-86%25-brightgreen.svg)
 
 
 This repository contains Java SDK for Hedera Hashgraph DID framework based on the draft version of [DID Method Specification](https://github.com/hashgraph/identity-did) on top of Hedera Consensus Service.
 
 The goal of this SDK is to simplify :
-- creation of identity networks witnin appnets, 
-- generation of decentralized identifiers for [Hedera DID Method](https://github.com/hashgraph/identity-did), 
+- creation of identity networks witnin appnets,
+- generation of decentralized identifiers for [Hedera DID Method](https://github.com/hashgraph/identity-did),
 - creation, update, deletion and resolution of DID documents in appnet identity networks,
 - issuance, verification and revocation of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/).
 
@@ -144,10 +144,12 @@ HcsDid hcsDid = didNetwork.generateDid(didRootKey.publicKey, false);
 
 // Without having a DID root key - it will be generated automatically:
 // Here we decided to add DID topic ID parameter `tid` to the DID.
-Entry<Ed25519PrivateKey, HcsDid> didRootKeyAndHcsDid = didNetwork.generateDid(true);
+HcsDid hcsDidWithDidRootKey = didNetwork.generateDid(true);
+Ed25519PrivateKey didRootKeyPrivateKey = hcsDidWithDidRootKey.getPrivateDidRootKey().get();
 
 // Without having a DID root key - it will be generated automatically with secure random generator:
-Entry<Ed25519PrivateKey, HcsDid> didRootKeyAndHcsDid2 = didNetwork.generateDid(SecureRandom.getInstanceStrong(), false);
+HcsDid hcsDidSRWithDidRootKey = didNetwork.generateDid(SecureRandom.getInstanceStrong(), false);
+Ed25519PrivateKey srDidRootKeyPrivateKey = hcsDidSRWithDidRootKey.getPrivateDidRootKey().get();
 ```
 
 - or by directly constructing `HcsDid` object:
@@ -176,7 +178,7 @@ HcsDid did = ...;
 
 DidDocumentBase didDocument = did.generateDidDocument();
 String didDocumentJson = didDocument.toJson();
-    
+
 System.out.println(didDocumentJson);
 ```
 
@@ -228,16 +230,55 @@ didNetwork.createDidTransaction(DidDocumentOperation.CREATE)
     // Configure ConsensusMessageSubmitTransaction, build it and sign if required by DID topic
     .buildAndSignTransaction(tx -> tx.setMaxTransactionFee(new Hbar(2)).build(client))
     // Define callback function when consensus was reached and DID document came back from mirror node
-    .onDidDocumentReceived((did, doc) -> {
+    .onDidDocumentReceived(msg -> {
       System.out.println("DID document published!");
-      System.out.println(doc);
+      System.out.println(msg.getDidDocument());
     })
     // Execute transaction
     .execute(client, mirrorClient);
 ```
 
 ##### Read (Resolve)
-TODO: to be documented once implementation is finalized
+In common scenarios DID resolution shall be executed against the appnet's REST API service as specified in [Hedera DID Method](https://github.com/hashgraph/identity-did). In this case the appnet constantly listening to the DID topic messages coming from a mirror node and stores them in it's dedicated storage. DID resolving parties, trusting the appnet can use this service to read a DID document for a given DID in a most performant way. In this case appnet can use `HcsDidTopicListener` to conveniently recieve parsed, validated and decrypted messages:
+
+```java
+HcsDidNetwork didNetwork = ...;
+HcsDidTopicListener listener = didNetwork.getDidTopicListener();
+
+listener.setStartTime(Instant.MIN)
+    .setIgnoreInvalidMessages(true)
+    .setIgnoreErrors(false)
+    .onError(err -> System.err.println(err))
+    .subscribe(mirrorClient, msg -> {
+        System.out.println("Message received");
+        System.out.println(msg.getDidDocument());
+        // Store message in appnet's system
+        ...
+    });
+```
+The listener can be restarted to process messages at any given `startTime` so that local storage can catch up to the state of the mirror node.
+Resolvers who have direct access to Hedera mirror node of their trust and do not want to use appnet's REST API service can run DID resolution query directy against the DID topic on the mirror node. This way is not recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsDidResolver` can be obtained from the `HcsDidNetwork` via `getResolver` method. It can accept multiple DIDs for resolution and when finished will return a map of DID strings and their corresponding last valid message posted to the DID topic.
+
+```java
+HcsDidNetwork didNetwork = ...;
+String did = "did:hedera:testnet:7c38oC4ytrYDGCqsaZ1AXt7ZPQ8etzfwaxoKjfJNzfoc;hedera:testnet:fid=0.0.1";
+didNetwork.getResolver()
+    .addDid(did)
+    .whenFinished(results -> {
+      HcsDidPlainMessage msg = results.get(did);
+      if(msg == null) {
+        // DID document not found
+      } else if(DidDocumentOperation.DELETE.equals(msg.getDidOperation())) {
+        // DID was deleted (revoked)
+      } else {
+        // Process DID document
+        System.out.println(msg.getDidDocument());
+      }
+    })
+    .execute(mirrorClient);
+```
+
+After the last message is received from the topic, the resolver will wait for a given period of time (by default 30 seconds) to wait for more messages. If at this time no more messages arrive, the resolution is considered completed. The waiting time can be modified with `setTimeout` method.
 
 ### Verifiable Credentials
 TODO: to be documented once VC implementation is ready

@@ -53,18 +53,18 @@ public class DidDocumentBase {
     JsonElement jsonElement = gson.toJsonTree(this);
     JsonObject rootObject = jsonElement.getAsJsonObject();
 
-    // Add DID root key to public keys.
-    JsonArray publicKeys = null;
-    if (rootObject.has(DidDocumentJsonProperties.PUBLIC_KEY)) {
-      publicKeys = rootObject.getAsJsonArray(DidDocumentJsonProperties.PUBLIC_KEY);
-    } else {
-      publicKeys = new JsonArray(1);
-      rootObject.add(DidDocumentJsonProperties.PUBLIC_KEY, publicKeys);
-    }
+    addDidRootKeyToPublicKeys(rootObject);
+    addDidRootKeyToAuthentication(rootObject);
 
-    publicKeys.add(gson.toJsonTree(didRootKey));
+    return gson.toJson(jsonElement);
+  }
 
-    // If authentication is not defined, add DID root key as authentication method.
+  /**
+   * Adds #did-root-key to authentication section of the DID document if it is not defined.
+   *
+   * @param rootObject The root object of DID Document as JsonObject.
+   */
+  private void addDidRootKeyToAuthentication(final JsonObject rootObject) {
     if (!rootObject.has(DidDocumentJsonProperties.AUTHENTICATION)) {
       rootObject.add(DidDocumentJsonProperties.AUTHENTICATION, new JsonArray());
     }
@@ -73,9 +73,26 @@ public class DidDocumentBase {
     if (authElement.isJsonArray() && authElement.getAsJsonArray().size() == 0) {
       authElement.getAsJsonArray().add(didRootKey.getId());
     }
+  }
 
-    return gson.toJson(jsonElement);
+  /**
+   * Adds a #did-root-key to public keys of the DID document.
+   *
+   * @param rootObject The root object of DID Document as JsonObject.
+   */
+  protected void addDidRootKeyToPublicKeys(final JsonObject rootObject) {
+    JsonArray publicKeys = null;
+    if (rootObject.has(DidDocumentJsonProperties.PUBLIC_KEY)) {
+      publicKeys = rootObject.getAsJsonArray(DidDocumentJsonProperties.PUBLIC_KEY);
+    } else {
+      publicKeys = new JsonArray(1);
+      rootObject.add(DidDocumentJsonProperties.PUBLIC_KEY, publicKeys);
+    }
 
+    GsonBuilder gsonBuilder = new GsonBuilder();
+    Gson gson = gsonBuilder.disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create();
+
+    publicKeys.add(gson.toJsonTree(didRootKey));
   }
 
   /**

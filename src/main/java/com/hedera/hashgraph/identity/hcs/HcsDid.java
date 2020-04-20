@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.bitcoinj.core.Base58;
 
 /**
@@ -32,6 +33,7 @@ public class HcsDid implements HederaDid {
   private String idString;
   private String did;
   private Ed25519PublicKey didRootKey;
+  private Ed25519PrivateKey privateDidRootKey;
 
   /**
    * Converts a Hedera DID string into {@link HcsDid} object.
@@ -85,10 +87,11 @@ public class HcsDid implements HederaDid {
 
   /**
    * Extracts method-specific URL parameters.
-   * @param mainParts Iterator over main parts of the DID.
-   * @param methodName The method name.
-   * @param networkName The network name.
-   * @return A map of method-specific URL parameters and their values.
+   *
+   * @param  mainParts   Iterator over main parts of the DID.
+   * @param  methodName  The method name.
+   * @param  networkName The network name.
+   * @return             A map of method-specific URL parameters and their values.
    */
   private static Map<String, String> extractParameters(final Iterator<String> mainParts,
       final String methodName, final String networkName) {
@@ -158,6 +161,20 @@ public class HcsDid implements HederaDid {
   }
 
   /**
+   * Creates a DID instance with private DID root key.
+   *
+   * @param network           The Hedera DID network.
+   * @param privateDidRootKey The private DID root key.
+   * @param addressBookFileId The appent's address book {@link FileId}
+   * @param didTopicId        The appnet's DID topic ID.
+   */
+  public HcsDid(final HederaNetwork network, final Ed25519PrivateKey privateDidRootKey, final FileId addressBookFileId,
+      final ConsensusTopicId didTopicId) {
+    this(network, privateDidRootKey.publicKey, addressBookFileId, didTopicId);
+    this.privateDidRootKey = privateDidRootKey;
+  }
+
+  /**
    * Creates a DID instance without topic ID specification.
    *
    * @param network           The Hedera DID network.
@@ -169,7 +186,7 @@ public class HcsDid implements HederaDid {
   }
 
   /**
-   * Creates a DID instance .
+   * Creates a DID instance.
    *
    * @param network           The Hedera DID network.
    * @param idString          The id-string of a DID.
@@ -288,5 +305,15 @@ public class HcsDid implements HederaDid {
     }
 
     return sb.toString();
+  }
+
+  /**
+   * Returns a private key of DID root key.
+   * This is only available if it was provided during {@link HcsDid} construction.
+   * 
+   * @return The private key of DID root key.
+   */
+  public Optional<Ed25519PrivateKey> getPrivateDidRootKey() {
+    return Optional.ofNullable(privateDidRootKey);
   }
 }

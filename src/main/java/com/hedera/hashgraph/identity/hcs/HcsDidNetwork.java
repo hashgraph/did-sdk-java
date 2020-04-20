@@ -13,8 +13,6 @@ import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
 import com.hedera.hashgraph.sdk.file.FileContentsQuery;
 import com.hedera.hashgraph.sdk.file.FileId;
 import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Appnet's identity network based on Hedera HCS DID method specification.
@@ -104,7 +102,7 @@ public final class HcsDidNetwork {
    * @return           The {@link HcsDidTransaction} instance.
    */
   public HcsDidTransaction createDidTransaction(final DidDocumentOperation operation) {
-    return new HcsDidTransaction(operation, ConsensusTopicId.fromString(addressBook.getDidTopicId()));
+    return new HcsDidTransaction(operation, getDidTopicId());
   }
 
   /**
@@ -129,16 +127,13 @@ public final class HcsDidNetwork {
    * Generates a new DID and it's root key.
    *
    * @param  withTid Indicates if DID topic ID should be added to the DID as <i>tid</i> parameter.
-   * @return         A map entry consisting of a private key of DID root key and {@link HcsDid} as a value.
+   * @return         Generated {@link HcsDid} with it's private DID root key.
    */
-  public Map.Entry<Ed25519PrivateKey, HcsDid> generateDid(final boolean withTid) {
+  public HcsDid generateDid(final boolean withTid) {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    ConsensusTopicId tid = withTid ? ConsensusTopicId.fromString(addressBook.getDidTopicId()) : null;
-    HcsDid hcsDid = new HcsDid(getNetwork(), privateKey.publicKey, addressBook.getFileId(), tid);
-    Map<Ed25519PrivateKey, HcsDid> map = new HashMap<>(1);
-    map.put(privateKey, hcsDid);
+    ConsensusTopicId tid = withTid ? getDidTopicId() : null;
 
-    return map.entrySet().iterator().next();
+    return new HcsDid(getNetwork(), privateKey, addressBook.getFileId(), tid);
   }
 
   /**
@@ -149,7 +144,7 @@ public final class HcsDidNetwork {
    * @return           A newly generated DID.
    */
   public HcsDid generateDid(final Ed25519PublicKey publicKey, final boolean withTid) {
-    ConsensusTopicId tid = withTid ? ConsensusTopicId.fromString(addressBook.getDidTopicId()) : null;
+    ConsensusTopicId tid = withTid ? getDidTopicId() : null;
     return new HcsDid(getNetwork(), publicKey, getAddressBook().getFileId(), tid);
   }
 
@@ -158,18 +153,48 @@ public final class HcsDidNetwork {
    *
    * @param  secureRandom Cryptographically strong random number generator.
    * @param  withTid      Indicates if DID topic ID should be added to the DID as <i>tid</i> parameter.
-   * @return              A map entry consisting of a private key of DID root key and {@link HcsDid} as a value.
+   * @return              Generated {@link HcsDid} with it's private DID root key.
    */
-  public Map.Entry<Ed25519PrivateKey, HcsDid> generateDid(final SecureRandom secureRandom, final boolean withTid) {
+  public HcsDid generateDid(final SecureRandom secureRandom, final boolean withTid) {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey(secureRandom);
-    ConsensusTopicId tid = withTid ? ConsensusTopicId.fromString(addressBook.getDidTopicId()) : null;
+    ConsensusTopicId tid = withTid ? getDidTopicId() : null;
 
-    HcsDid hcsDid = new HcsDid(getNetwork(), privateKey.publicKey, getAddressBook().getFileId(), tid);
-    Map<Ed25519PrivateKey, HcsDid> map = new HashMap<>(1);
-    map.put(privateKey, hcsDid);
-
-    return map.entrySet().iterator().next();
+    return new HcsDid(getNetwork(), privateKey, getAddressBook().getFileId(), tid);
   }
 
-  // TODO resolve DID
+  /**
+   * Returns a DID resolver for this network.
+   *
+   * @return The DID resolver for this network.
+   */
+  public HcsDidResolver getResolver() {
+    return new HcsDidResolver(getDidTopicId());
+  }
+
+  /**
+   * Returns a DID topic listener for this network.
+   * 
+   * @return The DID topic listener.
+   */
+  public HcsDidTopicListener getDidTopicListener() {
+    return new HcsDidTopicListener(getDidTopicId());
+  }
+
+  /**
+   * Returns DID topic ID for this network.
+   * 
+   * @return The DID topic ID.
+   */
+  public ConsensusTopicId getDidTopicId() {
+    return ConsensusTopicId.fromString(addressBook.getDidTopicId());
+  }
+
+  /**
+   * Returns Verifiable Credentials topic ID for this network.
+   * 
+   * @return The VC topic ID.
+   */
+  public ConsensusTopicId getVcTopicId() {
+    return ConsensusTopicId.fromString(addressBook.getVcTopicId());
+  }
 }

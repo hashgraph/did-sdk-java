@@ -19,7 +19,7 @@ import java.util.function.Function;
 /**
  * The builder used to create new appnet identity networks based on Hedera HCS DID method specification.
  */
-public class HcsDidNetworkBuilder extends TransactionValidator {
+public class HcsDidNetworkBuilder {
   private String appnetName;
   private ConsensusTopicId didTopicId;
   private ConsensusTopicId vcTopicId;
@@ -40,7 +40,7 @@ public class HcsDidNetworkBuilder extends TransactionValidator {
    * @throws HederaNetworkException In case of querying Hedera File Service fails due to transport calls.
    */
   public HcsDidNetwork execute(final Client client) throws HederaNetworkException, HederaStatusException {
-    checkValidationErrors("HederaNetwork not created: ");
+    new Validator().checkValidationErrors("HederaNetwork not created: ", v -> validate(v));
 
     if (didTopicTxFunction != null) {
       TransactionId didTxId = didTopicTxFunction.apply(new ConsensusTopicCreateTransaction()).execute(client);
@@ -129,24 +129,28 @@ public class HcsDidNetworkBuilder extends TransactionValidator {
     return this;
   }
 
-  @Override
-  protected void validate() {
-    require(didTopicTxFunction != null || didTopicId != null,
+  /**
+   * Runs validation logic.
+   *
+   * @param validator The errors validator.
+   */
+  protected void validate(final Validator validator) {
+    validator.require(didTopicTxFunction != null || didTopicId != null,
         "Provide an existing DID TopicId or build and sign TopicCreateTransaction.");
-    require(vcTopicTxFunction != null || vcTopicId != null,
+    validator.require(vcTopicTxFunction != null || vcTopicId != null,
         "Provide an existing Verifiable Credentials TopicId or  build and sign TopicCreateTransaction.");
 
-    require(!(didTopicTxFunction != null && didTopicId != null),
+    validator.require(!(didTopicTxFunction != null && didTopicId != null),
         "Provide an existing DID TopicId or build and sign  TopicCreateTransaction, but not both.");
-    require(!(vcTopicTxFunction != null && vcTopicId != null),
+    validator.require(!(vcTopicTxFunction != null && vcTopicId != null),
         "Provide an existing Verifiable Credentials TopicId or build and sign TopicCreateTransaction, but not both.");
 
-    require(addressBookTxFunction != null && !Strings.isNullOrEmpty(appnetName),
+    validator.require(addressBookTxFunction != null && !Strings.isNullOrEmpty(appnetName),
         "Build and sign FileCreateTransaction for address book file.");
 
-    require(network != null, "HederaNetwork is not defined.");
+    validator.require(network != null, "HederaNetwork is not defined.");
 
-    require(didServers != null && !didServers.isEmpty(), "No Appnet DID servers are specified.");
+    validator.require(didServers != null && !didServers.isEmpty(), "No Appnet DID servers are specified.");
   }
 
   /**
