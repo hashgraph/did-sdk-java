@@ -42,7 +42,7 @@
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../../com/hedera/hashgraph/identity/package-summary.html">Prev&nbsp;Package</a></li>
-<li>Next&nbsp;Package</li>
+<li><a href="../../../../../com/hedera/hashgraph/identity/hcs/did/package-summary.html">Next&nbsp;Package</a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../../index.html?com/hedera/hashgraph/identity/hcs/package-summary.html" target="_top">Frames</a></li>
@@ -85,57 +85,79 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsDid.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDid</a></td>
-<td class="colLast">
-<div class="block">Hedera Decentralized Identifier for Hedera DID Method specification based on HCS.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsDidNetwork.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidNetwork</a></td>
-<td class="colLast">
-<div class="block">Appnet's identity network based on Hedera HCS DID method specification.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsDidNetworkAddressBook.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidNetworkAddressBook</a></td>
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/AddressBook.html" title="class in com.hedera.hashgraph.identity.hcs">AddressBook</a></td>
 <td class="colLast">
 <div class="block">Appent's address book for HCS identity network.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsDidNetworkBuilder.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidNetworkBuilder</a></td>
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html" title="class in com.hedera.hashgraph.identity.hcs">HcsIdentityNetwork</a></td>
+<td class="colLast">
+<div class="block">Appnet's identity network based on Hedera HCS DID method specification.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetworkBuilder.html" title="class in com.hedera.hashgraph.identity.hcs">HcsIdentityNetworkBuilder</a></td>
 <td class="colLast">
 <div class="block">The builder used to create new appnet identity networks based on Hedera HCS DID method specification.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/Message.html" title="class in com.hedera.hashgraph.identity.hcs">Message</a></td>
+<td class="colLast">&nbsp;</td>
+</tr>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsDidPlainMessage.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidPlainMessage</a></td>
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;T extends <a href="../../../../../com/hedera/hashgraph/identity/hcs/Message.html" title="class in com.hedera.hashgraph.identity.hcs">Message</a>&gt;</td>
 <td class="colLast">
-<div class="block">The DID document message in a plain (unencrypted) form.</div>
+<div class="block">The envelope for Hedera identity messages sent to HCS DID or VC topics.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsDidResolver.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidResolver</a></td>
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a>&lt;T extends <a href="../../../../../com/hedera/hashgraph/identity/hcs/Message.html" title="class in com.hedera.hashgraph.identity.hcs">Message</a>&gt;</td>
 <td class="colLast">
-<div class="block">Resolves the DID from Hedera network.</div>
+<div class="block">A listener of confirmed messages from a HCS identity topic.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidRootKey</a></td>
-<td class="colLast">
-<div class="block">Represents a root key of HCS Identity DID.</div>
-</td>
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html" title="class in com.hedera.hashgraph.identity.hcs">MessageResolver</a>&lt;T extends <a href="../../../../../com/hedera/hashgraph/identity/hcs/Message.html" title="class in com.hedera.hashgraph.identity.hcs">Message</a>&gt;</td>
+<td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsDidTopicListener.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidTopicListener</a></td>
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">MessageTransaction</a>&lt;T extends <a href="../../../../../com/hedera/hashgraph/identity/hcs/Message.html" title="class in com.hedera.hashgraph.identity.hcs">Message</a>&gt;</td>
+<td class="colLast">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li class="blockList">
+<table class="typeSummary" border="0" cellpadding="3" cellspacing="0" summary="Enum Summary table, listing enums, and an explanation">
+<caption><span>Enum Summary</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Enum</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageMode.html" title="enum in com.hedera.hashgraph.identity.hcs">MessageMode</a></td>
 <td class="colLast">
-<div class="block">A listener of confirmed <code>HcsDidMessage</code> messages from a DID topic.</div>
+<div class="block">The mode in which HCS message with DID document is submitted.</div>
 </td>
 </tr>
+</tbody>
+</table>
+</li>
+<li class="blockList">
+<table class="typeSummary" border="0" cellpadding="3" cellspacing="0" summary="Exception Summary table, listing exceptions, and an explanation">
+<caption><span>Exception Summary</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Exception</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+<tbody>
 <tr class="altColor">
-<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsDidTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidTransaction</a></td>
+<td class="colFirst"><a href="../../../../../com/hedera/hashgraph/identity/hcs/InvalidMessageException.html" title="class in com.hedera.hashgraph.identity.hcs">InvalidMessageException</a></td>
 <td class="colLast">
-<div class="block">The DID document creation, update or deletion transaction.</div>
+<div class="block">Exception thrown when the message coming from the mirror node fails validation.</div>
 </td>
 </tr>
 </tbody>
@@ -169,7 +191,7 @@
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../../com/hedera/hashgraph/identity/package-summary.html">Prev&nbsp;Package</a></li>
-<li>Next&nbsp;Package</li>
+<li><a href="../../../../../com/hedera/hashgraph/identity/hcs/did/package-summary.html">Next&nbsp;Package</a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../../index.html?com/hedera/hashgraph/identity/hcs/package-summary.html" target="_top">Frames</a></li>

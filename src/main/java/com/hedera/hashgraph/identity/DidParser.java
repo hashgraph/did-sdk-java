@@ -1,6 +1,6 @@
 package com.hedera.hashgraph.identity;
 
-import com.hedera.hashgraph.identity.hcs.HcsDid;
+import com.hedera.hashgraph.identity.hcs.did.HcsDid;
 
 /**
  * DID parser for Hedera DIDs.

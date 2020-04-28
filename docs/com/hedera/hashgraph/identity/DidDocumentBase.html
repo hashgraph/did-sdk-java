@@ -137,7 +137,7 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/hedera/hashgraph/identity/DidDocumentBase.html#context">context</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected <a href="../../../../com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidRootKey</a></code></td>
+<td class="colFirst"><code>protected <a href="../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidRootKey</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/hedera/hashgraph/identity/DidDocumentBase.html#didRootKey">didRootKey</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
@@ -195,7 +195,7 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/hedera/hashgraph/identity/DidDocumentBase.html#getContext--">getContext</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code><a href="../../../../com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidRootKey</a></code></td>
+<td class="colFirst"><code><a href="../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidRootKey</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/hedera/hashgraph/identity/DidDocumentBase.html#getDidRootKey--">getDidRootKey</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i4" class="altColor">
@@ -204,12 +204,12 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/hedera/hashgraph/identity/DidDocumentBase.html#setDidRootKey-com.hedera.hashgraph.identity.hcs.HcsDidRootKey-">setDidRootKey</a></span>(<a href="../../../../com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidRootKey</a>&nbsp;didRootKey)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/hedera/hashgraph/identity/DidDocumentBase.html#setDidRootKey-com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey-">setDidRootKey</a></span>(<a href="../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidRootKey</a>&nbsp;didRootKey)</code>&nbsp;</td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/hedera/hashgraph/identity/DidDocumentBase.html#toJson--">toJson</a></span>()</code>
-<div class="block">Converts this DID document operation message into JSON string.</div>
+<div class="block">Converts this DID document into JSON string.</div>
 </td>
 </tr>
 </table>
@@ -266,7 +266,7 @@ protected&nbsp;java.lang.String id</pre>
 <h4>didRootKey</h4>
 <pre>@Expose(serialize=false,
         deserialize=false)
-protected&nbsp;<a href="../../../../com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidRootKey</a> didRootKey</pre>
+protected&nbsp;<a href="../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidRootKey</a> didRootKey</pre>
 </li>
 </ul>
 </li>
@@ -306,10 +306,10 @@ protected&nbsp;<a href="../../../../com/hedera/hashgraph/identity/hcs/HcsDidRoot
 <li class="blockList">
 <h4>toJson</h4>
 <pre>public&nbsp;java.lang.String&nbsp;toJson()</pre>
-<div class="block">Converts this DID document operation message into JSON string.</div>
+<div class="block">Converts this DID document into JSON string.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>The JSON representation of this message.</dd>
+<dd>The JSON representation of this document.</dd>
 </dl>
 </li>
 </ul>
@@ -368,16 +368,16 @@ protected&nbsp;<a href="../../../../com/hedera/hashgraph/identity/hcs/HcsDidRoot
 <ul class="blockList">
 <li class="blockList">
 <h4>getDidRootKey</h4>
-<pre>public&nbsp;<a href="../../../../com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidRootKey</a>&nbsp;getDidRootKey()</pre>
+<pre>public&nbsp;<a href="../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidRootKey</a>&nbsp;getDidRootKey()</pre>
 </li>
 </ul>
-<a name="setDidRootKey-com.hedera.hashgraph.identity.hcs.HcsDidRootKey-">
+<a name="setDidRootKey-com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>setDidRootKey</h4>
-<pre>public&nbsp;void&nbsp;setDidRootKey(<a href="../../../../com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidRootKey</a>&nbsp;didRootKey)</pre>
+<pre>public&nbsp;void&nbsp;setDidRootKey(<a href="../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidRootKey</a>&nbsp;didRootKey)</pre>
 </li>
 </ul>
 </li>

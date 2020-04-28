@@ -224,7 +224,7 @@
 <ul class="blockList">
 <li class="blockList">
 <table class="constantsSummary" border="0" cellpadding="3" cellspacing="0" summary="Constant Field Values table, listing constant fields, and values">
-<caption><span>com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/HcsDidResolver.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidResolver</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/MessageResolver.html" title="class in com.hedera.hashgraph.identity.hcs">MessageResolver</a>&lt;<a href="com/hedera/hashgraph/identity/hcs/MessageResolver.html" title="type parameter in MessageResolver">T</a> extends <a href="com/hedera/hashgraph/identity/hcs/Message.html" title="class in com.hedera.hashgraph.identity.hcs">Message</a>&gt;</span><span class="tabEnd">&nbsp;</span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th scope="col">Constant Field</th>
@@ -232,18 +232,20 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.HcsDidResolver.DEFAULT_TIMEOUT">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.MessageResolver.DEFAULT_TIMEOUT">
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;long</code></td>
-<td><code><a href="com/hedera/hashgraph/identity/hcs/HcsDidResolver.html#DEFAULT_TIMEOUT">DEFAULT_TIMEOUT</a></code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/MessageResolver.html#DEFAULT_TIMEOUT">DEFAULT_TIMEOUT</a></code></td>
 <td class="colLast"><code>30000L</code></td>
 </tr>
 </tbody>
 </table>
 </li>
+</ul>
+<ul class="blockList">
 <li class="blockList">
 <table class="constantsSummary" border="0" cellpadding="3" cellspacing="0" summary="Constant Field Values table, listing constant fields, and values">
-<caption><span>com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs">HcsDidRootKey</a></span><span class="tabEnd">&nbsp;</span></caption>
+<caption><span>com.hedera.hashgraph.identity.hcs.did.<a href="com/hedera/hashgraph/identity/hcs/did/HcsDidRootKey.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidRootKey</a></span><span class="tabEnd">&nbsp;</span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th scope="col">Constant Field</th>
@@ -251,18 +253,102 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.HcsDidRootKey.DID_ROOT_KEY_NAME">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey.DID_ROOT_KEY_NAME">
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
-<td><code><a href="com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html#DID_ROOT_KEY_NAME">DID_ROOT_KEY_NAME</a></code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/did/HcsDidRootKey.html#DID_ROOT_KEY_NAME">DID_ROOT_KEY_NAME</a></code></td>
 <td class="colLast"><code>"#did-root-key"</code></td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.HcsDidRootKey.DID_ROOT_KEY_TYPE">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey.DID_ROOT_KEY_TYPE">
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
-<td><code><a href="com/hedera/hashgraph/identity/hcs/HcsDidRootKey.html#DID_ROOT_KEY_TYPE">DID_ROOT_KEY_TYPE</a></code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/did/HcsDidRootKey.html#DID_ROOT_KEY_TYPE">DID_ROOT_KEY_TYPE</a></code></td>
 <td class="colLast"><code>"Ed25519VerificationKey2018"</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<ul class="blockList">
+<li class="blockList">
+<table class="constantsSummary" border="0" cellpadding="3" cellspacing="0" summary="Constant Field Values table, listing constant fields, and values">
+<caption><span>com.hedera.hashgraph.identity.hcs.vc.<a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcDocumentJsonProperties</a></span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th scope="col">Constant Field</th>
+<th class="colLast" scope="col">Value</th>
+</tr>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.CONTEXT">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#CONTEXT">CONTEXT</a></code></td>
+<td class="colLast"><code>"@context"</code></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.CREDENTIAL_STATUS">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#CREDENTIAL_STATUS">CREDENTIAL_STATUS</a></code></td>
+<td class="colLast"><code>"credentialStatus"</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.CREDENTIAL_SUBJECT">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#CREDENTIAL_SUBJECT">CREDENTIAL_SUBJECT</a></code></td>
+<td class="colLast"><code>"credentialSubject"</code></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.FIRST_CONTEXT_ENTRY">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#FIRST_CONTEXT_ENTRY">FIRST_CONTEXT_ENTRY</a></code></td>
+<td class="colLast"><code>"https://www.w3.org/2018/credentials/v1"</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.ID">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#ID">ID</a></code></td>
+<td class="colLast"><code>"id"</code></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.ISSUANCE_DATE">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#ISSUANCE_DATE">ISSUANCE_DATE</a></code></td>
+<td class="colLast"><code>"issuanceDate"</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.ISSUER">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#ISSUER">ISSUER</a></code></td>
+<td class="colLast"><code>"issuer"</code></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.PROOF">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#PROOF">PROOF</a></code></td>
+<td class="colLast"><code>"proof"</code></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.TYPE">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#TYPE">TYPE</a></code></td>
+<td class="colLast"><code>"type"</code></td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><a name="com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentJsonProperties.VERIFIABLE_CREDENTIAL_TYPE">
+<!--   -->
+</a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
+<td><code><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#VERIFIABLE_CREDENTIAL_TYPE">VERIFIABLE_CREDENTIAL_TYPE</a></code></td>
+<td class="colLast"><code>"VerifiableCredential"</code></td>
 </tr>
 </tbody>
 </table>

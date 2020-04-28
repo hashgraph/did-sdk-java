@@ -60,7 +60,6 @@ public final class DidSyntax {
    * Hedera DID method-specific URL Parameters.
    */
   public static final class MethodSpecificParameter {
-
     /**
      * MethodSpecificParameter name for {@link FileId} of appnet's address book.
      */
@@ -70,5 +69,19 @@ public final class DidSyntax {
      * MethodSpecificParameter name for {@link TopicID} of appnet's DID topic.
      */
     public static final String DID_TOPIC_ID = "tid";
+
+    /**
+     * This class is not to be instantiated.
+     */
+    private MethodSpecificParameter() {
+      // Empty on purpose.
+    }
+  }
+
+  /**
+   * This class is not to be instantiated.
+   */
+  private DidSyntax() {
+    // Empty on purpose.
   }
 }

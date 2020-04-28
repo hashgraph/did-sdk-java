@@ -12,4 +12,11 @@ public final class DidDocumentJsonProperties {
   public static final String CREATED = "created";
   public static final String UPDATED = "updated";
   public static final String PROOF = "proof";
+
+  /**
+   * This class is not to be instantiated.
+   */
+  private DidDocumentJsonProperties() {
+    // Empty on purpose.
+  }
 }

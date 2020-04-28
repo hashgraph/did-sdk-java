@@ -12,6 +12,8 @@ import com.hedera.hashgraph.identity.DidDocumentBase;
 import com.hedera.hashgraph.identity.DidDocumentJsonProperties;
 import com.hedera.hashgraph.identity.DidSyntax;
 import com.hedera.hashgraph.identity.HederaNetwork;
+import com.hedera.hashgraph.identity.hcs.did.HcsDid;
+import com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
 import com.hedera.hashgraph.sdk.file.FileId;
 import org.bitcoinj.core.Base58;

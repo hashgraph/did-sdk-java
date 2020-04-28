@@ -3,12 +3,11 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 [![Documentation](https://img.shields.io/badge/javadoc-reference-informational)](docs/index.html)
 
-![LINE](https://img.shields.io/badge/line--coverage-84%25-brightgreen.svg)
-![BRANCH](https://img.shields.io/badge/branch--coverage-61%25-yellow.svg)
-![COMPLEXITY](https://img.shields.io/badge/complexity-1.98-brightgreen.svg)
-![INSTRUCTION](https://img.shields.io/badge/instruction--coverage-83%25-brightgreen.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-82%25-brightgreen.svg)
-![CLASS](https://img.shields.io/badge/class--coverage-86%25-brightgreen.svg)
+![LINE](https://img.shields.io/badge/line--coverage-83%25-brightgreen.svg)
+![INSTRUCTION](https://img.shields.io/badge/instruction--coverage-84%25-brightgreen.svg)
+![METHOD](https://img.shields.io/badge/method--coverage-86%25-brightgreen.svg)
+![CLASS](https://img.shields.io/badge/class--coverage-97%25-brightgreen.svg)
+![COMPLEXITY](https://img.shields.io/badge/complexity-1.94-brightgreen.svg)
 
 
 This repository contains Java SDK for Hedera Hashgraph DID framework based on the draft version of [DID Method Specification](https://github.com/hashgraph/identity-did) on top of Hedera Consensus Service.
@@ -32,9 +31,15 @@ The goal of this SDK is to simplify :
         - [Create, Update, Delete](#create-update-delete)
         - [Read (Resolve)](#read-resolve)
     - [Verifiable Credentials](#verifiable-credentials)
-      - [Issuing](#issuing)
-      - [Revocation](#revocation)
-      - [Verification](#verification)
+      - [Status Registration](#status-registration)
+      - [Status Verification](#status-verification)
+      - [Appnet Relay Interface for Verifiable Credentials](#appnet-relay-interface-for-verifiable-credentials)
+      - [SDK Usage](#sdk-usage)
+        - [Verifiable Credential Document](#verifiable-credential-document)
+          - [Credential Schema](#credential-schema)
+        - [Credential Hash calculation](#credential-hash-calculation)
+        - [Status Registration](#status-registration-1)
+        - [Status Verification](#status-verification-1)
   - [License Information](#license-information)
   - [References](#references)
 
@@ -66,12 +71,12 @@ Appnets that want to use Hedera DID Method shall create the following artifacts 
 - Hedera Consensus Service topic for DID Document messages
 - Hedera Consensus Service topic for Verifiable Credentials messages
 
-These could be set up manually by appnet administrators or can be created using `HcsDidNetworkBuilder` as follows:
+These could be set up manually by appnet administrators or can be created using `HcsIdentityNetworkBuilder` as follows:
 ```java
 Ed25519PublicKey myPublicKey = ...;
 Client client = Client.forTestnet();
 
-HcsDidNetwork didNetwork = new HcsDidNetworkBuilder()
+HcsIdentityNetwork identityNetwork = new HcsIdentityNetworkBuilder()
     .setNetwork(HederaNetwork.TESTNET)
     .setAppnetName("MyIdentityAppnet")
     .addAppnetDidServer("https://appnet-did-server-url:port/path-to-did-api")
@@ -97,7 +102,7 @@ HcsDidNetwork didNetwork = new HcsDidNetworkBuilder()
 `FileCreateTransaction` for address book file creation and `ConsensusTopicCreateTransaction` for DID and VC topic creation can be configured in a standard way as specified in Hedera Java SDK.
 
 ### Existing Identity Network Instantiation
-Once identity network artifacts have been created, appnets will require `HcsDidNetwork` instance to interact with identity network.
+Once identity network artifacts have been created, appnets will require `HcsIdentityNetwork` instance to interact with identity network.
 It can be initialized in multiple ways:
 - from existing address book file stored by appnet - which will not require querying Hedera File Service:
 ```java
@@ -106,9 +111,9 @@ Path pathToAddressBookFile = Paths.get("<pathToLocalAddressBookJsonFile.json>");
 String addressBookJson = new String(Files.readAllBytes(pathToAddressBookFile), StandardCharsets.UTF_8);
 FileId addressBookFileId = FileId.fromString("<hedera.file.id>");
 
-HcsDidNetworkAddressBook addressBook = HcsDidNetworkAddressBook.fromJson(addressBookJson, addressBookFileId);
+AddressBook addressBook = AddressBook.fromJson(addressBookJson, addressBookFileId);
 
-HcsDidNetwork didNetwork = HcsDidNetwork.fromAddressBook(HederaNetwork.TESTNET, addressBook);
+HcsIdentityNetwork identityNetwork = HcsIdentityNetwork.fromAddressBook(HederaNetwork.TESTNET, addressBook);
 ```
 
 - from address book FileId - which will query Hedera File Service and read the content of the address book file:
@@ -117,7 +122,7 @@ Client client = Client.forTestnet();
 Hbar maxFileQueryPayment = new Hbar(2);
 FileId addressBookFileId = FileId.fromString("<hedera.file.id>");
 
-HcsDidNetwork didNetwork = HcsDidNetwork.fromAddressBookFile(client, HederaNetwork.TESTNET, addressBookFileId, maxFileQueryPayment);
+HcsIdentityNetwork identityNetwork = HcsIdentityNetwork.fromAddressBookFile(client, HederaNetwork.TESTNET, addressBookFileId, maxFileQueryPayment);
 ```
 
 - from a Hedera DID string that will extract `fid` parameter and query address book file content from Hedera File Service:
@@ -127,7 +132,7 @@ String did = "did:hedera:testnet:7c38oC4ytrYDGCqsaZ1AXt7ZPQ8etzfwaxoKjfJNzfoc;he
 Client client = Client.forTestnet();
 Hbar maxFileQueryPayment = new Hbar(2);
 
-HcsDidNetwork didNetwork = HcsDidNetwork.fromHcsDid(client, HcsDid.fromString(did), maxFileQueryPayment);
+HcsIdentityNetwork identityNetwork = HcsIdentityNetwork.fromHcsDid(client, HcsDid.fromString(did), maxFileQueryPayment);
 ```
 ### Decentralized Identifiers
 Decentralized Identifiers based on Hedera DID Method must conform to its ABNF notation. SDK provides useful utilities that will take care of constructing a valid DID string for each network.
@@ -136,19 +141,19 @@ Decentralized Identifiers based on Hedera DID Method must conform to its ABNF no
 A DID is represented in SDK as `HcsDid` object and can be easily converted to it's DID string form by calling its `toDid()` or `toString()` method. New decentralized identifiers can be generated in multiple handly ways:
 - from already instantiated network:
 ```java
-HcsDidNetwork didNetwork = ...;
+HcsIdentityNetwork identityNetwork = ...;
 
 // From a given DID root key:
 Ed25519PrivateKey didRootKey = ...;
-HcsDid hcsDid = didNetwork.generateDid(didRootKey.publicKey, false);
+HcsDid hcsDid = identityNetwork.generateDid(didRootKey.publicKey, false);
 
 // Without having a DID root key - it will be generated automatically:
 // Here we decided to add DID topic ID parameter `tid` to the DID.
-HcsDid hcsDidWithDidRootKey = didNetwork.generateDid(true);
+HcsDid hcsDidWithDidRootKey = identityNetwork.generateDid(true);
 Ed25519PrivateKey didRootKeyPrivateKey = hcsDidWithDidRootKey.getPrivateDidRootKey().get();
 
 // Without having a DID root key - it will be generated automatically with secure random generator:
-HcsDid hcsDidSRWithDidRootKey = didNetwork.generateDid(SecureRandom.getInstanceStrong(), false);
+HcsDid hcsDidSRWithDidRootKey = identityNetwork.generateDid(SecureRandom.getInstanceStrong(), false);
 Ed25519PrivateKey srDidRootKeyPrivateKey = hcsDidSRWithDidRootKey.getPrivateDidRootKey().get();
 ```
 
@@ -203,7 +208,7 @@ This will produce the following document:
 
 ##### Create, Update, Delete
 CRUD operations on a given DID document are all executed in the same way, by using `HcsDidTransaction`.
-The transaction is created from an instance of `HcsDidNetwork` by calling `createDidTransaction` method and specifying CRUD operation, e.g. `DidDocumentOperation.CREATE`. Then `HcsDidTransaction` must be provided with the DID document, which has to be signed by DID root key of the DID subject. Finally `ConsensusMessageSubmitTransaction` must be configured accordingly to Hedera SDK, built and signed.
+The transaction is created from an instance of `HcsIdentityNetwork` by calling `createDidTransaction` method and specifying CRUD operation, e.g. `DidMethodOperation.CREATE`. Then `HcsDidTransaction` must be provided with the DID document, which has to be signed by DID root key of the DID subject. Finally `ConsensusMessageSubmitTransaction` must be configured accordingly to Hedera SDK, built and signed.
 
 Appnet implementations can optionally add a callback listener and receive an event when the DID message reached consensus and was propageted to the mirror node.
 They can also have their own mirror node listener and catch incoming messages from DID topic.
@@ -212,17 +217,17 @@ Once confirmed DID document arrived from a mirror node, appnets shall store them
 
 Here is an example DID document creation code:
 ```java
-Client client = null;
-MirrorClient mirrorClient = null;
-HcsDidNetwork didNetwork = null;
+Client client = ...;
+MirrorClient mirrorClient = ...;
+HcsIdentityNetwork identityNetwork = ...;
 
-Ed25519PrivateKey didRootKey = null;
-HcsDid hcsDid = null;
+Ed25519PrivateKey didRootKey = ...;
+HcsDid hcsDid = ...;
 
 String didDocument = hcsDid.generateDidDocument().toJson();
 
 // Build and execute transaction
-didNetwork.createDidTransaction(DidDocumentOperation.CREATE)
+identityNetwork.createDidTransaction(DidMethodOperation.CREATE)
     // Provide DID document as JSON string
     .setDidDocument(didDocument)
     // Sign it with DID root key
@@ -242,8 +247,8 @@ didNetwork.createDidTransaction(DidDocumentOperation.CREATE)
 In common scenarios DID resolution shall be executed against the appnet's REST API service as specified in [Hedera DID Method](https://github.com/hashgraph/identity-did). In this case the appnet constantly listening to the DID topic messages coming from a mirror node and stores them in it's dedicated storage. DID resolving parties, trusting the appnet can use this service to read a DID document for a given DID in a most performant way. In this case appnet can use `HcsDidTopicListener` to conveniently recieve parsed, validated and decrypted messages:
 
 ```java
-HcsDidNetwork didNetwork = ...;
-HcsDidTopicListener listener = didNetwork.getDidTopicListener();
+HcsIdentityNetwork identityNetwork = ...;
+HcsDidTopicListener listener = identityNetwork.getDidTopicListener();
 
 listener.setStartTime(Instant.MIN)
     .setIgnoreInvalidMessages(true)
@@ -257,23 +262,27 @@ listener.setStartTime(Instant.MIN)
     });
 ```
 The listener can be restarted to process messages at any given `startTime` so that local storage can catch up to the state of the mirror node.
-Resolvers who have direct access to Hedera mirror node of their trust and do not want to use appnet's REST API service can run DID resolution query directy against the DID topic on the mirror node. This way is not recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsDidResolver` can be obtained from the `HcsDidNetwork` via `getResolver` method. It can accept multiple DIDs for resolution and when finished will return a map of DID strings and their corresponding last valid message posted to the DID topic.
+Resolvers who have direct access to Hedera mirror node of their trust and do not want to use appnet's REST API service can run DID resolution query directy against the DID topic on the mirror node. This way is not recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsDidResolver` can be obtained from the `HcsIdentityNetwork` via `getResolver` method. It can accept multiple DIDs for resolution and when finished will return a map of DID strings and their corresponding last valid message posted to the DID topic.
 
 ```java
-HcsDidNetwork didNetwork = ...;
+HcsIdentityNetwork identityNetwork = ...;
 String did = "did:hedera:testnet:7c38oC4ytrYDGCqsaZ1AXt7ZPQ8etzfwaxoKjfJNzfoc;hedera:testnet:fid=0.0.1";
-didNetwork.getResolver()
+identityNetwork.getResolver()
     .addDid(did)
     .whenFinished(results -> {
-      HcsDidPlainMessage msg = results.get(did);
-      if(msg == null) {
-        // DID document not found
-      } else if(DidDocumentOperation.DELETE.equals(msg.getDidOperation())) {
-        // DID was deleted (revoked)
-      } else {
-        // Process DID document
-        System.out.println(msg.getDidDocument());
-      }
+        MessageEnvelope<HcsDidMessage> envelope = results.get(did);
+        if (envelope == null) {
+          // DID document not found
+          return;
+        }
+
+        HcsDidMessage msg = envelope.open();
+        if (DidMethodOperation.DELETE.equals(msg.getOperation())) {
+          // DID was deleted (revoked)
+        } else {
+          // Process DID document
+          System.out.println(msg.getDidDocument());
+        }
     })
     .execute(mirrorClient);
 ```
@@ -281,11 +290,99 @@ didNetwork.getResolver()
 After the last message is received from the topic, the resolver will wait for a given period of time (by default 30 seconds) to wait for more messages. If at this time no more messages arrive, the resolution is considered completed. The waiting time can be modified with `setTimeout` method.
 
 ### Verifiable Credentials
-TODO: to be documented once VC implementation is ready
+Besides DID method specification implementation, Hedera DID Java SDK provides a verifiable credentials registry framwork. Issuers and verifiers working with appnets can utilize it to register verifiable credential events such as: issuance, revication, suspension or resumption of claims. The way Hedera handles those events is in line with the design of DID documents. However, no verifiable credential documents are ever submitted over Hedera network. Instead only credential hashes and operations are confirmed on the ledger. As in DID method specification, verifiable credentials have a dedicated Consensus Service Topic within the appnet to which issuers send messages to register verifiable credential events.
 
-#### Issuing
-#### Revocation
-#### Verification
+#### Status Registration
+A valid Issuance, Revocation, Susspension or Resumption,message must have a JSON structure defined by a [vc-message-schema](vc-message.schema.json) and contains the following properties:
+- `mode` - Describes the mode in which the message content is provided. Valid values are: `plain` or `encrypted`. Messages in `encrypted` mode have `credentialHash` credentialHashattribute encrypted separately. Other attributes are plain.
+- `message` - The message content with the following attributes:
+  - `operation` - Operation on a verifiable credential.  Valid values are: `issue`, `suspend`, `resume` and `revoke`.
+  - `credentialHash` -  - This field may contain either:
+    - a hash of a verifiable credential document as Base64-encoded string,
+    - or a Base64-encoded encrypted representation of this hash, where the encryption and decryption methods and keys are defined by appnet owners.
+  - `timestamp` - A message creation time. The value MUST be a valid XML datetime value, as defined in section 3.3.7 of [W3C XML Schema Definition Language (XSD) 1.1 Part 2: Datatypes](https://www.w3.org/TR/xmlschema11-2/). This datetime value MUST be normalized to UTC 00:00, as indicated by the trailing "Z". It is important to note that this timestamp is a system timestamp as a variable part of the message and does not represent a consensus timestamp of a message submitted to the DID topic.
+- `signature` - A Base64-encoded signature that is a result of signing a minified JSON string of a message attribute with a private key corresponding to the public key `#did-root-key` in the DID document of the credential issuer. Appnets and verifiers may decide to accept revocation messages signed by credential owners. The framework does not impose any limitation on how message signatures are verified.
+
+Neither the Hedera network nor mirror nodes validate the credential documents, their hashes or message signatures. It is appnets that, as part of their subscription logic, must validate messages based on the above criteria. The messages with duplicate signatures shall be disregarded and only the first one with verified signature shall be considered valid (in consensus timestamp order).
+
+Here is an example of a complete message wrapped in an envelope and signed:
+```json
+{
+   "mode":"plain",
+   "message":{
+      "operation":"issue",
+      "credentialHash":"De6CHEKt37Q91oHPhNQYxzUySq3HHb7d5cUZft8uBiow",
+      "timestamp":"2020-04-28T11:11:16.449Z"
+   },
+   "signature":"IQ+eX33sslafu7eeaMrAswQOO33jl5xw5mfgwB8GnIEbsr/631JADGrGLymfpZEbO7RgVjGKRZIohAeDZukKAA=="
+}
+```
+
+It is a responsibility of an appnet's administrators to decide who can submit messages to their VC topic. Access control of message submission is defined by a `submitKey` property of `ConsensusCreateTopicTransaction` body. If no `submitKey` is defined for a topic, then any party can submit messages against the topic. Detailed information on Hedera Consensus Service APIs can be found in the official [Hedera API documentation](https://docs.hedera.com/hedera-api/consensus/consensusservice).
+
+
+#### Status Verification
+Verifiers upon accepting a claim from credential subjects shall establish the following:
+1. trust to the issuing subjects (e.g. by resolving a known or trusted DID of the issuer and following its authentication procedure)
+2. validation of the credential proofs - according to the proof type defined by the issuer
+3. verification of the credential status in Hedera credential registry
+4. validation of claims against verifier's requirements
+
+Due to the open nature of verifiable credential documents and multiple ways of presentation of proofs inside them, validation of credential proofs is at the responsibility of the verifier. Appnets may support verifiers providing functionalities to automate this process within the requirements of their network.
+Hedera SDK for Verifiable Credentials provides only mechanisms to verify the status of a credential to determine if it was not suspended or revoked.
+An example implementation of an appnet is available within the SDK's github repository.
+
+#### Appnet Relay Interface for Verifiable Credentials
+TODO: to be documented when example application is implemented.
+
+#### SDK Usage
+TODO: subject to change - work in progress
+
+At this point it is assumed that Hedera Identity Netowrk has already been set up, issuers and credential owners have registered and exchanged their DIDs.
+##### Verifiable Credential Document Construction
+
+###### Credential Schema
+Credential schemas define the attributes of claims issued to credential owners. These may be external JSON schema files stored on a publicly available server, within Hedera File Service, exposed by appnet services or even embedded within Verifiable Credential documents. Appnet implementation may choose any of those options and SDK is not imposing any limitation in this space. Claims in a structure of credential schema are stored within `credentialSubject` property of a VC document and must have an ID property that points to Credential owner's DID. Java classes that represent the credential schema claims shall be implemented as JSON-serializable classes extending `CredentialSubject` class.
+
+For example:
+```java
+class ExampleCredential extends CredentialSubject {
+  @Expose
+  private String firstName;
+  @Expose
+  private String lastName;
+  @Expose
+  private int age;
+
+  public DemoAccessCredential(String ownerDid, String firstName, String lastName, int age) {
+    this.id = ownerDid;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.age = age;
+  }
+
+  ...
+}
+```
+##### Credential Hash calculation
+Hedera VC registry operates on credential hashes that are derived from verifiable credential documents by calculating a hash of a subset of this document attributes that are constant and mandatory. In order for verifiers to be able to resolve the status of a credential they must be able to calculate its hash without having access to all credential subjects or claim attributes in the document (in case they were shared with them partially or using ZKPs). For this reason the credential hash is defined as a Base64-encoded SHA-256 hash of a minimized JSON document consisting of the following attributes of the original VC document:
+
+- `id` - even though VC document specification does not specify it as mandatory, it is on Hedera VC registry and every VC should define one.
+- `type` - a list of verifiable credential type values.
+- `issuer` - the DID and (optionally) a name of the issuer.
+- `issuanceDate` - the date when credential was issued.
+
+Having a verifiable credential document in a form of a JSON file we can calculate its credential hash using `toCredentialHash` method of `HcsVcDocumentBase` class:
+```java
+HcsVcDocumentBase<DemoAccessCredential> vcFromJson = HcsVcDocumentBase.fromJson(json, ExampleCredential.class);
+String credentialHash = vcFromJson.toCredentialHash();
+```
+
+##### Status Registration
+
+
+##### Status Verification
+
 
 ## License Information
 Licensed under Apache License, Version 2.0 – see [LICENSE](LICENSE) in this repo or on the official Apache page  <http://www.apache.org/licenses/LICENSE-2.0>

@@ -1,14 +1,14 @@
 package com.hedera.hashgraph.identity;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.hedera.hashgraph.identity.hcs.HcsDidRootKey;
+import com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey;
+import com.hedera.hashgraph.identity.utils.JsonUtils;
 import java.util.Iterator;
 
 /**
@@ -42,13 +42,12 @@ public class DidDocumentBase {
   }
 
   /**
-   * Converts this DID document operation message into JSON string.
+   * Converts this DID document into JSON string.
    *
-   * @return The JSON representation of this message.
+   * @return The JSON representation of this document.
    */
   public String toJson() {
-    GsonBuilder gsonBuilder = new GsonBuilder();
-    Gson gson = gsonBuilder.disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create();
+    Gson gson = JsonUtils.getGson();
 
     JsonElement jsonElement = gson.toJsonTree(this);
     JsonObject rootObject = jsonElement.getAsJsonObject();
@@ -89,10 +88,7 @@ public class DidDocumentBase {
       rootObject.add(DidDocumentJsonProperties.PUBLIC_KEY, publicKeys);
     }
 
-    GsonBuilder gsonBuilder = new GsonBuilder();
-    Gson gson = gsonBuilder.disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create();
-
-    publicKeys.add(gson.toJsonTree(didRootKey));
+    publicKeys.add(JsonUtils.getGson().toJsonTree(didRootKey));
   }
 
   /**
@@ -103,8 +99,7 @@ public class DidDocumentBase {
    * @return      The {@link DidDocumentBase}.
    */
   public static DidDocumentBase fromJson(final String json) {
-    GsonBuilder gsonBuilder = new GsonBuilder();
-    Gson gson = gsonBuilder.disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create();
+    Gson gson = JsonUtils.getGson();
 
     DidDocumentBase result = null;
 
