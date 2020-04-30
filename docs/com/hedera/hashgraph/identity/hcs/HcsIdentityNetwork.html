@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":9,"i3":9,"i4":9,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":9,"i5":9,"i6":9,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -135,6 +135,12 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
+<td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidTransaction</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-">createDidTransaction</a></span>(<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;&nbsp;message)</code>
+<div class="block">Instantiates a <a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.did"><code>HcsDidTransaction</code></a> to perform the specified operation on the DID document.</div>
+</td>
+</tr>
+<tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTransaction</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createVcTransaction-com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation-java.lang.String-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">createVcTransaction</a></span>(<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcOperation.html" title="enum in com.hedera.hashgraph.identity.hcs.vc">HcsVcOperation</a>&nbsp;operation,
                    java.lang.String&nbsp;credentialHash,
@@ -142,14 +148,21 @@ extends java.lang.Object</pre>
 <div class="block">Instantiates a <a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> to perform the specified operation on the VC document.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
+<td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTransaction</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createVcTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">createVcTransaction</a></span>(<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcMessage.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcMessage</a>&gt;&nbsp;message,
+                   com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;signerPublicKey)</code>
+<div class="block">Instantiates a <a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> to perform the specified operation on the VC document status.</div>
+</td>
+</tr>
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html" title="class in com.hedera.hashgraph.identity.hcs">HcsIdentityNetwork</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#fromAddressBook-com.hedera.hashgraph.identity.HederaNetwork-com.hedera.hashgraph.identity.hcs.AddressBook-">fromAddressBook</a></span>(<a href="../../../../../com/hedera/hashgraph/identity/HederaNetwork.html" title="enum in com.hedera.hashgraph.identity">HederaNetwork</a>&nbsp;network,
                <a href="../../../../../com/hedera/hashgraph/identity/hcs/AddressBook.html" title="class in com.hedera.hashgraph.identity.hcs">AddressBook</a>&nbsp;addressBook)</code>
 <div class="block">Instantiates existing identity network from a provided address book.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html" title="class in com.hedera.hashgraph.identity.hcs">HcsIdentityNetwork</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#fromAddressBookFile-com.hedera.hashgraph.sdk.Client-com.hedera.hashgraph.identity.HederaNetwork-com.hedera.hashgraph.sdk.file.FileId-com.hedera.hashgraph.sdk.Hbar-">fromAddressBookFile</a></span>(com.hedera.hashgraph.sdk.Client&nbsp;client,
                    <a href="../../../../../com/hedera/hashgraph/identity/HederaNetwork.html" title="enum in com.hedera.hashgraph.identity">HederaNetwork</a>&nbsp;network,
@@ -158,7 +171,7 @@ extends java.lang.Object</pre>
 <div class="block">Instantiates existing identity network using an address book file read from Hedera File Service.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html" title="class in com.hedera.hashgraph.identity.hcs">HcsIdentityNetwork</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#fromHcsDid-com.hedera.hashgraph.sdk.Client-com.hedera.hashgraph.identity.hcs.did.HcsDid-com.hedera.hashgraph.sdk.Hbar-">fromHcsDid</a></span>(com.hedera.hashgraph.sdk.Client&nbsp;client,
           <a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDid.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDid</a>&nbsp;hcsDid,
@@ -166,81 +179,81 @@ extends java.lang.Object</pre>
 <div class="block">Instantiates existing identity network using a DID generated for this network.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDid.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDid</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#generateDid-boolean-">generateDid</a></span>(boolean&nbsp;withTid)</code>
 <div class="block">Generates a new DID and it's root key.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDid.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDid</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#generateDid-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-boolean-">generateDid</a></span>(com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;publicKey,
            boolean&nbsp;withTid)</code>
 <div class="block">Generates a new DID from the given public DID root key.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDid.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDid</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#generateDid-java.security.SecureRandom-boolean-">generateDid</a></span>(java.security.SecureRandom&nbsp;secureRandom,
            boolean&nbsp;withTid)</code>
 <div class="block">Generates a new DID and it's root key using a cryptographically strong random number generator.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/AddressBook.html" title="class in com.hedera.hashgraph.identity.hcs">AddressBook</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getAddressBook--">getAddressBook</a></span>()</code>
 <div class="block">Returns the address book of this identity network.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidResolver.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidResolver</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getDidResolver--">getDidResolver</a></span>()</code>
 <div class="block">Returns a DID resolver for this network.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>com.hedera.hashgraph.sdk.consensus.ConsensusTopicId</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getDidTopicId--">getDidTopicId</a></span>()</code>
 <div class="block">Returns DID topic ID for this network.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTopicListener.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidTopicListener</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getDidTopicListener--">getDidTopicListener</a></span>()</code>
 <div class="block">Returns a DID topic listener for this network.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/HederaNetwork.html" title="enum in com.hedera.hashgraph.identity">HederaNetwork</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getNetwork--">getNetwork</a></span>()</code>
 <div class="block">Returns the Hedera network on which this identity network runs.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcStatusResolver.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcStatusResolver</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcStatusResolver--">getVcStatusResolver</a></span>()</code>
 <div class="block">Returns a VC status resolver for this network.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcStatusResolver.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcStatusResolver</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcStatusResolver-java.util.function.Function-">getVcStatusResolver</a></span>(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
 <div class="block">Returns a VC status resolver for this network.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>com.hedera.hashgraph.sdk.consensus.ConsensusTopicId</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcTopicId--">getVcTopicId</a></span>()</code>
 <div class="block">Returns Verifiable Credentials topic ID for this network.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTopicListener.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTopicListener</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcTopicListener--">getVcTopicListener</a></span>()</code>
 <div class="block">Returns a VC topic listener for this network.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTopicListener.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTopicListener</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcTopicListener-java.util.function.Function-">getVcTopicListener</a></span>(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
 <div class="block">Returns a VC topic listener for this network.</div>
@@ -354,6 +367,22 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
+<a name="createDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>createDidTransaction</h4>
+<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidTransaction</a>&nbsp;createDidTransaction(<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;&nbsp;message)</pre>
+<div class="block">Instantiates a <a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.did"><code>HcsDidTransaction</code></a> to perform the specified operation on the DID document.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>message</code> - The DID topic message ready to for sending.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The <a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.did"><code>HcsDidTransaction</code></a> instance.</dd>
+</dl>
+</li>
+</ul>
 <a name="createVcTransaction-com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation-java.lang.String-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">
 <!--   -->
 </a>
@@ -371,6 +400,24 @@ extends java.lang.Object</pre>
 <dd><code>signerPublicKey</code> - Public key of the signer (issuer).</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>The transaction instance.</dd>
+</dl>
+</li>
+</ul>
+<a name="createVcTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>createVcTransaction</h4>
+<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTransaction</a>&nbsp;createVcTransaction(<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcMessage.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcMessage</a>&gt;&nbsp;message,
+                                            com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;signerPublicKey)</pre>
+<div class="block">Instantiates a <a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> to perform the specified operation on the VC document status.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>message</code> - The VC topic message ready to for sending.</dd>
+<dd><code>signerPublicKey</code> - Public key of the signer (usually issuer).</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The <a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> instance.</dd>
 </dl>
 </li>
 </ul>

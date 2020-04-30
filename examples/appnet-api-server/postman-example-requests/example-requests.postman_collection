@@ -1,0 +1,219 @@
+{
+	"info": {
+		"_postman_id": "cb2b6eb7-f79b-48a9-897a-fbbc2c4723cc",
+		"name": "Hedera - test requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "DID - Generate new",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DID - CREATE message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1\",\r\n    \"publicKey\": [\r\n        {\r\n            \"id\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1#did-root-key\",\r\n            \"type\": \"Ed25519VerificationKey2018\",\r\n            \"controller\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1\",\r\n            \"publicKeyBase58\": \"7uRh6NBCyhGW4Wx8cRgoTKiSubiHC6vF7UtW5PjBwMLP\"\r\n        }\r\n    ],\r\n    \"authentication\": [\r\n        \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1#did-root-key\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DID - UPDATE message",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1\",\r\n    \"publicKey\": [\r\n        {\r\n            \"id\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1#did-root-key\",\r\n            \"type\": \"Ed25519VerificationKey2018\",\r\n            \"controller\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1\",\r\n            \"publicKeyBase58\": \"7uRh6NBCyhGW4Wx8cRgoTKiSubiHC6vF7UtW5PjBwMLP\"\r\n        }\r\n    ],\r\n    \"authentication\": [\r\n        \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1#did-root-key\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DID - DELETE message",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1\",\r\n    \"publicKey\": [\r\n        {\r\n            \"id\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1#did-root-key\",\r\n            \"type\": \"Ed25519VerificationKey2018\",\r\n            \"controller\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1\",\r\n            \"publicKeyBase58\": \"7uRh6NBCyhGW4Wx8cRgoTKiSubiHC6vF7UtW5PjBwMLP\"\r\n        }\r\n    ],\r\n    \"authentication\": [\r\n        \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1#did-root-key\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DID - Sign DID message",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "302e020100300506032b657004220420b05d3812356b95cec3cd4646c34e638c633c1c2e78b660aa891c65772c3800b2"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"mode\": \"plain\",\r\n    \"message\": {\r\n        \"operation\": \"delete\",\r\n        \"did\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1\",\r\n        \"didDocumentBase64\": \"ew0KICAgICJAY29udGV4dCI6ICJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIiwNCiAgICAiaWQiOiAiZGlkOmhlZGVyYTp0ZXN0bmV0OkhCYXRzYmZDQWNaeDZ4NkJ0VXlaM3RwUmNzdkNhODV5R1lKQ2tSOEdoMk5vO2hlZGVyYTp0ZXN0bmV0OmZpZD0wLjAuMSIsDQogICAgInB1YmxpY0tleSI6IFsNCiAgICAgICAgew0KICAgICAgICAgICAgImlkIjogImRpZDpoZWRlcmE6dGVzdG5ldDpIQmF0c2JmQ0FjWng2eDZCdFV5WjN0cFJjc3ZDYTg1eUdZSkNrUjhHaDJObztoZWRlcmE6dGVzdG5ldDpmaWQ9MC4wLjEjZGlkLXJvb3Qta2V5IiwNCiAgICAgICAgICAgICJ0eXBlIjogIkVkMjU1MTlWZXJpZmljYXRpb25LZXkyMDE4IiwNCiAgICAgICAgICAgICJjb250cm9sbGVyIjogImRpZDpoZWRlcmE6dGVzdG5ldDpIQmF0c2JmQ0FjWng2eDZCdFV5WjN0cFJjc3ZDYTg1eUdZSkNrUjhHaDJObztoZWRlcmE6dGVzdG5ldDpmaWQ9MC4wLjEiLA0KICAgICAgICAgICAgInB1YmxpY0tleUJhc2U1OCI6ICI3dVJoNk5CQ3loR1c0V3g4Y1Jnb1RLaVN1YmlIQzZ2RjdVdFc1UGpCd01MUCINCiAgICAgICAgfQ0KICAgIF0sDQogICAgImF1dGhlbnRpY2F0aW9uIjogWw0KICAgICAgICAiZGlkOmhlZGVyYTp0ZXN0bmV0OkhCYXRzYmZDQWNaeDZ4NkJ0VXlaM3RwUmNzdkNhODV5R1lKQ2tSOEdoMk5vO2hlZGVyYTp0ZXN0bmV0OmZpZD0wLjAuMSNkaWQtcm9vdC1rZXkiDQogICAgXQ0KfQ==\",\r\n        \"timestamp\": \"2020-04-29T11:06:17.380Z\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DID - SUBMIT message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"mode\": \"plain\",\r\n    \"message\": {\r\n        \"operation\": \"create\",\r\n        \"did\": \"did:hedera:testnet:FHdn8y2ekV3C5XQCphmau8iGdX8H8YL4kuaP6SRFknYw;hedera:testnet:fid=0.0.1\",\r\n        \"didDocumentBase64\": \"ew0KICAgICJAY29udGV4dCI6ICJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIiwNCiAgICAiaWQiOiAiZGlkOmhlZGVyYTp0ZXN0bmV0OkZIZG44eTJla1YzQzVYUUNwaG1hdThpR2RYOEg4WUw0a3VhUDZTUkZrbll3O2hlZGVyYTp0ZXN0bmV0OmZpZD0wLjAuMSIsDQogICAgInB1YmxpY0tleSI6IFsNCiAgICAgICAgew0KICAgICAgICAgICAgImlkIjogImRpZDpoZWRlcmE6dGVzdG5ldDpGSGRuOHkyZWtWM0M1WFFDcGhtYXU4aUdkWDhIOFlMNGt1YVA2U1JGa25ZdztoZWRlcmE6dGVzdG5ldDpmaWQ9MC4wLjEjZGlkLXJvb3Qta2V5IiwNCiAgICAgICAgICAgICJ0eXBlIjogIkVkMjU1MTlWZXJpZmljYXRpb25LZXkyMDE4IiwNCiAgICAgICAgICAgICJjb250cm9sbGVyIjogImRpZDpoZWRlcmE6dGVzdG5ldDpGSGRuOHkyZWtWM0M1WFFDcGhtYXU4aUdkWDhIOFlMNGt1YVA2U1JGa25ZdztoZWRlcmE6dGVzdG5ldDpmaWQ9MC4wLjEiLA0KICAgICAgICAgICAgInB1YmxpY0tleUJhc2U1OCI6ICJ2ZVJBekV6VzlXbjF2RlBXUkNya1lRWDNjdkozTm83azlMWlRSTktOWHRqIg0KICAgICAgICB9DQogICAgXSwNCiAgICAiYXV0aGVudGljYXRpb24iOiBbDQogICAgICAgICJkaWQ6aGVkZXJhOnRlc3RuZXQ6Rkhkbjh5MmVrVjNDNVhRQ3BobWF1OGlHZFg4SDhZTDRrdWFQNlNSRmtuWXc7aGVkZXJhOnRlc3RuZXQ6ZmlkPTAuMC4xI2RpZC1yb290LWtleSINCiAgICBdDQp9\",\r\n        \"timestamp\": \"2020-04-29T09:57:07.510Z\"\r\n    },\r\n    \"signature\": \"EeQTAK624oyes5RwhXWJn97+WAg1QaNUUwixIyGYljMLtnyxjwMXZ2tn/n4OE3mDw6o7EKovMwCZD8YHMysfBQ==\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DID - RESOLVE",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"did:hedera:testnet:HBatsbfCAcZx6x6BtUyZ3tpRcsvCa85yGYJCkR8Gh2No;hedera:testnet:fid=0.0.1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shutdown Appnet server",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/shutdown",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"shutdown"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"id": "386132ce-685c-4287-b0d2-0ae8b91d99ed",
+			"key": "baseUrl",
+			"value": "http://localhost:5050",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

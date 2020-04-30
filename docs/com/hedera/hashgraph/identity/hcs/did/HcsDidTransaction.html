@@ -133,7 +133,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <!--   -->
 </a>
 <h3>Fields inherited from class&nbsp;com.hedera.hashgraph.identity.hcs.<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">MessageTransaction</a></h3>
-<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#topicId">topicId</a></code></li>
+<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#message">message</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#topicId">topicId</a></code></li>
 </ul>
 </li>
 </ul>
@@ -152,6 +152,12 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html#HcsDidTransaction-com.hedera.hashgraph.identity.DidMethodOperation-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">HcsDidTransaction</a></span>(<a href="../../../../../../com/hedera/hashgraph/identity/DidMethodOperation.html" title="enum in com.hedera.hashgraph.identity">DidMethodOperation</a>&nbsp;operation,
                  com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</code>
 <div class="block">Instantiates a new transaction object.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html#HcsDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">HcsDidTransaction</a></span>(<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;&nbsp;message,
+                 com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</code>
+<div class="block">Instantiates a new transaction object from a message that was already prepared.</div>
 </td>
 </tr>
 </table>
@@ -231,7 +237,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <a name="HcsDidTransaction-com.hedera.hashgraph.identity.DidMethodOperation-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>HcsDidTransaction</h4>
 <pre>public&nbsp;HcsDidTransaction(<a href="../../../../../../com/hedera/hashgraph/identity/DidMethodOperation.html" title="enum in com.hedera.hashgraph.identity">DidMethodOperation</a>&nbsp;operation,
@@ -241,6 +247,22 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>operation</code> - The operation to be performed on a DID document.</dd>
 <dd><code>topicId</code> - The HCS DID topic ID where message will be submitted.</dd>
+</dl>
+</li>
+</ul>
+<a name="HcsDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>HcsDidTransaction</h4>
+<pre>public&nbsp;HcsDidTransaction(<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;&nbsp;message,
+                         com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</pre>
+<div class="block">Instantiates a new transaction object from a message that was already prepared.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>topicId</code> - The HCS DID topic ID where message will be submitted.</dd>
+<dd><code>message</code> - The message envelope.</dd>
 </dl>
 </li>
 </ul>

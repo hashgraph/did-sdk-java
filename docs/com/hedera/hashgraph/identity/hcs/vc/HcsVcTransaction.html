@@ -133,7 +133,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <!--   -->
 </a>
 <h3>Fields inherited from class&nbsp;com.hedera.hashgraph.identity.hcs.<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">MessageTransaction</a></h3>
-<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#topicId">topicId</a></code></li>
+<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#message">message</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#topicId">topicId</a></code></li>
 </ul>
 </li>
 </ul>
@@ -154,6 +154,13 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
                 java.lang.String&nbsp;credentialHash,
                 com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;signerPublicKey)</code>
 <div class="block">Instantiates a new transaction object.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html#HcsVcTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">HcsVcTransaction</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId,
+                <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcMessage.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcMessage</a>&gt;&nbsp;message,
+                com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;signerPublicKey)</code>
+<div class="block">Instantiates a new transaction object from a message that was already prepared.</div>
 </td>
 </tr>
 </table>
@@ -227,7 +234,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <a name="HcsVcTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation-java.lang.String-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>HcsVcTransaction</h4>
 <pre>public&nbsp;HcsVcTransaction(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId,
@@ -240,6 +247,24 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <dd><code>topicId</code> - The HCS VC topic ID where message will be submitted.</dd>
 <dd><code>operation</code> - The operation to be performed on a verifiable credential.</dd>
 <dd><code>credentialHash</code> - The hash of a credential.</dd>
+<dd><code>signerPublicKey</code> - Public key of the signer of this operation.</dd>
+</dl>
+</li>
+</ul>
+<a name="HcsVcTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>HcsVcTransaction</h4>
+<pre>public&nbsp;HcsVcTransaction(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId,
+                        <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcMessage.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcMessage</a>&gt;&nbsp;message,
+                        com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;signerPublicKey)</pre>
+<div class="block">Instantiates a new transaction object from a message that was already prepared.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>topicId</code> - The HCS VC topic ID where message will be submitted.</dd>
+<dd><code>message</code> - The message envelope.</dd>
 <dd><code>signerPublicKey</code> - Public key of the signer of this operation.</dd>
 </dl>
 </li>

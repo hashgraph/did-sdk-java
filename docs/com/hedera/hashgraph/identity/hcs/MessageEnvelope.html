@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":9,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10};
+var methods = {"i0":10,"i1":9,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -246,6 +246,12 @@ extends java.lang.Object</pre>
 <div class="block">Signs this message envelope with the given signing function.</div>
 </td>
 </tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html#toJson--">toJson</a></span>()</code>
+<div class="block">Converts this message envelope into a JSON string.</div>
+</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -381,6 +387,20 @@ protected&nbsp;com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse mirr
 <dd><code>signer</code> - The signing function.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>This envelope signed and serialized to JSON, ready for submission to HCS topic.</dd>
+</dl>
+</li>
+</ul>
+<a name="toJson--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>toJson</h4>
+<pre>public&nbsp;java.lang.String&nbsp;toJson()</pre>
+<div class="block">Converts this message envelope into a JSON string.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>The JSON string representing this message envelope.</dd>
 </dl>
 </li>
 </ul>

@@ -29,6 +29,17 @@ public class HcsDidTransaction extends MessageTransaction<HcsDidMessage> {
   }
 
   /**
+   * Instantiates a new transaction object from a message that was already prepared.
+   *
+   * @param topicId The HCS DID topic ID where message will be submitted.
+   * @param message The message envelope.
+   */
+  public HcsDidTransaction(final MessageEnvelope<HcsDidMessage> message, final ConsensusTopicId topicId) {
+    super(topicId, message);
+    this.operation = null;
+  }
+
+  /**
    * Sets a DID document as JSON string that will be submitted to HCS.
    *
    * @param  didDocument The didDocument to be published.
@@ -42,8 +53,9 @@ public class HcsDidTransaction extends MessageTransaction<HcsDidMessage> {
   @Override
   protected void validate(final Validator validator) {
     super.validate(validator);
-    validator.require(!Strings.isNullOrEmpty(didDocument), "DID document is mandatory.");
-    validator.require(operation != null, "DID method operation is not defined.");
+    // if message was not provided, check if we have all information to build it.
+    validator.require(!Strings.isNullOrEmpty(didDocument) || message != null, "DID document is mandatory.");
+    validator.require(operation != null || message != null, "DID method operation is not defined.");
   }
 
   @Override

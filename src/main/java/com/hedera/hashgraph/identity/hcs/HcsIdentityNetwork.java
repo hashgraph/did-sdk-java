@@ -4,9 +4,11 @@ import com.google.common.base.Charsets;
 import com.hedera.hashgraph.identity.DidMethodOperation;
 import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.identity.hcs.did.HcsDid;
+import com.hedera.hashgraph.identity.hcs.did.HcsDidMessage;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidResolver;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidTopicListener;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidTransaction;
+import com.hedera.hashgraph.identity.hcs.vc.HcsVcMessage;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcStatusResolver;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcTopicListener;
@@ -117,6 +119,16 @@ public final class HcsIdentityNetwork {
   }
 
   /**
+   * Instantiates a {@link HcsDidTransaction} to perform the specified operation on the DID document.
+   *
+   * @param  message The DID topic message ready to for sending.
+   * @return         The {@link HcsDidTransaction} instance.
+   */
+  public HcsDidTransaction createDidTransaction(final MessageEnvelope<HcsDidMessage> message) {
+    return new HcsDidTransaction(message, getDidTopicId());
+  }
+
+  /**
    * Instantiates a {@link HcsVcTransaction} to perform the specified operation on the VC document.
    *
    * @param  operation       The type of operation.
@@ -127,6 +139,18 @@ public final class HcsIdentityNetwork {
   public HcsVcTransaction createVcTransaction(final HcsVcOperation operation, final String credentialHash,
       final Ed25519PublicKey signerPublicKey) {
     return new HcsVcTransaction(getVcTopicId(), operation, credentialHash, signerPublicKey);
+  }
+
+  /**
+   * Instantiates a {@link HcsVcTransaction} to perform the specified operation on the VC document status.
+   *
+   * @param  message         The VC topic message ready to for sending.
+   * @param  signerPublicKey Public key of the signer (usually issuer).
+   * @return                 The {@link HcsVcTransaction} instance.
+   */
+  public HcsVcTransaction createVcTransaction(final MessageEnvelope<HcsVcMessage> message,
+      final Ed25519PublicKey signerPublicKey) {
+    return new HcsVcTransaction(getVcTopicId(), message, signerPublicKey);
   }
 
   /**

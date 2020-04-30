@@ -132,6 +132,10 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="type parameter in MessageTransaction">T</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#message">message</a></span></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected com.hedera.hashgraph.sdk.consensus.ConsensusTopicId</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#topicId">topicId</a></span></code>&nbsp;</td>
 </tr>
@@ -152,6 +156,12 @@ extends java.lang.Object</pre>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#MessageTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">MessageTransaction</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</code>
 <div class="block">Creates a new instance of a message transaction.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#MessageTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-com.hedera.hashgraph.identity.hcs.MessageEnvelope-">MessageTransaction</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId,
+                  <a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="type parameter in MessageTransaction">T</a>&gt;&nbsp;message)</code>
+<div class="block">Creates a new instance of a message transaction with already prepared message.</div>
 </td>
 </tr>
 </table>
@@ -267,10 +277,19 @@ extends java.lang.Object</pre>
 <a name="topicId">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>topicId</h4>
 <pre>protected final&nbsp;com.hedera.hashgraph.sdk.consensus.ConsensusTopicId topicId</pre>
+</li>
+</ul>
+<a name="message">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>message</h4>
+<pre>protected&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="type parameter in MessageTransaction">T</a> extends <a href="../../../../../com/hedera/hashgraph/identity/hcs/Message.html" title="class in com.hedera.hashgraph.identity.hcs">Message</a>&gt; message</pre>
 </li>
 </ul>
 </li>
@@ -284,7 +303,7 @@ extends java.lang.Object</pre>
 <a name="MessageTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>MessageTransaction</h4>
 <pre>public&nbsp;MessageTransaction(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</pre>
@@ -292,6 +311,22 @@ extends java.lang.Object</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>topicId</code> - Consensus topic ID to which message will be submitted.</dd>
+</dl>
+</li>
+</ul>
+<a name="MessageTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-com.hedera.hashgraph.identity.hcs.MessageEnvelope-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>MessageTransaction</h4>
+<pre>public&nbsp;MessageTransaction(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId,
+                          <a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="type parameter in MessageTransaction">T</a>&gt;&nbsp;message)</pre>
+<div class="block">Creates a new instance of a message transaction with already prepared message.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>topicId</code> - Consensus topic ID to which message will be submitted.</dd>
+<dd><code>message</code> - The message signed and ready to be sent.</dd>
 </dl>
 </li>
 </ul>

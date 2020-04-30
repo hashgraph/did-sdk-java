@@ -36,11 +36,29 @@ public class HcsVcTransaction extends MessageTransaction<HcsVcMessage> {
     this.signerPublicKey = signerPublicKey;
   }
 
+  /**
+   * Instantiates a new transaction object from a message that was already prepared.
+   *
+   * @param topicId         The HCS VC topic ID where message will be submitted.
+   * @param message         The message envelope.
+   * @param signerPublicKey Public key of the signer of this operation.
+   */
+  public HcsVcTransaction(final ConsensusTopicId topicId, final MessageEnvelope<HcsVcMessage> message,
+      final Ed25519PublicKey signerPublicKey) {
+    super(topicId, message);
+    this.signerPublicKey = signerPublicKey;
+    this.operation = null;
+    this.credentialHash = null;
+  }
+
   @Override
   protected void validate(final Validator validator) {
     super.validate(validator);
-    validator.require(!Strings.isNullOrEmpty(credentialHash), "Verifiable credential hash is null or empty.");
-    validator.require(operation != null, "Operation on verifiable credential is not defined.");
+
+    // If built message was provided credential hash and operation are not mandatory
+    validator.require(!Strings.isNullOrEmpty(credentialHash) || message != null,
+        "Verifiable credential hash is null or empty.");
+    validator.require(operation != null || message != null, "Operation on verifiable credential is not defined.");
   }
 
   @Override

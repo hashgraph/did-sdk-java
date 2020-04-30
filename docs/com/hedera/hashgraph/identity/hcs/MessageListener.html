@@ -273,7 +273,7 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#setStartTime-java.time.Instant-">setStartTime</a></span>(java.time.Instant&nbsp;startTime)</code>&nbsp;</td>
 </tr>
 <tr id="i13" class="rowColor">
-<td class="colFirst"><code>void</code></td>
+<td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#subscribe-com.hedera.hashgraph.sdk.mirror.MirrorClient-java.util.function.Consumer-">subscribe</a></span>(com.hedera.hashgraph.sdk.mirror.MirrorClient&nbsp;mirrorClient,
          java.util.function.Consumer&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;&gt;&nbsp;receiver)</code>
 <div class="block">Subscribes to mirror node topic messages stream.</div>
@@ -467,13 +467,15 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>subscribe</h4>
-<pre>public&nbsp;void&nbsp;subscribe(com.hedera.hashgraph.sdk.mirror.MirrorClient&nbsp;mirrorClient,
-                      java.util.function.Consumer&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;&gt;&nbsp;receiver)</pre>
+<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;&nbsp;subscribe(com.hedera.hashgraph.sdk.mirror.MirrorClient&nbsp;mirrorClient,
+                                    java.util.function.Consumer&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;&gt;&nbsp;receiver)</pre>
 <div class="block">Subscribes to mirror node topic messages stream.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>mirrorClient</code> - Mirror client instance.</dd>
 <dd><code>receiver</code> - Receiver of parsed messages.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>This listener instance.</dd>
 </dl>
 </li>
 </ul>

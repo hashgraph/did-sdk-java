@@ -212,9 +212,17 @@
 <dd>
 <div class="block">Instantiates a <a href="com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.did"><code>HcsDidTransaction</code></a> to perform the specified operation on the DID document.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-">createDidTransaction(MessageEnvelope&lt;HcsDidMessage&gt;)</a></span> - Method in class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html" title="class in com.hedera.hashgraph.identity.hcs">HcsIdentityNetwork</a></dt>
+<dd>
+<div class="block">Instantiates a <a href="com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.did"><code>HcsDidTransaction</code></a> to perform the specified operation on the DID document.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createVcTransaction-com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation-java.lang.String-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">createVcTransaction(HcsVcOperation, String, Ed25519PublicKey)</a></span> - Method in class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html" title="class in com.hedera.hashgraph.identity.hcs">HcsIdentityNetwork</a></dt>
 <dd>
 <div class="block">Instantiates a <a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> to perform the specified operation on the VC document.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createVcTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">createVcTransaction(MessageEnvelope&lt;HcsVcMessage&gt;, Ed25519PublicKey)</a></span> - Method in class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html" title="class in com.hedera.hashgraph.identity.hcs">HcsIdentityNetwork</a></dt>
+<dd>
+<div class="block">Instantiates a <a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> to perform the specified operation on the VC document status.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html#CREDENTIAL_STATUS">CREDENTIAL_STATUS</a></span> - Static variable in class com.hedera.hashgraph.identity.hcs.vc.<a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentJsonProperties.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcDocumentJsonProperties</a></dt>
 <dd>&nbsp;</dd>
@@ -680,6 +688,10 @@
 <dd>
 <div class="block">Instantiates a new transaction object.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html#HcsDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">HcsDidTransaction(MessageEnvelope&lt;HcsDidMessage&gt;, ConsensusTopicId)</a></span> - Constructor for class com.hedera.hashgraph.identity.hcs.did.<a href="com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidTransaction</a></dt>
+<dd>
+<div class="block">Instantiates a new transaction object from a message that was already prepared.</div>
+</dd>
 <dt><a href="com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html" title="class in com.hedera.hashgraph.identity.hcs"><span class="typeNameLink">HcsIdentityNetwork</span></a> - Class in <a href="com/hedera/hashgraph/identity/hcs/package-summary.html">com.hedera.hashgraph.identity.hcs</a></dt>
 <dd>
 <div class="block">Appnet's identity network based on Hedera HCS DID method specification.</div>
@@ -745,6 +757,10 @@
 <dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html#HcsVcTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation-java.lang.String-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">HcsVcTransaction(ConsensusTopicId, HcsVcOperation, String, Ed25519PublicKey)</a></span> - Constructor for class com.hedera.hashgraph.identity.hcs.vc.<a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTransaction</a></dt>
 <dd>
 <div class="block">Instantiates a new transaction object.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html#HcsVcTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">HcsVcTransaction(ConsensusTopicId, MessageEnvelope&lt;HcsVcMessage&gt;, Ed25519PublicKey)</a></span> - Constructor for class com.hedera.hashgraph.identity.hcs.vc.<a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTransaction</a></dt>
+<dd>
+<div class="block">Instantiates a new transaction object from a message that was already prepared.</div>
 </dd>
 <dt><a href="com/hedera/hashgraph/identity/HederaDid.html" title="interface in com.hedera.hashgraph.identity"><span class="typeNameLink">HederaDid</span></a> - Interface in <a href="com/hedera/hashgraph/identity/package-summary.html">com.hedera.hashgraph.identity</a></dt>
 <dd>
@@ -868,6 +884,8 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/MessageEnvelope.html#message">message</a></span> - Variable in class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/MessageTransaction.html#message">message</a></span> - Variable in class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">MessageTransaction</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs"><span class="typeNameLink">MessageEnvelope</span></a>&lt;<a href="com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="type parameter in MessageEnvelope">T</a> extends <a href="com/hedera/hashgraph/identity/hcs/Message.html" title="class in com.hedera.hashgraph.identity.hcs">Message</a>&gt; - Class in <a href="com/hedera/hashgraph/identity/hcs/package-summary.html">com.hedera.hashgraph.identity.hcs</a></dt>
 <dd>
 <div class="block">The envelope for Hedera identity messages sent to HCS DID or VC topics.</div>
@@ -901,6 +919,10 @@
 <dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/MessageTransaction.html#MessageTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">MessageTransaction(ConsensusTopicId)</a></span> - Constructor for class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">MessageTransaction</a></dt>
 <dd>
 <div class="block">Creates a new instance of a message transaction.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/MessageTransaction.html#MessageTransaction-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-com.hedera.hashgraph.identity.hcs.MessageEnvelope-">MessageTransaction(ConsensusTopicId, MessageEnvelope&lt;T&gt;)</a></span> - Constructor for class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">MessageTransaction</a></dt>
+<dd>
+<div class="block">Creates a new instance of a message transaction with already prepared message.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/MessageEnvelope.html#mirrorResponse">mirrorResponse</a></span> - Variable in class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a></dt>
 <dd>&nbsp;</dd>
@@ -1165,6 +1187,10 @@
 <dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/Message.html#toJson--">toJson()</a></span> - Method in class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/Message.html" title="class in com.hedera.hashgraph.identity.hcs">Message</a></dt>
 <dd>
 <div class="block">Converts this message into JSON string.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/MessageEnvelope.html#toJson--">toJson()</a></span> - Method in class com.hedera.hashgraph.identity.hcs.<a href="com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a></dt>
+<dd>
+<div class="block">Converts this message envelope into a JSON string.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentBase.html#toJson--">toJson()</a></span> - Method in class com.hedera.hashgraph.identity.hcs.vc.<a href="com/hedera/hashgraph/identity/hcs/vc/HcsVcDocumentBase.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcDocumentBase</a></dt>
 <dd>

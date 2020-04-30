@@ -1,0 +1,1056 @@
+{
+	"info": {
+		"_postman_id": "26968fdd-1c1e-4c3f-802e-b7cc82319712",
+		"name": "Hedera - e2e flow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. DEMO - Generate DID for Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b83ec81d-8a71-4157-a391-3fbcc71cde01",
+						"exec": [
+							"pm.collectionVariables.set(\"issuerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"issuerDid\", jsonData.id);",
+							"",
+							"pm.test(\"Issuer's private key is present\", function () {",
+							"    pm.response.to.have.header(\"privateKey\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. DID - CREATE message for Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "74b2ca3c-313f-492c-9eb0-5663fb9925a0",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{issuerDidDocument}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. DEMO - Sign CREATE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "00985ee1-e078-4068-b41a-1cabb7fa2383",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. DID - SUBMIT Issuer's DID Document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. DID  - RESOLVE Issuer's DID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "43031c91-1612-4083-9b66-05838b2d0729",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. DEMO - Generate DID for Owner",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0b962001-deed-4346-b357-65c484b5df88",
+						"exec": [
+							"pm.collectionVariables.set(\"ownerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
+							"pm.collectionVariables.set(\"ownerDidDocument\", responseBody);",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"ownerDid\", jsonData.id);",
+							"",
+							"pm.test(\"Owner's private key is present\", function () {",
+							"    pm.response.to.have.header(\"privateKey\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. DEMO - Generate Driving License document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cae9b1c4-3468-4bdb-b2f1-d8cf6a584a83",
+						"exec": [
+							"pm.collectionVariables.set(\"drivingLicense\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"issuer\": \"{{issuerDid}}\",\n\t\"owner\": \"{{ownerDid}}\",\n\t\"firstName\": \"John\",\n\t\"lastName\": \"Doe\",\n\t\"drivingLicenseCategories\": [\"A\", \"B1\", \"T\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-driving-license",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-driving-license"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. DEMO - Get Driving License credential hash",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3f2a87ef-fd2d-4e17-9c5b-23377b7fdf6c",
+						"exec": [
+							"pm.collectionVariables.set(\"credentialHash\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{drivingLicense}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/get-credential-hash",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"get-credential-hash"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. VC - create ISSUE message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b010bd61-2b69-4c4f-85b2-b5d036d37525",
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{drivingLicense}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10. DEMO - sign ISSUE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2bf27c00-6bf3-4772-a9aa-6f5268dcd3f6",
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "{{issuerPrivateKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-vc-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-vc-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11. VC - SUBMIT issuance message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12. VC - RESOLVE driving license status",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7035f5db-4b61-4be1-9e59-7beb36dbd387",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "13. VC - create REVOKE message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "561c4785-c75d-4c53-a64e-24276659ee74",
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{drivingLicense}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "14. DEMO - sign REVOKE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "560a0129-dd21-480a-8ab0-7129eb0470f3",
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "{{issuerPrivateKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-vc-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-vc-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "15. VC - SUBMIT revocation message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "16. VC - RESOLVE driving license status after revocation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "3f11c655-12e9-401d-9fb7-026cb65b83e2",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "17. DID - UPDATE message for Issuer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "50d9a9d2-ff9c-45f5-bf5e-f7325837286d",
+						"exec": [
+							"var jsonData = JSON.parse(pm.collectionVariables.get(\"issuerDidDocument\"));",
+							"pm.collectionVariables.set(\"issuerDidPublicKeyPart\", JSON.stringify(jsonData.publicKey));",
+							"pm.collectionVariables.set(\"issuerDidAuthenticationPart\", JSON.stringify(jsonData.authentication));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "80516346-b073-444e-8ca9-327a4463e236",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": {{issuerDidAuthenticationPart}},\r\n    \"service\": [{\r\n    \t\"id\": \"#test-service\",\r\n    \t\"type\": \"VerifiableCredentialService\",\r\n    \t\"serviceEndpoint\": \"https://example.appnet.com/vc/\"\r\n    }]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "18. DEMO - Sign UPDATE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cea2d85c-0df8-4dba-b27f-8ed37a0141c7",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "19. DID - SUBMIT Issuer's updated DID Document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "20. DID  - RESOLVE Issuer's DID after update",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "da96536a-f47a-4874-aaf4-7509ad89150b",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ff8fba13-3984-4a50-b98a-3626760d6b39",
+						"exec": [
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "21. DID - DELETE message for Issuer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b253c671-54b6-4392-a9fa-706e8c86ffa7",
+						"exec": [
+							"var jsonData = JSON.parse(pm.collectionVariables.get(\"issuerDidDocument\"));",
+							"pm.collectionVariables.set(\"issuerDidPublicKeyPart\", JSON.stringify(jsonData.publicKey));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "769da631-ecc4-4356-8147-cc9da2126cc5",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "22. DEMO - Sign DELETE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2355684a-e10a-43d4-a7f6-23bd73515788",
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "{{issuerPrivateKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "23. DID - SUBMIT Issuer's document deletion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "24. DID  - RESOLVE Issuer's DID after delete should fail",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ba9b4cdf-2a20-4ecc-8d25-c45db3b52221",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "899d08fa-0db9-4ea7-9d9b-735647588eeb",
+						"exec": [
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f027e46a-4910-40a0-9ef4-67ede9d76c44",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "f4d97ee4-67ba-4984-af6a-6c9638a95b29",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "1200dc1a-3123-4f1a-a964-660cbaac796d",
+			"key": "baseUrl",
+			"value": "http://localhost:5050",
+			"type": "string"
+		},
+		{
+			"id": "a6ad4c15-d52e-430a-909b-a2cb2c1660fe",
+			"key": "issuerPrivateKey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "b1ab27bf-39ee-403a-98da-f771930c3e18",
+			"key": "issuerDid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "1d27a4dd-e62c-4bd5-8bee-993b4189405c",
+			"key": "issuerDidDocument",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "c168007b-69a2-4f06-9465-7a4a7d43bd22",
+			"key": "didMessage",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "b067e914-e8c0-4d54-b420-e4e8ad9c5439",
+			"key": "ownerDid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "887a3b0f-ae6f-4c75-997f-08d220b34217",
+			"key": "ownerDidDocument",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "5e874cb7-ab1e-475d-9c5c-066ee4b9df05",
+			"key": "ownerPrivateKey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "13c831af-6f32-4c37-a700-2bcd417c1046",
+			"key": "drivingLicense",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "8664854f-515f-46ba-a938-27b9765fbbe2",
+			"key": "drivingLicenseHash",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "95c823b3-87c7-4982-b6a5-eb99843ba8a8",
+			"key": "credentialHash",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "def0af52-5850-445b-9546-9757ac5cb787",
+			"key": "vcMessage",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "4c4b6144-281f-47eb-8d37-3b8d1b7bd6ac",
+			"key": "issuerDidAuthenticationPart",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "d4bd89e5-33e7-4dad-aaed-9bb912e79b7a",
+			"key": "issuerDidPublicKeyPart",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

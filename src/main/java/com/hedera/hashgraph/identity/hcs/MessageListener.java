@@ -79,14 +79,17 @@ public abstract class MessageListener<T extends Message> {
   /**
    * Subscribes to mirror node topic messages stream.
    *
-   * @param mirrorClient Mirror client instance.
-   * @param receiver     Receiver of parsed messages.
+   * @param  mirrorClient Mirror client instance.
+   * @param  receiver     Receiver of parsed messages.
+   * @return              This listener instance.
    */
-  public void subscribe(final MirrorClient mirrorClient, final Consumer<MessageEnvelope<T>> receiver) {
+  public MessageListener<T> subscribe(final MirrorClient mirrorClient, final Consumer<MessageEnvelope<T>> receiver) {
     subscriptionHandle = query.subscribe(
         mirrorClient,
         resp -> handleResponse(resp, receiver),
         err -> handleError(err));
+
+    return this;
   }
 
   /**

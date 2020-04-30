@@ -86,8 +86,16 @@ public class MessageEnvelope<T extends Message> {
     byte[] signatureBytes = signer.apply(msgBytes);
     signature = new String(Base64.getEncoder().encode(signatureBytes), StandardCharsets.UTF_8);
 
-    Gson gson = JsonUtils.getGson();
-    return gson.toJson(this).getBytes(StandardCharsets.UTF_8);
+    return toJson().getBytes(StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Converts this message envelope into a JSON string.
+   *
+   * @return The JSON string representing this message envelope.
+   */
+  public String toJson() {
+    return JsonUtils.getGson().toJson(this);
   }
 
   /**

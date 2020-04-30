@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://localhost:5050/driving-license-schema.json",
+    "type": "object",
+    "title": "The Example Driving License Schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "additionalProperties": true,
+    "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "drivingLicenseCategories"
+    ],
+    "properties": {
+		 "id": {
+            "$id": "#/properties/id",
+            "type": "string",
+            "title": "DID of the owner",
+            "default": "",
+            "examples": [
+                "did:hedera:testnet:DnK9ApZ4GHyAyJY4BL6PKQCJdq1T6jbFpt2bJbRvc63k;hedera:testnet:fid=0.0.1"
+            ]
+		},
+        "firstName": {
+            "$id": "#/properties/firstName",
+            "type": "string",
+            "title": "Owner's first name",
+            "default": "",
+            "examples": [
+                "John"
+            ]
+        },
+        "lastName": {
+            "$id": "#/properties/lastName",
+            "type": "string",
+            "title": "Owner's last name",
+            "default": "",
+            "examples": [
+                "Doe"
+            ]
+        },
+        "drivingLicenseCategories": {
+            "$id": "#/properties/drivingLicenseCategories",
+            "type": "array",
+            "title": "Array of driving license categories",
+            "default": [],
+            "examples": [
+                [
+                    "A",
+                    "B1",
+                    "T"
+                ]
+            ],
+            "additionalItems": true,
+            "items": {
+                "$id": "#/properties/drivingLicenseCategories/items",
+                "type": "string",
+                "title": "A single driving license category",
+                "default": "",
+                "examples": [
+                    "A",
+                    "B1",
+                    "T"
+                ]
+            }
+        }
+    }
+}

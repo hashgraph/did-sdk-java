@@ -3,11 +3,11 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 [![Documentation](https://img.shields.io/badge/javadoc-reference-informational)](docs/index.html)
 
-![LINE](https://img.shields.io/badge/line--coverage-83%25-brightgreen.svg)
-![INSTRUCTION](https://img.shields.io/badge/instruction--coverage-84%25-brightgreen.svg)
+![LINE](https://img.shields.io/badge/line--coverage-84%25-brightgreen.svg)
+![INSTRUCTION](https://img.shields.io/badge/instruction--coverage-85%25-brightgreen.svg)
 ![METHOD](https://img.shields.io/badge/method--coverage-86%25-brightgreen.svg)
 ![CLASS](https://img.shields.io/badge/class--coverage-97%25-brightgreen.svg)
-![COMPLEXITY](https://img.shields.io/badge/complexity-1.94-brightgreen.svg)
+![COMPLEXITY](https://img.shields.io/badge/complexity-1.95-brightgreen.svg)
 
 
 This repository contains Java SDK for Hedera Hashgraph DID framework based on the draft version of [DID Method Specification](https://github.com/hashgraph/identity-did) on top of Hedera Consensus Service.

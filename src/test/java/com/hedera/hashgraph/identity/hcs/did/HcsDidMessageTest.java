@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hedera.hashgraph.identity.DidDocumentBase;
 import com.hedera.hashgraph.identity.DidMethodOperation;
 import com.hedera.hashgraph.identity.HederaNetwork;
+import com.hedera.hashgraph.identity.hcs.AesEncryptionUtil;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
@@ -43,6 +45,39 @@ public class HcsDidMessageTest {
     // Test below should be true, as the did does not contain tid parameter
     assertTrue(envelope.open().isValid(DID_TOPIC_ID1));
     assertEquals(originalEnvelope.open().getTimestamp(), envelope.open().getTimestamp());
+  }
+
+  @Test
+  void testEncryptedMessage() {
+    final String secret = "Secret encryption password";
+
+    Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
+    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, ADDRESS_BOOK_FID);
+    DidDocumentBase doc = did.generateDidDocument();
+    String didJson = doc.toJson();
+
+    MessageEnvelope<HcsDidMessage> originalEnvelope = HcsDidMessage.fromDidDocumentJson(didJson,
+        DidMethodOperation.CREATE);
+
+    MessageEnvelope<HcsDidMessage> encryptedMsg = originalEnvelope
+        .encrypt(HcsDidMessage.getEncrypter(m -> AesEncryptionUtil.encrypt(m, secret)));
+
+    MessageEnvelope<HcsDidMessage> encryptedSignedMsg = MessageEnvelope
+        .fromJson(new String(encryptedMsg.sign(m -> privateKey.sign(m)), StandardCharsets.UTF_8),
+            HcsDidMessage.class);
+
+    assertNotNull(encryptedSignedMsg);
+    // Throw error if decrypter is not provided
+    assertThrows(IllegalArgumentException.class, () -> encryptedSignedMsg.open());
+
+    // Decrypt and open message
+    HcsDidMessage decryptedMsg = encryptedSignedMsg
+        .open(HcsDidMessage.getDecrypter((m, i) -> AesEncryptionUtil.decrypt(m, secret)));
+
+    // Check if it's properties are correct after decryption
+    assertNotNull(decryptedMsg);
+    assertEquals(originalEnvelope.open().getDidDocumentBase64(), decryptedMsg.getDidDocumentBase64());
+    assertEquals(originalEnvelope.open().getDid(), decryptedMsg.getDid());
   }
 
   @Test

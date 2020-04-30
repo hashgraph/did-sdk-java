@@ -1,5 +1,6 @@
 package com.hedera.hashgraph.identity.hcs;
 
+import com.google.common.base.Strings;
 import com.hedera.hashgraph.identity.utils.Validator;
 import com.hedera.hashgraph.sdk.Client;
 import com.hedera.hashgraph.sdk.HederaNetworkException;
@@ -11,6 +12,7 @@ import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
 import com.hedera.hashgraph.sdk.mirror.MirrorClient;
 import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.function.BiFunction;
@@ -31,6 +33,8 @@ public abstract class MessageTransaction<T extends Message> {
   private UnaryOperator<byte[]> signer;
   private MessageListener<T> listener;
 
+  protected MessageEnvelope<T> message;
+
   /**
    * Creates a new instance of a message transaction.
    *
@@ -38,6 +42,18 @@ public abstract class MessageTransaction<T extends Message> {
    */
   public MessageTransaction(final ConsensusTopicId topicId) {
     this.topicId = topicId;
+    this.executed = false;
+  }
+
+  /**
+   * Creates a new instance of a message transaction with already prepared message.
+   *
+   * @param topicId Consensus topic ID to which message will be submitted.
+   * @param message The message signed and ready to be sent.
+   */
+  public MessageTransaction(final ConsensusTopicId topicId, final MessageEnvelope<T> message) {
+    this.topicId = topicId;
+    this.message = message;
     this.executed = false;
   }
 
@@ -164,12 +180,13 @@ public abstract class MessageTransaction<T extends Message> {
   public TransactionId execute(final Client client, final MirrorClient mirrorClient) {
     new Validator().checkValidationErrors("MessageTransaction execution failed: ", v -> validate(v));
 
-    MessageEnvelope<T> envelope = buildMessage();
+    MessageEnvelope<T> envelope = message == null ? buildMessage() : message;
     if (encrypter != null) {
       envelope.encrypt(provideMessageEncrypter(encrypter));
     }
 
-    byte[] messageContent = envelope.sign(signer);
+    byte[] messageContent = envelope.getSignature() == null ? envelope.sign(signer)
+        : envelope.toJson().getBytes(StandardCharsets.UTF_8);
 
     if (receiver != null) {
       listener = provideTopicListener(topicId);
@@ -221,7 +238,9 @@ public abstract class MessageTransaction<T extends Message> {
    */
   protected void validate(final Validator validator) {
     validator.require(!executed, "This transaction has already been executed.");
-    validator.require(signer != null, "Signing function is missing.");
+    // signing function is only needed if signed message was not provided.
+    validator.require(signer != null || (message != null && !Strings.isNullOrEmpty(message.getSignature())),
+        "Signing function is missing.");
     validator.require(buildTransactionFunction != null, "Transaction builder is missing.");
     validator.require((encrypter != null && decrypter != null) || (encrypter == null && decrypter == null),
         "Either both encrypter and decrypter must be specified or none.");
