@@ -13,7 +13,7 @@
 This repository contains Java SDK for Hedera Hashgraph DID framework based on the draft version of [DID Method Specification](https://github.com/hashgraph/identity-did) on top of Hedera Consensus Service.
 
 The goal of this SDK is to simplify :
-- creation of identity networks witnin appnets,
+- creation of identity networks within appnets,
 - generation of decentralized identifiers for [Hedera DID Method](https://github.com/hashgraph/identity-did),
 - creation, update, deletion and resolution of DID documents in appnet identity networks,
 - issuance, verification and revocation of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/).
@@ -66,10 +66,11 @@ implementation group: 'com.hedera.hashgraph', name: 'identity', version: '1.0.0'
 ```
 
 ### Identity Network Creation
-Appnets that want to use Hedera DID Method shall create the following artifacts for their identity network:
-- [Address book](https://github.com/hashgraph/Identity-did/blob/master/did-method-specification.md#appnet-address-book) file in Hedera File Service
-- Hedera Consensus Service topic for DID Document messages
-- Hedera Consensus Service topic for Verifiable Credentials messages
+
+An identity appnet should have the following artifacts created on the Hedera mainnet:
+- [Address book](https://github.com/hashgraph/Identity-did/blob/master/did-method-specification.md#appnet-address-book) for the members of the appnet stored as a file in Hedera File Service
+- Hedera Consensus Service topic for DID Document messages. HCS messages creating, updating, or deleting DID Documents are submitted to this topic.
+- Hedera Consensus Service topic for Verifiable Credentials messages. HCS messages issuing, suspending, or revoking Verifible Credentials are submitted to this topic.
 
 These could be set up manually by appnet administrators or can be created using `HcsIdentityNetworkBuilder` as follows:
 ```java
@@ -102,9 +103,9 @@ HcsIdentityNetwork identityNetwork = new HcsIdentityNetworkBuilder()
 `FileCreateTransaction` for address book file creation and `ConsensusTopicCreateTransaction` for DID and VC topic creation can be configured in a standard way as specified in Hedera Java SDK.
 
 ### Existing Identity Network Instantiation
-Once identity network artifacts have been created, appnets will require `HcsIdentityNetwork` instance to interact with identity network.
+Once the above identity network artifacts have been created, appnets will require `HcsIdentityNetwork` instance to interact with identity network.
 It can be initialized in multiple ways:
-- from existing address book file stored by appnet - which will not require querying Hedera File Service:
+- from an existing address book file stored by appnet - which will not require querying Hedera File Service:
 ```java
 // Read address book JSON from a local file (or another appnet's source)
 Path pathToAddressBookFile = Paths.get("<pathToLocalAddressBookJsonFile.json>");
@@ -207,15 +208,11 @@ This will produce the following document:
 ```
 
 ##### Create, Update, Delete
-CRUD operations on a given DID document are all executed in the same way, by using `HcsDidTransaction`.
-The transaction is created from an instance of `HcsIdentityNetwork` by calling `createDidTransaction` method and specifying CRUD operation, e.g. `DidMethodOperation.CREATE`. Then `HcsDidTransaction` must be provided with the DID document, which has to be signed by DID root key of the DID subject. Finally `ConsensusMessageSubmitTransaction` must be configured accordingly to Hedera SDK, built and signed.
+C(not R)UD operations on a given DID document are all executed in the same way, by using `HcsDidTransaction`.
+The transaction is created from an instance of `HcsIdentityNetwork` by calling `createDidTransaction` method and specifying the appropriate CRUD operation, e.g. `DidMethodOperation.CREATE`. Then `HcsDidTransaction` must be provided with the DID document, which has to be signed by DID root key of the DID subject. Finally `ConsensusMessageSubmitTransaction` must be configured accordingly to Hedera SDK, built and signed.
 
-Appnet implementations can optionally add a callback listener and receive an event when the DID message reached consensus and was propageted to the mirror node.
-They can also have their own mirror node listener and catch incoming messages from DID topic.
 
-Once confirmed DID document arrived from a mirror node, appnets shall store them in their own storage solution. This will allow them to resolve DIDs more efficiently, instead of querying mirror node for each request.
-
-Here is an example DID document creation code:
+Here is example DID document creation code:
 ```java
 Client client = ...;
 MirrorClient mirrorClient = ...;
@@ -243,8 +240,12 @@ identityNetwork.createDidTransaction(DidMethodOperation.CREATE)
     .execute(client, mirrorClient);
 ```
 
-##### Read (Resolve)
-In common scenarios DID resolution shall be executed against the appnet's REST API service as specified in [Hedera DID Method](https://github.com/hashgraph/identity-did). In this case the appnet constantly listening to the DID topic messages coming from a mirror node and stores them in it's dedicated storage. DID resolving parties, trusting the appnet can use this service to read a DID document for a given DID in a most performant way. In this case appnet can use `HcsDidTopicListener` to conveniently recieve parsed, validated and decrypted messages:
+Appnet implementations can optionally add a callback listener and receive an event when the HCS message carrying the DID operation reached consensus and was subsequently propagated to the mirror network.
+They can also have their own mirror node listener and catch incoming messages from the relevant DID topic. 
+
+Once a Hedera timestamped DID document is received from a mirror node, appnets can store them in their own storage solution in support of future resolution requests.
+
+Here is example code demonstrating the use of `HcsDidTopicListener` to  recieve parsed, validated and decrypted messages from a mirror:
 
 ```java
 HcsIdentityNetwork identityNetwork = ...;
@@ -262,7 +263,11 @@ listener.setStartTime(Instant.MIN)
     });
 ```
 The listener can be restarted to process messages at any given `startTime` so that local storage can catch up to the state of the mirror node.
-Resolvers who have direct access to Hedera mirror node of their trust and do not want to use appnet's REST API service can run DID resolution query directy against the DID topic on the mirror node. This way is not recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsDidResolver` can be obtained from the `HcsIdentityNetwork` via `getResolver` method. It can accept multiple DIDs for resolution and when finished will return a map of DID strings and their corresponding last valid message posted to the DID topic.
+
+##### Read (Resolve)
+Typically, DID resolution shall be executed against the appnet's REST API service as specified in [Hedera DID Method](https://github.com/hashgraph/identity-did). In this model, the nodes of the appnet listen to the appropriate DID topic at a mirror node and store the DID Documents in it's dedicated storage (as described above). Those parties seeking to resolve a DID will query an appnet node in order to retrieve the corresponding DID Document. This model may presume a degree of trust between the parties requesting the DID DOcument and the appnet node.  
+
+Resolvers who have direct access to a Hedera mirror node and do not want to use appnet's REST API service can run DID resolution query directy against the DID topic on the mirror node. This method may not be recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsDidResolver` can be obtained from the `HcsIdentityNetwork` via `getResolver` method. It can accept multiple DIDs for resolution and when finished will return a map of DID strings and their corresponding last valid message posted to the DID topic.
 
 ```java
 HcsIdentityNetwork identityNetwork = ...;
@@ -290,7 +295,7 @@ identityNetwork.getResolver()
 After the last message is received from the topic, the resolver will wait for a given period of time (by default 30 seconds) to wait for more messages. If at this time no more messages arrive, the resolution is considered completed. The waiting time can be modified with `setTimeout` method.
 
 ### Verifiable Credentials
-Besides DID method specification implementation, Hedera DID Java SDK provides a verifiable credentials registry framwork. Issuers and verifiers working with appnets can utilize it to register verifiable credential events such as: issuance, revication, suspension or resumption of claims. The way Hedera handles those events is in line with the design of DID documents. However, no verifiable credential documents are ever submitted over Hedera network. Instead only credential hashes and operations are confirmed on the ledger. As in DID method specification, verifiable credentials have a dedicated Consensus Service Topic within the appnet to which issuers send messages to register verifiable credential events.
+Besides supporting the management of DID Documents are per the HCS DID method specification, the Hedera DID Java SDK provides a verifiable credentials registry framwork. Issuers and verifiers working with appnets can utilize it to register verifiable credential events such as: issuance, revication, suspension or resumption of claims. The model is very similar to how HCS messages are used to manage the lifecycle of DID DOcuments. However, no verifiable credential themselves are ever submitted over the Hedera network. Instead, only hashes of such credentials are messaged over HCS and and so timestamped and ordered. As in the DID method specification, verifiable credentials have a dedicated Consensus Service Topic within the appnet to which issuers send messages to register verifiable credential events.
 
 #### Status Registration
 A valid Issuance, Revocation, Susspension or Resumption,message must have a JSON structure defined by a [vc-message-schema](vc-message.schema.json) and contains the following properties:
