@@ -19,7 +19,6 @@ import com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentBase;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcMessage;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
-import com.hedera.hashgraph.sdk.file.FileId;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import org.slf4j.Logger;
@@ -56,7 +55,7 @@ public class DemoHandler extends AppnetHandler {
    */
   public void generateDid(final Context ctx) {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, FileId.fromString("0.0.1"));
+    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, identityNetwork.getAddressBook().getFileId());
     DidDocumentBase doc = did.generateDidDocument();
 
     ctx.header(HEADER_PRIVATE_KEY, privateKey.toString());
