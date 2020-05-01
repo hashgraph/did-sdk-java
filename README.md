@@ -10,11 +10,11 @@
 ![COMPLEXITY](https://img.shields.io/badge/complexity-1.95-brightgreen.svg)
 
 
-This repository contains Java SDK for Hedera Hashgraph DID framework based on the draft version of [DID Method Specification](https://github.com/hashgraph/identity-did) on top of Hedera Consensus Service.
+This repository contains the Java SDK for managing DID Documents & Verifiable Credentials framework using the Hedera Consensus Service.
 
-The goal of this SDK is to simplify :
+This SDK is desiogne to simplify :
 - creation of identity networks within appnets,
-- generation of decentralized identifiers for [Hedera DID Method](https://github.com/hashgraph/identity-did),
+- generation of decentralized identifiers for [Hedera DID Method](https://github.com/hashgraph/did-method),
 - creation, update, deletion and resolution of DID documents in appnet identity networks,
 - issuance, verification and revocation of [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/).
 
@@ -393,7 +393,7 @@ String credentialHash = vcFromJson.toCredentialHash();
 Licensed under Apache License, Version 2.0 – see [LICENSE](LICENSE) in this repo or on the official Apache page  <http://www.apache.org/licenses/LICENSE-2.0>
 
 ## References
-* <https://github.com/hashgraph/identity-did>
+* <https://github.com/hashgraph/did-method>
 * <https://github.com/hashgraph/hedera-sdk-java>
 * <https://docs.hedera.com/hedera-api/>
 * <https://www.hedera.com/>
