@@ -176,7 +176,7 @@ HcsDid did = HcsDid.fromString(didString);
 
 #### CRUD Methods for DID Document
 A DID document is a graph-based data structure typically expressed using JSON-LD 1.1 format. Its structure can be extended based on DID subject requirements.
-As currently there is no standard Java library for DID documents, nor even JSON-LD version 1.1 documents, this SDK uses a custom `DidDocumentBase` class that constructs JSON-LD DID document with only mandatory DID document attributes defined by [W3C DID Specification](https://w3c.github.io/did-core/) and those required by [Hedera DID Method](https://github.com/hashgraph/identity-did). Appnet creators can extend `DidDocumentBase` class to include other attributes in the DID document or construct a JSON-LD string in their own way (e.g. using 3rd party RDF libraries).
+As currently there is no standard Java library for DID documents, nor even JSON-LD version 1.1 documents, this SDK uses a custom `DidDocumentBase` class that constructs JSON-LD DID document with only mandatory DID document attributes defined by [W3C DID Specification](https://w3c.github.io/did-core/) and those required by [Hedera DID Method](https://github.com/hashgraph/did-method). Appnet creators can extend `DidDocumentBase` class to include other attributes in the DID document or construct a JSON-LD string in their own way (e.g. using 3rd party RDF libraries).
 
 Having `HcsDid` object, we can generate a DID document for it:
 ```java
@@ -245,7 +245,7 @@ They can also have their own mirror node listener and catch incoming messages fr
 
 Once a Hedera timestamped DID document is received from a mirror node, appnets can store them in their own storage solution in support of future resolution requests.
 
-Here is example code demonstrating the use of `HcsDidTopicListener` to  recieve parsed, validated and decrypted messages from a mirror:
+Here is example code demonstrating the use of `HcsDidTopicListener` to  receive parsed, validated and decrypted messages from a mirror:
 
 ```java
 HcsIdentityNetwork identityNetwork = ...;
