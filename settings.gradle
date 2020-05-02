@@ -1,4 +1,4 @@
 include 'appnet-api-server'
 project(":appnet-api-server").projectDir = file("examples/appnet-api-server")
 
-rootProject.name = 'identity-sdk'
+rootProject.name = 'did-sdk-java'
