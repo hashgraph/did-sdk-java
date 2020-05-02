@@ -12,7 +12,7 @@
 
 This repository contains the Java SDK for managing DID Documents & Verifiable Credentials framework using the Hedera Consensus Service.
 
-This SDK is desiogne to simplify :
+This SDK is designed to simplify :
 - creation of identity networks within appnets,
 - generation of decentralized identifiers for [Hedera DID Method](https://github.com/hashgraph/did-method),
 - creation, update, deletion and resolution of DID documents in appnet identity networks,
