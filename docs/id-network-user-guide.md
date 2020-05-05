@@ -10,7 +10,7 @@ An identity appnet should have the following artifacts created on the Hedera mai
 
 - [Address book][address-book] for the members of the appnet stored as a file in Hedera File Service
 - Hedera Consensus Service topic for DID Document messages. HCS messages creating, updating, or deleting DID Documents are submitted to this topic.
-- Hedera Consensus Service topic for Verifiable Credentials messages. HCS messages issuing, suspending, or revoking Verifible Credentials are submitted to this topic.
+- Hedera Consensus Service topic for Verifiable Credentials messages. HCS messages issuing, suspending, or revoking Verifiable Credentials are submitted to this topic.
 
 These could be set up manually by appnet administrators or can be created using `HcsIdentityNetworkBuilder` as follows:
 

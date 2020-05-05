@@ -8,7 +8,7 @@
   
 ## DID Generation
 
-A DID is represented in SDK as `HcsDid` object and can be easily converted to it's DID string form by calling its `toDid()` or `toString()` method. New decentralized identifiers can be generated in multiple handly ways:
+A DID is represented in SDK as `HcsDid` object and can be easily converted to it's DID string form by calling its `toDid()` or `toString()` method. New decentralized identifiers can be generated in multiple handy ways:
 
 - from already instantiated network:
 
@@ -38,7 +38,7 @@ FileId addressBookFileId = FileId.fromString("<hedera.address-book-file.id>");
 HcsDid did = new HcsDid(HederaNetwork.TESTNET, didRootKey.publicKey, addressBookFileId);
 ```
 
-Please note that generated DIDs are completely offchain. They are not published to the Hedera network unless specific DID document message is sent to HCS DID topic.
+Please note that generated DIDs are completely off-chain. They are not published to the Hedera network unless specific DID document message is sent to HCS DID topic.
 
 Existing Hedera DID strings can be parsed into `HcsDid` object by calling `fromString` method:
 
@@ -144,9 +144,9 @@ The listener can be restarted to process messages at any given `startTime` so th
 
 ### Read (Resolve)
 
-Typically, DID resolution shall be executed against the appnet's REST API service as specified in [Hedera DID Method][did-method-spec]. In this model, the nodes of the appnet listen to the appropriate DID topic at a mirror node and store the DID Documents in it's dedicated storage (as described above). Those parties seeking to resolve a DID will query an appnet node in order to retrieve the corresponding DID Document. This model may presume a degree of trust between the parties requesting the DID DOcument and the appnet node.
+Typically, DID resolution shall be executed against the appnet REST API service as specified in [Hedera DID Method][did-method-spec]. In this model, the nodes of the appnet listen to the appropriate DID topic at a mirror node and store the DID Documents in it's dedicated storage (as described above). Those parties seeking to resolve a DID will query an appnet node in order to retrieve the corresponding DID Document. This model may presume a degree of trust between the parties requesting the DID DOcument and the appnet node.
 
-Resolvers who have direct access to a Hedera mirror node and do not want to use appnet's REST API service can run DID resolution query directy against the DID topic on the mirror node. This method may not be recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsDidResolver` can be obtained from the `HcsIdentityNetwork` via `getResolver` method. It can accept multiple DIDs for resolution and when finished will return a map of DID strings and their corresponding last valid message posted to the DID topic.
+Resolvers who have direct access to a Hedera mirror node and do not want to use appnet REST API service can run DID resolution query directly against the DID topic on the mirror node. This method may not be recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsDidResolver` can be obtained from the `HcsIdentityNetwork` via `getResolver` method. It can accept multiple DIDs for resolution and when finished will return a map of DID strings and their corresponding last valid message posted to the DID topic.
 
 ```java
 HcsIdentityNetwork identityNetwork = ...;
