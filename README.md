@@ -1,14 +1,9 @@
 
 # Hedera™ Hashgraph DID - Java SDK
 
-[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
-[![Documentation](https://img.shields.io/badge/javadoc-reference-informational)](docs/sdk-javadocs/index.html)
-![LINE](https://img.shields.io/badge/line--coverage-84%25-brightgreen.svg)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE) [![Documentation](https://img.shields.io/badge/javadoc-reference-informational)](docs/sdk-javadocs/index.html)
 
-![INSTRUCTION](https://img.shields.io/badge/instruction--coverage-85%25-brightgreen.svg)
-![METHOD](https://img.shields.io/badge/method--coverage-86%25-brightgreen.svg)
-![CLASS](https://img.shields.io/badge/class--coverage-97%25-brightgreen.svg)
-![COMPLEXITY](https://img.shields.io/badge/complexity-1.95-brightgreen.svg)
+![LINE](https://img.shields.io/badge/line--coverage-84%25-brightgreen.svg) ![INSTRUCTION](https://img.shields.io/badge/instruction--coverage-85%25-brightgreen.svg) ![METHOD](https://img.shields.io/badge/method--coverage-86%25-brightgreen.svg) ![CLASS](https://img.shields.io/badge/class--coverage-97%25-brightgreen.svg) ![COMPLEXITY](https://img.shields.io/badge/complexity-1.95-brightgreen.svg)
 
 This repository contains the Java SDK for managing DID Documents & Verifiable Credentials framework using the Hedera Consensus Service.
 
@@ -86,8 +81,6 @@ The appnet runs on localhost port 5050 be default. It does not expose any user i
 Please refer to the [README](/examples/appnet-api-server/README.md) file of the appnet project for more details.
 
 ## Contributing
-
-TODO: To be reviewed by Hedera team (contributing guide based on hedera-sdk-java).
 
 We welcome participation from all developers! For instructions on how to contribute to this repo, please review the [Contributing Guide](/CONTRIBUTING.md).
 
