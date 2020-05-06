@@ -66,7 +66,7 @@ implementation group: 'com.hedera.hashgraph', name: 'identity', version: '1.0.0'
 
 - [DID Method Specification][did-method-spec]
 - [Verifiable Credentials Registry](/docs/vc-specification.md)
-- [SDK JavaDoc Reference](/docs/sdk-javadocs/index.html)
+- [SDK JavaDoc Reference][sdk-javadocs]
 
 ### Getting Started Guides
 
@@ -106,3 +106,4 @@ Licensed under [Apache License, Version 2.0](LICENSE).
 [did-method-spec]: https://github.com/hashgraph/did-method
 [did-core]: https://www.w3.org/TR/did-core/
 [vc-data-model]: https://www.w3.org/TR/vc-data-model/
+[sdk-javadocs]: https://hashgraph.github.io/did-sdk-java/sdk-javadocs/
