@@ -1,0 +1,83 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "HCS VC message schema",
+    "description": "The schema of a VC message",
+    "default": {},
+    "required": [
+        "mode",
+        "message",
+        "signature"
+    ],
+    "additionalProperties": true,
+    "properties": {
+        "mode": {
+            "$id": "#/properties/mode",
+            "type": "string",
+            "title": "The mode in which this message is sent",
+            "default": "",
+            "examples": [
+                "plain",
+                "encrypted"
+            ]
+        },
+        "message": {
+            "$id": "#/properties/message",
+            "type": "object",
+            "title": "The VC message",
+            "default": {},
+            "examples": [
+                {
+                    "timestamp": "2020-05-06T16:45:20.006Z",
+                    "credentialHash": "GmcA3ut3tM7d51tRjkxvGZNaigtzwFAVunkimQC573Mv",
+                    "operation": "issue"
+                }
+            ],
+            "required": [
+                "operation",
+                "credentialHash",
+                "timestamp"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "operation": {
+                    "$id": "#/properties/message/properties/operation",
+                    "type": "string",
+                    "title": "The type of operation on VC status",
+                    "default": "",
+                    "examples": [
+                        "issue", "suspend", "resume", "revoke"
+                    ]
+                },
+                "credentialHash": {
+                    "$id": "#/properties/message/properties/credentialHash",
+                    "type": "string",
+                    "title": "The hash of a verifiable credential document",
+                    "default": "",
+                    "examples": [
+                        "GmcA3ut3tM7d51tRjkxvGZNaigtzwFAVunkimQC573Mv"
+                    ]
+                },
+                "timestamp": {
+                    "$id": "#/properties/message/properties/timestamp",
+                    "type": "string",
+                    "title": "The message creation timestamp",
+                    "default": "",
+                    "examples": [
+                        "2020-05-06T16:45:20.006Z"
+                    ]
+                }
+            }
+        },
+        "signature": {
+            "$id": "#/properties/signature",
+            "type": "string",
+            "title": "The signature of a message JSON with DID root key",
+            "default": "",
+            "examples": [
+                "8sCN9zIUcIL17R9KILvPoAkYkh8XFOCGL+uIYZw+nfDZuuEEb0JZHMZ/78Anr1QrKx9KLBxd3c6Xay8gNZ//AA=="
+            ]
+        }
+    }
+}

@@ -1,5 +1,7 @@
 # Decentralized Identifiers - User Guide
 
+---
+
 - [Decentralized Identifiers - User Guide](#decentralized-identifiers---user-guide)
   - [DID Generation](#did-generation)
   - [CRUD Methods for DID Document](#crud-methods-for-did-document)
@@ -7,6 +9,8 @@
     - [Read (Resolve)](#read-resolve)
   - [Continuous Listening to DID Topic Messages](#continuous-listening-to-did-topic-messages)
   
+---
+
 ## DID Generation
 
 A DID is represented in SDK as `HcsDid` object and can be easily converted to it's DID string form by calling its `toDid()` or `toString()` method. New decentralized identifiers can be generated in multiple handy ways:

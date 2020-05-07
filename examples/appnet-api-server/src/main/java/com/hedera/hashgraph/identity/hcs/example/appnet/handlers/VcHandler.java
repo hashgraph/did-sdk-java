@@ -4,8 +4,10 @@ import com.hedera.hashgraph.identity.hcs.HcsIdentityNetwork;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.hcs.example.appnet.AppnetStorage;
 import com.hedera.hashgraph.identity.hcs.example.appnet.dto.ErrorResponse;
+import com.hedera.hashgraph.identity.hcs.example.appnet.dto.VerifiableCredentialStatus;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcMessage;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation;
+import com.hedera.hashgraph.identity.utils.JsonUtils;
 import com.hedera.hashgraph.sdk.Client;
 import com.hedera.hashgraph.sdk.Hbar;
 import com.hedera.hashgraph.sdk.TransactionId;
@@ -44,7 +46,7 @@ public class VcHandler extends AppnetHandler {
    * @param ctx The HTTP context.
    */
   public void issue(final Context ctx) {
-    ctx.getRequest().getBody().then(data -> buildVcMessage(ctx, HcsVcOperation.ISSUE));
+    buildVcMessage(ctx, HcsVcOperation.ISSUE);
   }
 
   /**
@@ -56,7 +58,7 @@ public class VcHandler extends AppnetHandler {
    * @param ctx The HTTP context.
    */
   public void suspend(final Context ctx) {
-    ctx.getRequest().getBody().then(data -> buildVcMessage(ctx, HcsVcOperation.SUSPEND));
+    buildVcMessage(ctx, HcsVcOperation.SUSPEND);
   }
 
   /**
@@ -68,7 +70,7 @@ public class VcHandler extends AppnetHandler {
    * @param ctx The HTTP context.
    */
   public void resume(final Context ctx) {
-    ctx.getRequest().getBody().then(data -> buildVcMessage(ctx, HcsVcOperation.RESUME));
+    buildVcMessage(ctx, HcsVcOperation.RESUME);
   }
 
   /**
@@ -80,7 +82,7 @@ public class VcHandler extends AppnetHandler {
    * @param ctx The HTTP context.
    */
   public void revoke(final Context ctx) {
-    ctx.getRequest().getBody().then(data -> buildVcMessage(ctx, HcsVcOperation.REVOKE));
+    buildVcMessage(ctx, HcsVcOperation.REVOKE);
   }
 
   /**
@@ -108,11 +110,11 @@ public class VcHandler extends AppnetHandler {
       String credentialHash = ctx.getPathTokens().get(PATH_PARAM_CREDENTIAL_HASH);
 
       String result = "";
-      HcsVcMessage message = storage.resolveVcStatus(credentialHash);
-      if (message == null) {
+      VerifiableCredentialStatus status = storage.resolveVcStatus(credentialHash);
+      if (status == null) {
         ctx.getResponse().status(Status.NOT_FOUND);
       } else {
-        result = message.toJson();
+        result = JsonUtils.getGson().toJson(status);
       }
 
       ctx.render(result);
@@ -144,7 +146,7 @@ public class VcHandler extends AppnetHandler {
    * Constructs a VC message from the given request body JSON.
    * The message is expected to be signed.
    * Then submits this signed message into the HCS VC topic.
-   * Returns 200 OK with empty body when submission was successful, without waiting for the consensus result.
+   * Returns 202 ACCEPTED with empty body when submission was successful, without waiting for the consensus result.
    *
    * @param ctx          The HTTP context.
    * @param json         The VC topic message as JSON string.
@@ -163,6 +165,7 @@ public class VcHandler extends AppnetHandler {
           .execute(client, mirrorClient);
 
       log.info("VC message transaction submitted: " + txId.toString());
+      ctx.getResponse().status(Status.ACCEPTED);
       ctx.render("");
     } catch (Exception e) {
       ctx.getResponse().status(Status.BAD_REQUEST);

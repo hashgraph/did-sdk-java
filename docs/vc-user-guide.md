@@ -1,11 +1,15 @@
 # Verifiable Credentials Registry - User Guide
 
+---
+
 - [Verifiable Credentials Registry - User Guide](#verifiable-credentials-registry---user-guide)
   - [Credential Schema](#credential-schema)
   - [Creation of Verifiable Credential Documents](#creation-of-verifiable-credential-documents)
   - [Issuance and Revocation](#issuance-and-revocation)
   - [Credential Status Verification](#credential-status-verification)
   - [Continuous Listening to VC Topic Messages](#continuous-listening-to-vc-topic-messages)
+
+---
 
 ## Credential Schema
 
@@ -117,8 +121,8 @@ TransactionId txId = identityNetwork.createVcTransaction(operation, credentialDo
 
 ## Credential Status Verification
 
-Once verifiers have validated credential document proofs and claim values off-chain, they shall check if these credentials have not been revoked or suspended in the Hedera verifiable credentials registry. 
-Typically, this status resolution shall be executed against the appnet REST API service as specified in [Hedera Verifiable Credentials Specification](/docs/vc-specification.md). In this model, the nodes of the appnet listen to the appropriate VC topic at a mirror node and store the credential hash status in it's dedicated storage. Those parties seeking to resolve a VC status will query an appnet node in order to retrieve the corresponding last valid VC status message. This model may presume a degree of trust between the parties requesting the VC status and the appnet node.
+Once verifiers have validated credential document proofs and claim values off-chain, they shall check if these credentials have not been revoked or suspended in the identity network's credentials registry.
+Typically, this status resolution shall be executed against the appnet REST API service as specified in [Verifiable Credentials Registry](/docs/vc-specification.md) specification. In this model, the nodes of the appnet listen to the appropriate VC topic at a mirror node and store the credential hash status in it's dedicated storage. Those parties seeking to resolve a VC status will query an appnet node in order to retrieve the corresponding last valid VC status message. This model may presume a degree of trust between the parties requesting the VC status and the appnet node.
 
 Verifiers who have direct access to a Hedera mirror node and do not want to use appnet REST API service can run VC status resolution query directly against the VC topic on the mirror node. This method may not be recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsVCResolver` can be obtained from the `HcsIdentityNetwork` via `getVcStatusResolver` method. It can accept multiple credential hashes for resolution and when finished will return a map of those hashes strings and their corresponding last valid message posted to the VC topic.
 

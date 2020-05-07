@@ -18,7 +18,7 @@ This repository contains the Java SDK for managing [DID Documents][did-core] & [
       - [Gradle](#gradle)
     - [Documentation](#documentation)
     - [Getting Started Guides](#getting-started-guides)
-    - [Running Example Appnet](#running-example-appnet)
+    - [Examples](#examples)
   - [Contributing](#contributing)
   - [License Information](#license-information)
   - [References](#references)
@@ -74,15 +74,13 @@ implementation group: 'com.hedera.hashgraph', name: 'identity', version: '1.0.0'
 - [Decentralized Identifiers](/docs/did-user-guide.md)
 - [Verifiable Credentials Registry](/docs/vc-user-guide.md)
 
-### Running Example Appnet
+### Examples
 
 The `/examples/appnet-api-server` folder contains an example implementation of an appnet that utilizes DID and VC SDK and exposes a REST API interface according to the Hedera DID Method Specification. The appnet server can be started by the following command directly from the root folder of this repository:
 
 ```cmd
 gradle :appnet-api-server:run
 ```
-
-The appnet runs on localhost port 5050 be default. It does not expose any user interface, instead there is a collection of POSTMAN requests available [here](/examples/appnet-api-server/postman-example-requests/e2e-flow.postman_collection) that demonstrate a full end-to-end flow of DID documents generation, publishing, update and deletion, as well as verifiable credential generation, issuance and revocation.
 
 Please refer to the [README](/examples/appnet-api-server/README.md) file of the appnet project for more details.
 

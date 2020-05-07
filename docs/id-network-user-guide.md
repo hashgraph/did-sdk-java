@@ -1,8 +1,12 @@
 # Identity Network - User Guide
 
+---
+
 - [Identity Network - User Guide](#identity-network---user-guide)
   - [Creation](#creation)
   - [Existing Network Instantiation](#existing-network-instantiation)
+
+---
 
 ## Creation
 

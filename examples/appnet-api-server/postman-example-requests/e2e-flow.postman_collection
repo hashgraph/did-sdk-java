@@ -338,7 +338,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{{drivingLicense}}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -479,7 +479,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{{drivingLicense}}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -968,85 +968,85 @@
 	],
 	"variable": [
 		{
-			"id": "1200dc1a-3123-4f1a-a964-660cbaac796d",
+			"id": "8a2f3be2-48b7-4b8d-a893-e0c376844252",
 			"key": "baseUrl",
 			"value": "http://localhost:5050",
 			"type": "string"
 		},
 		{
-			"id": "a6ad4c15-d52e-430a-909b-a2cb2c1660fe",
+			"id": "032eafe0-a3ca-4a1f-9f92-26be816e6035",
 			"key": "issuerPrivateKey",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "b1ab27bf-39ee-403a-98da-f771930c3e18",
+			"id": "3a32686a-6eb5-45a3-a070-87ab0cc9f22d",
 			"key": "issuerDid",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "1d27a4dd-e62c-4bd5-8bee-993b4189405c",
+			"id": "6703ed04-b801-4826-b212-bde04170d3e3",
 			"key": "issuerDidDocument",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "c168007b-69a2-4f06-9465-7a4a7d43bd22",
+			"id": "941ad4b6-9826-47db-bf33-998bbbccb030",
 			"key": "didMessage",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "b067e914-e8c0-4d54-b420-e4e8ad9c5439",
+			"id": "fc1b332b-cfae-4970-bd4b-1fc0f66c7f9a",
 			"key": "ownerDid",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "887a3b0f-ae6f-4c75-997f-08d220b34217",
+			"id": "c7fc08a5-8f02-4541-af1d-5d514ce9ae38",
 			"key": "ownerDidDocument",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "5e874cb7-ab1e-475d-9c5c-066ee4b9df05",
+			"id": "60c4ea33-cc85-4c4e-af10-f1f0358351d3",
 			"key": "ownerPrivateKey",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "13c831af-6f32-4c37-a700-2bcd417c1046",
+			"id": "16ed72d4-2558-4a7d-a988-1ae628369f4f",
 			"key": "drivingLicense",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "8664854f-515f-46ba-a938-27b9765fbbe2",
+			"id": "c620b737-8203-4f5c-82f1-bccdf09bf90b",
 			"key": "drivingLicenseHash",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "95c823b3-87c7-4982-b6a5-eb99843ba8a8",
+			"id": "7fa4fe7a-75b8-4c3a-90be-608d731fe85c",
 			"key": "credentialHash",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "def0af52-5850-445b-9546-9757ac5cb787",
+			"id": "77411300-b8d5-4bff-9c3d-1ad38fce3317",
 			"key": "vcMessage",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "4c4b6144-281f-47eb-8d37-3b8d1b7bd6ac",
+			"id": "888e3925-97f0-47bb-983d-5d6d3bf6f343",
 			"key": "issuerDidAuthenticationPart",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "d4bd89e5-33e7-4dad-aaed-9bb912e79b7a",
+			"id": "1afbc4ed-9967-476a-88dc-f21e6dd8510e",
 			"key": "issuerDidPublicKeyPart",
 			"value": "",
 			"type": "string"
