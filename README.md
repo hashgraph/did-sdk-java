@@ -19,6 +19,8 @@ This repository contains the Java SDK for managing [DID Documents][did-core] & [
     - [Documentation](#documentation)
     - [Getting Started Guides](#getting-started-guides)
     - [Examples](#examples)
+      - [With Docker](#with-docker)
+      - [With Gradle](#with-gradle)
   - [Contributing](#contributing)
   - [License Information](#license-information)
   - [References](#references)
@@ -76,13 +78,54 @@ implementation group: 'com.hedera.hashgraph', name: 'identity', version: '1.0.0'
 
 ### Examples
 
-The `/examples/appnet-api-server` folder contains an example implementation of an appnet that utilizes DID and VC SDK and exposes a REST API interface according to the Hedera DID Method Specification. The appnet server can be started by the following command directly from the root folder of this repository:
+The `/examples/appnet-api-server` folder contains an example implementation of an appnet that utilizes DID and VC SDK and exposes a REST API interface according to the Hedera DID Method Specification. 
 
-```cmd
-gradle :appnet-api-server:run
-```
+The appnet runs on localhost port 5050 be default. It does not expose any user interface, instead there is a collection of POSTMAN requests available [here](/examples/appnet-api-server/postman-example-requests/e2e-flow.postman_collection) that demonstrate a full end-to-end flow of DID documents generation, publishing, update and deletion, as well as verifiable credential generation, issuance and revocation.
 
 Please refer to the [README](/examples/appnet-api-server/README.md) file of the appnet project for more details.
+
+#### With Docker
+
+Install [Docker for Mac](https://www.docker.com/docker-mac), or [Docker for Windows](https://www.docker.com/docker-windows)
+
+```cmd
+cd identity-sdk
+cp .env.sample .env
+nano .env
+```
+
+update the following environment variables with your `testnet` account details
+
+* OPERATOR_ID=0.0.xxxx
+* OPERATOR_KEY=302...
+
+```cmd
+docker build -t did-demo .
+docker run -p 5050:5050 did-demo:latest
+```
+
+#### With Gradle
+
+```cmd
+cd identity-sdk/examples
+cp .env.sample .env
+nano .env
+```
+
+update the following environment variables with your `testnet` account details
+
+* OPERATOR_ID=0.0.xxxx
+* OPERATOR_KEY=302...
+
+return to the `identity-sdk` folder
+```cmd
+cd ..
+```
+
+run the appnet example
+```shell script
+./gradlew :appnet-api-server:run
+```
 
 ## Contributing
 
