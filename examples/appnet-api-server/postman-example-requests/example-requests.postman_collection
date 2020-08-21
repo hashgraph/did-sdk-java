@@ -190,23 +190,6 @@
 			"response": []
 		},
 		{
-			"name": "Shutdown Appnet server",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/shutdown",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"shutdown"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "VC - Issue",
 			"request": {
 				"method": "POST",

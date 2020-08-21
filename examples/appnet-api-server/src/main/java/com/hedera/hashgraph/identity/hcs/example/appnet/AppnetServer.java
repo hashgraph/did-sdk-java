@@ -223,11 +223,7 @@ public class AppnetServer {
             // Schema files
             .files(f -> f.dir("schemas").files("driving-license-schema.json"))
 
-            // To stop the server gracefully
-            .post("shutdown", ctx -> {
-              ctx.render("Shutdown request received. Stopping the server...");
-              apiServer.stop();
-            })));
+            ));
   }
 
   /**
