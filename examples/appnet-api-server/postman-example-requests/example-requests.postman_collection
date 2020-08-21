@@ -266,13 +266,13 @@
 				"method": "PATCH",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/demo/generate-did",
+					"raw": "{{baseUrl}}/vc/9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"demo",
-						"generate-did"
+						"vc",
+						"9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh"
 					]
 				}
 			},
@@ -299,16 +299,24 @@
 		{
 			"name": "VC - Submit",
 			"request": {
-				"method": "DELETE",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mode\": \"plain\",\n    \"message\": {\n        \"operation\": \"issue\",\n        \"credentialHash\": \"9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh\",\n        \"timestamp\": \"2020-08-21T13:14:14.283233Z\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{baseUrl}}/vc/9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh",
+					"raw": "{{baseUrl}}/vc-submit",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
-						"vc",
-						"9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh"
+						"vc-submit"
 					]
 				}
 			},
