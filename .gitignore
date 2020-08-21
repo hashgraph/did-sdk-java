@@ -94,3 +94,4 @@ local.properties
 .project
 .checkstyle
 .classpath
+.idea/
