@@ -81,6 +81,7 @@ public class AppnetServer {
 
     try {
       initHederaIdentityNetwork();
+      Thread.sleep(10000);
       initStorageAndTopicListeners();
       initHandlers();
       startApiServer();
@@ -347,5 +348,11 @@ public class AppnetServer {
         .execute(client);
 
     log.info("New identity network created: " + appnetName);
+    log.info("Sleeping 10s to allow propagation of new topics to mirror node");
+    try {
+      Thread.sleep(10000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 }
