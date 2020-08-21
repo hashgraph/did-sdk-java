@@ -7,8 +7,16 @@ buildscript {
   }
 }
 
+plugins {
+    id "java"
+    id "application"
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+}
+
 apply plugin: "io.ratpack.ratpack-java"
 apply plugin: "ru.vyarus.quality"
+
+
 repositories {
   jcenter()
 }
@@ -26,6 +34,17 @@ dependencies {
 
 mainClassName = "com.hedera.hashgraph.identity.hcs.example.appnet.AppnetServer"
 
+jar {
+    manifest {
+        attributes "Main-Class": mainClassName
+    }
+}
+
+shadowJar {
+    // by default, this plugin generates a new `-all` jar
+    // the empty string makes it override the non-all jar
+    classifier = ""
+}
 
 quality {
 	checkstyleVersion = '8.29'
