@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "cb2b6eb7-f79b-48a9-897a-fbbc2c4723cc",
+		"_postman_id": "e761286f-f732-4685-b570-c86567e027ea",
 		"name": "Hedera - test requests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -201,6 +201,114 @@
 					],
 					"path": [
 						"shutdown"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VC - Issue",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VC - Get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VC - Suspend",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VC - Unsuspend",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VC - Revoke",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VC - Submit",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"9wsnFSSxQoibcpV2D11HwWRcsej53AVZ5jSXDQgD6Uh"
 					]
 				}
 			},
