@@ -32,7 +32,6 @@ gradle-app.setting
 
 # Environment variables file
 .env
-.env.sample
 
 .metadata
 bin/
