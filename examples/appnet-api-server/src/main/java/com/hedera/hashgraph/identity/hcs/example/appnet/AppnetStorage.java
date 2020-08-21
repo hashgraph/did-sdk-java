@@ -4,6 +4,7 @@ import com.github.jsonldjava.shaded.com.google.common.collect.Sets;
 import com.hedera.hashgraph.identity.DidMethodOperation;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidMessage;
+import com.hedera.hashgraph.identity.hcs.example.appnet.dto.VerifiableCredentialStatus;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcMessage;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
@@ -118,9 +119,11 @@ public class AppnetStorage {
    * @return                The last valid status message with credential status inside or NULL if the status was not
    *                        found (e.g. credential was never issued).
    */
-  public HcsVcMessage resolveVcStatus(final String credentialHash) {
+  public VerifiableCredentialStatus resolveVcStatus(final String credentialHash) {
     MessageEnvelope<HcsVcMessage> envelope = vcStorage.get(credentialHash);
-    return envelope == null ? null : envelope.open();
+
+    return envelope == null ? null
+        : VerifiableCredentialStatus.fromHcsVcMessage(envelope.open(), envelope.getConsensusTimestamp());
   }
 
   /**

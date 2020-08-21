@@ -148,7 +148,7 @@ public class DidHandler extends AppnetHandler {
    * Constructs a DID message from the given request body JSON.
    * The message is expected to be signed.
    * Then submits this signed CREATE, UPDATE or DELETE message into the HCS DID topic.
-   * Returns 200 OK with empty body when submission was successful, without waiting for the consensus result.
+   * Returns 202 ACCEPTED with empty body when submission was successful, without waiting for the consensus result.
    *
    * @param ctx          The HTTP context.
    * @param json         The DID topic message as JSON string.
@@ -167,6 +167,7 @@ public class DidHandler extends AppnetHandler {
           .execute(client, mirrorClient);
 
       log.info("DID message transaction submitted: " + txId.toString());
+      ctx.getResponse().status(Status.ACCEPTED);
       ctx.render("");
     } catch (Exception e) {
       ctx.getResponse().status(Status.BAD_REQUEST);

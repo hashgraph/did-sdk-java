@@ -1,14 +1,19 @@
 # Decentralized Identifiers - User Guide
 
+---
+
 - [Decentralized Identifiers - User Guide](#decentralized-identifiers---user-guide)
   - [DID Generation](#did-generation)
   - [CRUD Methods for DID Document](#crud-methods-for-did-document)
     - [Create, Update, Delete](#create-update-delete)
     - [Read (Resolve)](#read-resolve)
+  - [Continuous Listening to DID Topic Messages](#continuous-listening-to-did-topic-messages)
   
+---
+
 ## DID Generation
 
-A DID is represented in SDK as `HcsDid` object and can be easily converted to it's DID string form by calling its `toDid()` or `toString()` method. New decentralized identifiers can be generated in multiple handly ways:
+A DID is represented in SDK as `HcsDid` object and can be easily converted to it's DID string form by calling its `toDid()` or `toString()` method. New decentralized identifiers can be generated in multiple handy ways:
 
 - from already instantiated network:
 
@@ -38,7 +43,7 @@ FileId addressBookFileId = FileId.fromString("<hedera.address-book-file.id>");
 HcsDid did = new HcsDid(HederaNetwork.TESTNET, didRootKey.publicKey, addressBookFileId);
 ```
 
-Please note that generated DIDs are completely offchain. They are not published to the Hedera network unless specific DID document message is sent to HCS DID topic.
+Please note that generated DIDs are completely off-chain. They are not published to the Hedera network unless specific DID document message is sent to HCS DID topic.
 
 Existing Hedera DID strings can be parsed into `HcsDid` object by calling `fromString` method:
 
@@ -144,14 +149,14 @@ The listener can be restarted to process messages at any given `startTime` so th
 
 ### Read (Resolve)
 
-Typically, DID resolution shall be executed against the appnet's REST API service as specified in [Hedera DID Method][did-method-spec]. In this model, the nodes of the appnet listen to the appropriate DID topic at a mirror node and store the DID Documents in it's dedicated storage (as described above). Those parties seeking to resolve a DID will query an appnet node in order to retrieve the corresponding DID Document. This model may presume a degree of trust between the parties requesting the DID DOcument and the appnet node.
+Typically, DID resolution shall be executed against the appnet REST API service as specified in [Hedera DID Method][did-method-spec]. In this model, the nodes of the appnet listen to the appropriate DID topic at a mirror node and store the DID Documents in it's dedicated storage (as described above). Those parties seeking to resolve a DID will query an appnet node in order to retrieve the corresponding DID Document. This model may presume a degree of trust between the parties requesting the DID Document and the appnet node.
 
-Resolvers who have direct access to a Hedera mirror node and do not want to use appnet's REST API service can run DID resolution query directy against the DID topic on the mirror node. This method may not be recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsDidResolver` can be obtained from the `HcsIdentityNetwork` via `getResolver` method. It can accept multiple DIDs for resolution and when finished will return a map of DID strings and their corresponding last valid message posted to the DID topic.
+Resolvers who have direct access to a Hedera mirror node and do not want to use appnet REST API service can run DID resolution query directly against the DID topic on the mirror node. This method may not be recommended as it has to process all messages in the topic from the beginning of its time, but if time is not an issue it can be used for single resolution executions. `HcsDidResolver` can be obtained from the `HcsIdentityNetwork` via `getDidResolver` method. It can accept multiple DIDs for resolution and when finished will return a map of DID strings and their corresponding last valid message posted to the DID topic.
 
 ```java
 HcsIdentityNetwork identityNetwork = ...;
 String did = "did:hedera:testnet:7c38oC4ytrYDGCqsaZ1AXt7ZPQ8etzfwaxoKjfJNzfoc;hedera:testnet:fid=0.0.1";
-identityNetwork.getResolver()
+identityNetwork.getDidResolver()
     .addDid(did)
     .whenFinished(results -> {
         MessageEnvelope<HcsDidMessage> envelope = results.get(did);
@@ -172,6 +177,48 @@ identityNetwork.getResolver()
 ```
 
 After the last message is received from the topic, the resolver will wait for a given period of time (by default 30 seconds) to wait for more messages. If at this time no more messages arrive, the resolution is considered completed. The waiting time can be modified with `setTimeout` method.
+
+## Continuous Listening to DID Topic Messages
+
+In order for appnets to listen to their DID topic at a mirror node and store DID documents, they may use the SDK's dedicated `MessageListener<HcsDidMessage>` rather than subscribing to the topic via Hedera SDK `MirrorConsensusTopicQuery`. This wrapper verifies incoming messages and parses them to `HcsDidMessage` type automatically.
+
+Here is an example code demonstrating how to obtain the listener instance and subscribe to the DID topic:
+
+```java
+// Define the time from which to retrieve topic messages.
+// Usually the consensus timestamp of the last message stored by appnet.
+Instant startTime = ...;
+HcsIdentityNetwork identityNetwork = ...;
+
+MessageListener<HcsDidMessage> didListener = identityNetwork.getDidTopicListener()
+    .setStartTime(startTime)
+    // Decide how to handle invalid messages in a topic
+    .onInvalidMessageReceived((resp, reason) -> {
+      System.out.println("Invalid message received from DID topic: " + reason);
+      System.out.println(new String(resp.message, StandardCharsets.UTF_8));
+    })
+    // Handle errors
+    .onError(e -> {
+      Code code = null;
+      if (e instanceof StatusRuntimeException) {
+        code = ((StatusRuntimeException) e).getStatus().getCode();
+      }
+
+      if (Code.UNAVAILABLE.equals(code)) {
+        // Restart listener if it crashed or lost connection to the mirror node.
+        ...
+      } else {
+        // Handle other errors
+        System.err.println("Error while processing message from DID topic: ");
+        e.printStackTrace();
+      }
+    })
+    // Start listening and decide how to handle valid incoming messages
+    .subscribe(mirrorClient, envelope -> {
+      // Store message in appnet storage
+      ...
+    });
+```
 
 [did-method-spec]: https://github.com/hashgraph/did-method
 [w3c-did-core]: https://w3c.github.io/did-core/
