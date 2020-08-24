@@ -20,6 +20,9 @@ FROM adoptopenjdk:12-jre-hotspot
 WORKDIR /srv
 COPY --from=build /opt/hedera-did/examples/appnet-api-server/build/libs/appnet-api-server.jar /srv/appnet-api-server.jar
 COPY --from=build /opt/hedera-did/.env /srv/.env
+COPY --from=build /opt/hedera-did/previewnet.json /srv/previewnet.json
+COPY --from=build /opt/hedera-did/testnet.json /srv/testnet.json
+COPY --from=build /opt/hedera-did/mainnet.json /srv/mainnet.json
 
 # run the micro service
 CMD java "-jar" "appnet-api-server.jar"
