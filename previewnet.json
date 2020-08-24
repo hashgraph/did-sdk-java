@@ -1,0 +1,8 @@
+{
+  "network": {
+    "0.0.3" : "0.previewnet.hedera.com:50211",
+    "0.0.4" : "1.previewnet.hedera.com:50211",
+    "0.0.5" : "2.previewnet.hedera.com:50211",
+    "0.0.6" : "3.previewnet.hedera.com:50211"
+  }
+}
