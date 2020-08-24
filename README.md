@@ -99,6 +99,11 @@ update the following environment variables with your `testnet` account details
 * OPERATOR_ID=0.0.xxxx
 * OPERATOR_KEY=302...
 
+you may also edit the following to use a different network (ensure your OPERATOR_ID and OPERATOR_KEY are valid)
+
+* NETWORK=testnet (can be `testnet`, `previewnet` or `mainnet`)
+* MIRROR_PROVIDER=hedera (can be `hedera` or `kabuto` (note `kabuto` not available on `previewnet`))
+
 ```cmd
 docker build -t did-demo .
 docker run -p 5050:5050 did-demo:latest
@@ -116,6 +121,11 @@ update the following environment variables with your `testnet` account details
 
 * OPERATOR_ID=0.0.xxxx
 * OPERATOR_KEY=302...
+
+you may also edit the following to use a different network (ensure your OPERATOR_ID and OPERATOR_KEY are valid)
+
+* NETWORK=testnet (can be `testnet`, `previewnet` or `mainnet`)
+* MIRROR_PROVIDER=hedera (can be `hedera` or `kabuto` (note `kabuto` not available on `previewnet`))
 
 return to the `identity-sdk` folder
 ```cmd
