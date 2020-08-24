@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.base.Charsets;
-import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.identity.hcs.did.HcsDid;
 import com.hedera.hashgraph.sdk.Client;
 import com.hedera.hashgraph.sdk.Hbar;
@@ -22,6 +21,8 @@ import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
 import com.hedera.hashgraph.sdk.file.FileCreateTransaction;
 import com.hedera.hashgraph.sdk.file.FileId;
 import io.github.cdimascio.dotenv.Dotenv;
+
+import java.io.FileNotFoundException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import org.junit.jupiter.api.BeforeAll;
@@ -40,20 +41,23 @@ public class HcsIdentityNetworkTest {
   private AccountId operatorId;
   private Ed25519PrivateKey operatorKey;
   private FileId addressBookFileId;
-
+  private String network;
   /**
    * Initialize hedera clients and accounts.
    */
   @BeforeAll
-  void setup() throws LocalValidationException, HederaNetworkException, HederaStatusException {
+  void setup() throws LocalValidationException, HederaNetworkException, HederaStatusException, FileNotFoundException {
     Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
 
     // Grab the OPERATOR_ID and OPERATOR_KEY from environment variable
     operatorId = AccountId.fromString(Objects.requireNonNull(dotenv.get("OPERATOR_ID")));
     operatorKey = Ed25519PrivateKey.fromString(Objects.requireNonNull(dotenv.get("OPERATOR_KEY")));
 
+    // Grab the network to use from environment variables
+    network = Objects.requireNonNull(dotenv.get("NETWORK"));
+
     // Build Hedera testnet client
-    client = Client.forTestnet();
+    client = Client.fromFile(network.concat(".json"));
 
     // Set the operator account ID and operator private key
     client.setOperator(operatorId, operatorKey);
@@ -83,7 +87,7 @@ public class HcsIdentityNetworkTest {
     final String vcTopicMemo = "Test Identity SDK appnet VC topic";
 
     HcsIdentityNetwork didNetwork = new HcsIdentityNetworkBuilder()
-        .setNetwork(HederaNetwork.TESTNET)
+        .setNetwork(network)
         .setAppnetName(appnetName)
         .addAppnetDidServer(didServerUrl)
         .buildAndSignAddressBookCreateTransaction(tx -> tx
@@ -114,7 +118,7 @@ public class HcsIdentityNetworkTest {
     assertNotNull(addressBook.getAppnetDidServers());
     assertNotNull(addressBook.getFileId());
     assertEquals(addressBook.getAppnetName(), appnetName);
-    assertEquals(didNetwork.getNetwork(), HederaNetwork.TESTNET);
+    assertEquals(didNetwork.getNetwork(), network);
 
     // Test if HCS topics exist.
 
@@ -135,7 +139,7 @@ public class HcsIdentityNetworkTest {
     assertEquals(vcTopicInfo.topicMemo, vcTopicMemo);
 
     // Test if address book file was created
-    HcsIdentityNetwork createdNetwork = HcsIdentityNetwork.fromAddressBookFile(client, HederaNetwork.TESTNET,
+    HcsIdentityNetwork createdNetwork = HcsIdentityNetwork.fromAddressBookFile(client, network,
         addressBook.getFileId(), FEE);
     assertNotNull(createdNetwork);
     assertEquals(addressBook.toJson(), createdNetwork.getAddressBook().toJson());
@@ -144,31 +148,31 @@ public class HcsIdentityNetworkTest {
   @Test
   void testInitNetworkFromJsonAddressBook() {
     AddressBook addressBook = AddressBook.fromJson(ADDRESS_BOOK_JSON, addressBookFileId);
-    HcsIdentityNetwork didNetwork = HcsIdentityNetwork.fromAddressBook(HederaNetwork.TESTNET, addressBook);
+    HcsIdentityNetwork didNetwork = HcsIdentityNetwork.fromAddressBook(network, addressBook);
 
     assertNotNull(didNetwork);
     assertNotNull(didNetwork.getAddressBook().getFileId());
-    assertEquals(didNetwork.getNetwork(), HederaNetwork.TESTNET);
+    assertEquals(didNetwork.getNetwork(), network);
   }
 
   @Test
   void testInitNetworkFromDid() throws HederaNetworkException, HederaStatusException {
     // Generate HcsDid
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, HcsDid.generateDidRootKey().publicKey, addressBookFileId);
+    HcsDid did = new HcsDid(network, HcsDid.generateDidRootKey().publicKey, addressBookFileId);
 
     // Initialize network from this DID, reading address book file from Hedera File Service
     HcsIdentityNetwork didNetwork = HcsIdentityNetwork.fromHcsDid(client, did, FEE);
 
     assertNotNull(didNetwork);
     assertNotNull(didNetwork.getAddressBook().getFileId());
-    assertEquals(didNetwork.getNetwork(), HederaNetwork.TESTNET);
+    assertEquals(didNetwork.getNetwork(), network);
     assertEquals(ADDRESS_BOOK_JSON, didNetwork.getAddressBook().toJson());
   }
 
   void checkTestGenerateDidForNetwork(HcsDid did, Ed25519PublicKey publicKey, String didTopicId, boolean withTid) {
     assertNotNull(did);
     assertEquals(HcsDid.publicKeyToIdString(publicKey), did.getIdString());
-    assertEquals(did.getNetwork(), HederaNetwork.TESTNET);
+    assertEquals(did.getNetwork(), network);
     assertEquals(did.getAddressBookFileId(), addressBookFileId);
     if (withTid) {
       assertEquals(did.getDidTopicId().toString(), didTopicId);
@@ -181,7 +185,7 @@ public class HcsIdentityNetworkTest {
   @Test
   void testGenerateDidForNetwork() throws NoSuchAlgorithmException {
     AddressBook addressBook = AddressBook.fromJson(ADDRESS_BOOK_JSON, addressBookFileId);
-    HcsIdentityNetwork didNetwork = HcsIdentityNetwork.fromAddressBook(HederaNetwork.TESTNET, addressBook);
+    HcsIdentityNetwork didNetwork = HcsIdentityNetwork.fromAddressBook(network, addressBook);
 
     // Random DID with tid parameter
     HcsDid did = didNetwork.generateDid(true);

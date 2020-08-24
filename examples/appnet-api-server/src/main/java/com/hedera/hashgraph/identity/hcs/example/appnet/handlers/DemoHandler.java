@@ -2,7 +2,6 @@ package com.hedera.hashgraph.identity.hcs.example.appnet.handlers;
 
 import com.google.common.base.Strings;
 import com.hedera.hashgraph.identity.DidDocumentBase;
-import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.identity.hcs.HcsIdentityNetwork;
 import com.hedera.hashgraph.identity.hcs.Message;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
@@ -55,7 +54,7 @@ public class DemoHandler extends AppnetHandler {
    */
   public void generateDid(final Context ctx) {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, identityNetwork.getAddressBook().getFileId());
+    HcsDid did = new HcsDid(identityNetwork.getNetwork(), privateKey.publicKey, identityNetwork.getAddressBook().getFileId());
     DidDocumentBase doc = did.generateDidDocument();
 
     ctx.header(HEADER_PRIVATE_KEY, privateKey.toString());

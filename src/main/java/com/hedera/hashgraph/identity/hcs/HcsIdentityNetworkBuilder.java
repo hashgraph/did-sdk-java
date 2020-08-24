@@ -2,7 +2,6 @@ package com.hedera.hashgraph.identity.hcs;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.identity.utils.Validator;
 import com.hedera.hashgraph.sdk.Client;
 import com.hedera.hashgraph.sdk.HederaNetworkException;
@@ -24,7 +23,7 @@ public class HcsIdentityNetworkBuilder {
   private String appnetName;
   private ConsensusTopicId didTopicId;
   private ConsensusTopicId vcTopicId;
-  private HederaNetwork network;
+  private String network;
   private Function<ConsensusTopicCreateTransaction, Transaction> didTopicTxFunction;
   private Function<ConsensusTopicCreateTransaction, Transaction> vcTopicTxFunction;
   private Function<FileCreateTransaction, Transaction> addressBookTxFunction;
@@ -193,7 +192,7 @@ public class HcsIdentityNetworkBuilder {
    * @param  network The network to set.
    * @return         This identity network builder instance.
    */
-  public HcsIdentityNetworkBuilder setNetwork(final HederaNetwork network) {
+  public HcsIdentityNetworkBuilder setNetwork(final String network) {
     this.network = network;
     return this;
   }

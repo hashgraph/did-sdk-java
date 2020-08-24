@@ -11,25 +11,30 @@ import com.google.gson.JsonParser;
 import com.hedera.hashgraph.identity.DidDocumentBase;
 import com.hedera.hashgraph.identity.DidDocumentJsonProperties;
 import com.hedera.hashgraph.identity.DidSyntax;
-import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.identity.hcs.did.HcsDid;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
 import com.hedera.hashgraph.sdk.file.FileId;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.bitcoinj.core.Base58;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+
+import java.util.Objects;
 
 /**
  * Tests base DID document serialization and deserialization.
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DidDocumentBaseTest {
+  private Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
+  // Grab the network to use from environment variables
+  private String network = Objects.requireNonNull(dotenv.get("NETWORK"));
 
   @Test
   public void testSerialization() {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, FileId.fromString("0.0.1"));
+    HcsDid did = new HcsDid(network, privateKey.publicKey, FileId.fromString("0.0.1"));
     DidDocumentBase doc = did.generateDidDocument();
 
     String didJson = doc.toJson();
@@ -56,7 +61,7 @@ public class DidDocumentBaseTest {
   @Test
   public void testDeserialization() {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, FileId.fromString("0.0.1"));
+    HcsDid did = new HcsDid(network, privateKey.publicKey, FileId.fromString("0.0.1"));
     DidDocumentBase doc = did.generateDidDocument();
 
     String didJson = doc.toJson();

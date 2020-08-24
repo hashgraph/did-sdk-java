@@ -2,7 +2,6 @@ package com.hedera.hashgraph.identity.hcs;
 
 import com.google.common.base.Charsets;
 import com.hedera.hashgraph.identity.DidMethodOperation;
-import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.identity.hcs.did.HcsDid;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidMessage;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidResolver;
@@ -38,7 +37,7 @@ public final class HcsIdentityNetwork {
   /**
    * The Hedera network on which this identity network is created.
    */
-  private HederaNetwork network;
+  private String network;
 
   /**
    * Creates a new identity network instance.
@@ -54,7 +53,7 @@ public final class HcsIdentityNetwork {
    * @param  addressBook The {@link AddressBook} of the identity network.
    * @return             The identity network instance.
    */
-  public static HcsIdentityNetwork fromAddressBook(final HederaNetwork network,
+  public static HcsIdentityNetwork fromAddressBook(final String network,
       final AddressBook addressBook) {
     HcsIdentityNetwork result = new HcsIdentityNetwork();
     result.network = network;
@@ -74,7 +73,7 @@ public final class HcsIdentityNetwork {
    * @throws HederaStatusException  In case querying Hedera File Service fails.
    * @throws HederaNetworkException In case of querying Hedera File Service fails due to transport calls.
    */
-  public static HcsIdentityNetwork fromAddressBookFile(final Client client, final HederaNetwork network,
+  public static HcsIdentityNetwork fromAddressBookFile(final Client client, final String network,
       final FileId addressBookFileId,
       final Hbar maxQueryPayment)
       throws HederaNetworkException, HederaStatusException {
@@ -167,7 +166,7 @@ public final class HcsIdentityNetwork {
    *
    * @return The Hedera network.
    */
-  public HederaNetwork getNetwork() {
+  public String getNetwork() {
     return network;
   }
 

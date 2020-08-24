@@ -1,7 +1,6 @@
 package com.hedera.hashgraph.identity.hcs.example.appnet;
 
 import com.google.common.base.Strings;
-import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.identity.hcs.AddressBook;
 import com.hedera.hashgraph.identity.hcs.HcsIdentityNetwork;
 import com.hedera.hashgraph.identity.hcs.HcsIdentityNetworkBuilder;
@@ -23,6 +22,8 @@ import com.hedera.hashgraph.sdk.mirror.MirrorClient;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
+
+import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Objects;
@@ -265,7 +266,7 @@ public class AppnetServer {
    * @throws HederaNetworkException In case communication with Hedera network fails.
    * @throws HederaStatusException  In case setting up identity network artifacts fail.
    */
-  private void initHederaIdentityNetwork() throws HederaNetworkException, HederaStatusException {
+  private void initHederaIdentityNetwork() throws HederaNetworkException, HederaStatusException, FileNotFoundException {
     log.info("Initializing identity network...");
     Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
 
@@ -274,26 +275,45 @@ public class AppnetServer {
     final Ed25519PrivateKey operatorKey = Ed25519PrivateKey
         .fromString(Objects.requireNonNull(dotenv.get("OPERATOR_KEY")));
 
+    // Grab the network to use from environment variables
+    final String network = Objects.requireNonNull(dotenv.get("NETWORK"));
+
     // Build Hedera testnet client
-    client = Client.forTestnet();
+    client = Client.fromFile(network.concat(".json"));
 
     // Set the operator account ID and operator private key
     client.setOperator(operatorId, operatorKey);
 
+    // Grab the desired mirror from environment variables
+    final String mirrorProvider = Objects.requireNonNull(dotenv.get("MIRROR_PROVIDER"));
+
     // Grab the mirror node address MIRROR_NODE_ADDRESS from environment variable
-    final String mirrorNodeAddress = Objects.requireNonNull(Dotenv.load().get("MIRROR_NODE_ADDRESS"));
+    String mirrorNodeAddress = "hcs." + network + ".mirrornode.hedera.com:5600";
+    if (mirrorProvider.equals("kabuto")) {
+      switch (network) {
+        case "mainnet":
+          mirrorNodeAddress = "api.kabuto.sh:50211";
+          break;
+        case "testnet":
+          mirrorNodeAddress = "api.testnet.kabuto.sh:50211";
+          break;
+        case "previewnet":
+          log.error("invalid previewnet network for Kabuto, please edit .env file");
+          System.exit(1);
+      }
+    }
 
     // Build the mirror node client
     mirrorClient = new MirrorClient(mirrorNodeAddress);
 
     // If identity network is provided as environment variable read from there, otherwise setup new one:
-    String abJson = Dotenv.load().get("EXISTING_ADDRESS_BOOK_JSON");
-    String abFileId = Dotenv.load().get("EXISTING_ADDRESS_BOOK_FILE_ID");
+    String abJson = dotenv.get("EXISTING_ADDRESS_BOOK_JSON");
+    String abFileId = dotenv.get("EXISTING_ADDRESS_BOOK_FILE_ID");
     if (Strings.isNullOrEmpty(abJson) || Strings.isNullOrEmpty(abFileId)) {
-      setupIdentityNetwork(operatorKey.publicKey);
+      setupIdentityNetwork(network, operatorKey.publicKey);
     } else {
       AddressBook addressBook = AddressBook.fromJson(abJson, FileId.fromString(abFileId));
-      identityNetwork = HcsIdentityNetwork.fromAddressBook(HederaNetwork.TESTNET, addressBook);
+      identityNetwork = HcsIdentityNetwork.fromAddressBook(network, addressBook);
     }
 
     log.info("Identity network initialized: " + identityNetwork.getAddressBook().getAppnetName());
@@ -309,10 +329,11 @@ public class AppnetServer {
    * - VC topic in HCS
    *
    * @param  publicKey              Public key of the account operator.
+   * @param  network                The network to use
    * @throws HederaNetworkException In case communication with Hedera network fails.
    * @throws HederaStatusException  In case setting up identity network artifacts fail.
    */
-  private void setupIdentityNetwork(final Ed25519PublicKey publicKey)
+  private void setupIdentityNetwork(final String network, final Ed25519PublicKey publicKey)
       throws HederaNetworkException, HederaStatusException {
     log.info("Setting up new identity network...");
     final Hbar fee = new Hbar(2);
@@ -322,7 +343,7 @@ public class AppnetServer {
     final String vcTopicMemo = "Example appnet VC topic";
 
     identityNetwork = new HcsIdentityNetworkBuilder()
-        .setNetwork(HederaNetwork.TESTNET)
+        .setNetwork(network)
         .setAppnetName(appnetName)
         .addAppnetDidServer(didServerUrl)
         .buildAndSignAddressBookCreateTransaction(tx -> tx

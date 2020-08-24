@@ -22,11 +22,11 @@ public interface HederaDid {
   DidDocumentBase generateDidDocument();
 
   /**
-   * Returns a Hedera {@link HederaNetwork} for which the DID is created.
+   * Returns a {@link String} for which the DID is created.
    *
    * @return A Hedera network for which the DID is created.
    */
-  HederaNetwork getNetwork();
+  String getNetwork();
 
   /**
    * Returns a DID method of this DID.

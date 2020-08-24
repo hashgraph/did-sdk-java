@@ -9,13 +9,15 @@ import com.hedera.hashgraph.identity.DidDocumentBase;
 import com.hedera.hashgraph.identity.DidSyntax;
 import com.hedera.hashgraph.identity.DidSyntax.Method;
 import com.hedera.hashgraph.identity.HederaDid;
-import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
 import com.hedera.hashgraph.sdk.file.FileId;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Objects;
+
+import io.github.cdimascio.dotenv.Dotenv;
 import org.bitcoinj.core.Base58;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -25,6 +27,9 @@ import org.junit.jupiter.api.TestInstance;
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class HcsDidTest {
+  private Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
+  // Grab the network to use from environment variables
+  private String network = Objects.requireNonNull(dotenv.get("NETWORK"));
 
   @Test
   void testGenerateAndParseDidWithoutTid() throws NoSuchAlgorithmException {
@@ -35,7 +40,7 @@ class HcsDidTest {
     Ed25519PublicKey pubKey = privKey.publicKey;
 
     // Generate HcsDid
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, pubKey, FileId.fromString(addressBook));
+    HcsDid did = new HcsDid(network, pubKey, FileId.fromString(addressBook));
 
     // Convert HcsDid to HcsDid string
     String didString = did.toString();
@@ -52,7 +57,7 @@ class HcsDidTest {
 
     assertEquals(parsedDid.toString(), didString);
     assertEquals(parsedDid.getMethod(), Method.HEDERA_HCS);
-    assertEquals(parsedDid.getNetwork(), HederaNetwork.TESTNET);
+    assertEquals(parsedDid.getNetwork(), network);
     assertEquals(parsedDid.getAddressBookFileId().toString(), addressBook);
     assertEquals(parsedDid.getIdString(), did.getIdString());
   }
@@ -68,7 +73,7 @@ class HcsDidTest {
     // Generate HcsDid
     FileId fileId = FileId.fromString(addressBook);
     ConsensusTopicId topicId = ConsensusTopicId.fromString(didTopicId);
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, fileId, topicId);
+    HcsDid did = new HcsDid(network, privateKey.publicKey, fileId, topicId);
 
     // Convert HcsDid to HcsDid string
     String didString = did.toString();
@@ -84,7 +89,7 @@ class HcsDidTest {
 
     assertEquals(parsedDid.toDid(), didString);
     assertEquals(parsedDid.getMethod(), Method.HEDERA_HCS);
-    assertEquals(parsedDid.getNetwork(), HederaNetwork.TESTNET);
+    assertEquals(parsedDid.getNetwork(), network);
     assertEquals(parsedDid.getAddressBookFileId().toString(), addressBook);
     assertEquals(parsedDid.getDidTopicId().toString(), didTopicId);
     assertEquals(parsedDid.getIdString(), did.getIdString());

@@ -9,13 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hedera.hashgraph.identity.DidDocumentBase;
 import com.hedera.hashgraph.identity.DidMethodOperation;
-import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.identity.hcs.AesEncryptionUtil;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
 import com.hedera.hashgraph.sdk.file.FileId;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+
+import io.github.cdimascio.dotenv.Dotenv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
@@ -27,11 +29,14 @@ public class HcsDidMessageTest {
   private static final FileId ADDRESS_BOOK_FID = FileId.fromString("0.0.1");
   private static final ConsensusTopicId DID_TOPIC_ID1 = ConsensusTopicId.fromString("0.0.2");
   private static final ConsensusTopicId DID_TOPIC_ID2 = ConsensusTopicId.fromString("0.0.3");
+  private Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
+  // Grab the network to use from environment variables
+  private String network = Objects.requireNonNull(dotenv.get("NETWORK"));
 
   @Test
   void testValidMessage() {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, ADDRESS_BOOK_FID);
+    HcsDid did = new HcsDid(network, privateKey.publicKey, ADDRESS_BOOK_FID);
     DidDocumentBase doc = did.generateDidDocument();
     String didJson = doc.toJson();
     MessageEnvelope<HcsDidMessage> originalEnvelope = HcsDidMessage.fromDidDocumentJson(didJson,
@@ -52,7 +57,7 @@ public class HcsDidMessageTest {
     final String secret = "Secret encryption password";
 
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, ADDRESS_BOOK_FID);
+    HcsDid did = new HcsDid(network, privateKey.publicKey, ADDRESS_BOOK_FID);
     DidDocumentBase doc = did.generateDidDocument();
     String didJson = doc.toJson();
 
@@ -83,7 +88,7 @@ public class HcsDidMessageTest {
   @Test
   void testInvalidDid() {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, ADDRESS_BOOK_FID);
+    HcsDid did = new HcsDid(network, privateKey.publicKey, ADDRESS_BOOK_FID);
     DidDocumentBase doc = did.generateDidDocument();
 
     String didJson = doc.toJson();
@@ -95,7 +100,7 @@ public class HcsDidMessageTest {
         .fromJson(new String(message, StandardCharsets.UTF_8), HcsDidMessage.class)
         .open();
 
-    HcsDid differentDid = new HcsDid(HederaNetwork.TESTNET, HcsDid.generateDidRootKey().publicKey, ADDRESS_BOOK_FID);
+    HcsDid differentDid = new HcsDid(network, HcsDid.generateDidRootKey().publicKey, ADDRESS_BOOK_FID);
     msg.did = differentDid.toDid();
 
     assertFalse(msg.isValid());
@@ -105,7 +110,7 @@ public class HcsDidMessageTest {
   void testInvalidTopic() {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
     // Include topic ID in the DID.
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, ADDRESS_BOOK_FID, DID_TOPIC_ID1);
+    HcsDid did = new HcsDid(network, privateKey.publicKey, ADDRESS_BOOK_FID, DID_TOPIC_ID1);
     DidDocumentBase doc = did.generateDidDocument();
 
     String didJson = doc.toJson();
@@ -124,7 +129,7 @@ public class HcsDidMessageTest {
   @Test
   void testMissingData() {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, ADDRESS_BOOK_FID);
+    HcsDid did = new HcsDid(network, privateKey.publicKey, ADDRESS_BOOK_FID);
     DidDocumentBase doc = did.generateDidDocument();
     final DidMethodOperation operation = DidMethodOperation.CREATE;
 
@@ -150,7 +155,7 @@ public class HcsDidMessageTest {
   @Test
   void testInvalidSignature() {
     Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(HederaNetwork.TESTNET, privateKey.publicKey, ADDRESS_BOOK_FID);
+    HcsDid did = new HcsDid(network, privateKey.publicKey, ADDRESS_BOOK_FID);
     DidDocumentBase doc = did.generateDidDocument();
 
     String didJson = doc.toJson();

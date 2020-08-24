@@ -7,7 +7,6 @@ import com.hedera.hashgraph.identity.DidSyntax;
 import com.hedera.hashgraph.identity.DidSyntax.Method;
 import com.hedera.hashgraph.identity.DidSyntax.MethodSpecificParameter;
 import com.hedera.hashgraph.identity.HederaDid;
-import com.hedera.hashgraph.identity.HederaNetwork;
 import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
@@ -29,7 +28,7 @@ public class HcsDid implements HederaDid {
 
   private ConsensusTopicId didTopicId;
   private FileId addressBookFileId;
-  private HederaNetwork network;
+  private String network;
   private String idString;
   private String did;
   private Ed25519PublicKey didRootKey;
@@ -78,8 +77,7 @@ public class HcsDid implements HederaDid {
         throw new IllegalArgumentException("DID string is invalid.");
       }
 
-      HederaNetwork didNetwork = HederaNetwork.get(networkName);
-      return new HcsDid(didNetwork, didIdString, addressBookFileId, topicId);
+      return new HcsDid(networkName, didIdString, addressBookFileId, topicId);
     } catch (NoSuchElementException e) {
       throw new IllegalArgumentException("DID string is invalid.", e);
     }
@@ -150,7 +148,7 @@ public class HcsDid implements HederaDid {
    * @param addressBookFileId The appent's address book {@link FileId}
    * @param didTopicId        The appnet's DID topic ID.
    */
-  public HcsDid(final HederaNetwork network, final Ed25519PublicKey didRootKey, final FileId addressBookFileId,
+  public HcsDid(final String network, final Ed25519PublicKey didRootKey, final FileId addressBookFileId,
       final ConsensusTopicId didTopicId) {
     this.didTopicId = didTopicId;
     this.addressBookFileId = addressBookFileId;
@@ -168,7 +166,7 @@ public class HcsDid implements HederaDid {
    * @param addressBookFileId The appent's address book {@link FileId}
    * @param didTopicId        The appnet's DID topic ID.
    */
-  public HcsDid(final HederaNetwork network, final Ed25519PrivateKey privateDidRootKey, final FileId addressBookFileId,
+  public HcsDid(final String network, final Ed25519PrivateKey privateDidRootKey, final FileId addressBookFileId,
       final ConsensusTopicId didTopicId) {
     this(network, privateDidRootKey.publicKey, addressBookFileId, didTopicId);
     this.privateDidRootKey = privateDidRootKey;
@@ -181,7 +179,7 @@ public class HcsDid implements HederaDid {
    * @param didRootKey        The public key from which DID is derived.
    * @param addressBookFileId The appent's address book {@link FileId}
    */
-  public HcsDid(final HederaNetwork network, final Ed25519PublicKey didRootKey, final FileId addressBookFileId) {
+  public HcsDid(final String network, final Ed25519PublicKey didRootKey, final FileId addressBookFileId) {
     this(network, didRootKey, addressBookFileId, null);
   }
 
@@ -193,7 +191,7 @@ public class HcsDid implements HederaDid {
    * @param addressBookFileId The appent's address book {@link FileId}
    * @param didTopicId        The appnet's DID topic ID.
    */
-  public HcsDid(final HederaNetwork network, final String idString, final FileId addressBookFileId,
+  public HcsDid(final String network, final String idString, final FileId addressBookFileId,
       final ConsensusTopicId didTopicId) {
     this.didTopicId = didTopicId;
     this.addressBookFileId = addressBookFileId;
@@ -238,7 +236,7 @@ public class HcsDid implements HederaDid {
   }
 
   @Override
-  public HederaNetwork getNetwork() {
+  public String getNetwork() {
     return network;
   }
 
@@ -280,7 +278,7 @@ public class HcsDid implements HederaDid {
    * @return A DID string.
    */
   private String buildDid() {
-    String methodNetwork = String.join(DidSyntax.DID_METHOD_SEPARATOR, getMethod().toString(), network.toString());
+    String methodNetwork = String.join(DidSyntax.DID_METHOD_SEPARATOR, getMethod().toString(), network);
 
     StringBuilder sb = new StringBuilder()
         .append(DidSyntax.DID_PREFIX)
