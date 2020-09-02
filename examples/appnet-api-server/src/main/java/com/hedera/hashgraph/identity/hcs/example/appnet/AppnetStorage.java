@@ -8,10 +8,12 @@ import com.hedera.hashgraph.identity.hcs.example.appnet.dto.VerifiableCredential
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcMessage;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import java.io.*;
+import java.time.Instant;
+import java.util.*;
+
+import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,20 +23,121 @@ import org.slf4j.LoggerFactory;
  * It also ignores messages sent to HCS topics before its startup operating only on what is received during runtime.
  */
 public class AppnetStorage {
+  private final String credentialIssuersFile = "persistedCredentialIssuers.ser";
+  private final String signaturesFile = "persistedSignatures.ser";
+  private final String DiDsFile = "persistedDiDs.ser";
+  private final String VCsFile = "persistedVCs.ser";;
+
   private static Logger log = LoggerFactory.getLogger(AppnetStorage.class);
-  private final Set<String> signatures;
-  private final Map<String, HcsDidMessage> didStorage;
-  private final Map<String, MessageEnvelope<HcsVcMessage>> vcStorage;
-  private final Map<String, Ed25519PublicKey> credentialIssuers;
+  private Set<String> signatures;
+  private Map<String, HcsDidMessage> didStorage;
+  private Map<String, MessageEnvelope<HcsVcMessage>> vcStorage;
+  private Map<String, Ed25519PublicKey> credentialIssuers;
+  private int didCount = 0;
+  private int vcCount = 0;
+  private int didStoreInterval = 0;
+  private int vcStoreInterval = 0;
+  private Instant lastDiDConsensusTimeStamp = Instant.ofEpochMilli(0);
+  private Instant lastVCConsensusTimeStamp = Instant.ofEpochMilli(0);
 
   /**
-   * Initializes in-memory buffers for appent's storage.
+   * Initializes in-memory buffers for appnet's storage.
    */
+  @SuppressWarnings({"unchecked"})
   public AppnetStorage() {
-    this.didStorage = new HashMap<>();
-    this.vcStorage = new HashMap<>();
-    this.signatures = new HashSet<>();
+    // load persisted data if it exists
+    if (new File(DiDsFile).exists()) {
+      log.info("Loading DiDs from persistence");
+      try {
+        FileInputStream fis = new FileInputStream(DiDsFile);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        this.didStorage = (Map<String, HcsDidMessage>) ois.readObject();
+        this.lastDiDConsensusTimeStamp = (Instant) ois.readObject();
+        ois.close();
+        fis.close();
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+        System.exit(1);
+      } catch (ClassNotFoundException c) {
+        System.out.println("Class not found");
+        c.printStackTrace();
+        System.exit(1);
+      }
+    } else {
+      this.didStorage = new HashMap<>();
+    }
+
+    if (new File(VCsFile).exists()) {
+      log.info("Loading VCs from persistence");
+      try {
+        FileInputStream fis = new FileInputStream(VCsFile);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        this.vcStorage = (Map<String, MessageEnvelope<HcsVcMessage>>) ois.readObject();
+        this.lastVCConsensusTimeStamp = (Instant) ois.readObject();
+        ois.close();
+        fis.close();
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+        System.exit(1);
+      } catch (ClassNotFoundException c) {
+        System.out.println("Class not found");
+        c.printStackTrace();
+        System.exit(1);
+      }
+    } else {
+      this.vcStorage = new HashMap<>();
+    }
+
+    if (new File(signaturesFile).exists()) {
+      log.info("Loading Signatures from persistence");
+      try {
+        FileInputStream fis = new FileInputStream(signaturesFile);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        this.signatures = (HashSet) ois.readObject();
+        ois.close();
+        fis.close();
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+        System.exit(1);
+      } catch (ClassNotFoundException c) {
+        System.out.println("Class not found");
+        c.printStackTrace();
+        System.exit(1);
+      }
+    } else {
+      this.signatures = new HashSet<>();
+    }
+
     this.credentialIssuers = new HashMap<>();
+    if (new File(credentialIssuersFile).exists()) {
+      log.info("Loading credential issuers from persistence");
+      try {
+        FileInputStream fis = new FileInputStream(credentialIssuersFile);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        Map<String, String> persistedCredentialIssuers = (Map<String, String>) ois.readObject();
+        ois.close();
+        fis.close();
+
+        // Ed25519public key is not serializable, perform the conversion here
+        for (Map.Entry<String, String> entry : persistedCredentialIssuers.entrySet()) {
+          this.credentialIssuers.put(entry.getKey(), Ed25519PublicKey.fromString(entry.getValue()));
+        }
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+        System.exit(1);
+      } catch (ClassNotFoundException c) {
+        System.out.println("Class not found");
+        c.printStackTrace();
+        System.exit(1);
+      }
+    }
+    // Get Environment variables for persistence
+    Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
+
+    // Grab the DID_PERSIST_COUNT and VC_PERSIST_COUNT from environment variables
+    this.didStoreInterval = Integer.parseInt(dotenv.get("DID_PERSIST_INTERVAL", "10"));
+    this.vcStoreInterval = Integer.parseInt(dotenv.get("VC_PERSIST_INTERVAL", "10"));
+
   }
 
   /**
@@ -56,6 +159,7 @@ public class AppnetStorage {
    */
   public void registerCredentialIssuance(final String credentialHash, final Ed25519PublicKey issuerPublicKey) {
     credentialIssuers.put(credentialHash, issuerPublicKey);
+    persistCredentialIssuers();
   }
 
   /**
@@ -87,6 +191,7 @@ public class AppnetStorage {
     }
 
     signatures.add(envelope.getSignature());
+    persistSignatures();
     HcsDidMessage msg = envelope.open();
 
     HcsDidMessage existing = didStorage.get(msg.getDid());
@@ -109,6 +214,8 @@ public class AppnetStorage {
 
     log.info("New DID message " + msg.getOperation() + " received for: " + msg.getDid());
     didStorage.put(msg.getDid(), msg);
+
+    persistDiDs(envelope.getConsensusTimestamp());
   }
 
   /**
@@ -144,6 +251,7 @@ public class AppnetStorage {
     }
 
     signatures.add(envelope.getSignature());
+    persistSignatures();
     HcsVcMessage msg = envelope.open();
 
     MessageEnvelope<HcsVcMessage> existing = vcStorage.get(msg.getCredentialHash());
@@ -158,6 +266,7 @@ public class AppnetStorage {
 
     log.info("New VC message " + msg.getOperation() + " received for: " + msg.getCredentialHash());
     vcStorage.put(msg.getCredentialHash(), envelope);
+    persistVCs(msg.getTimestamp());
   }
 
   /**
@@ -175,5 +284,110 @@ public class AppnetStorage {
     }
 
     return result;
+  }
+  /**
+   * Persists DiDs from memory into a file
+   *
+   * @param consensusTimeStamp  The consensusTimeStamp of the last message received from mirror node
+   */
+  private void persistDiDs(Instant consensusTimeStamp) {
+    didCount += 1;
+    if (didCount == didStoreInterval) {
+      didCount = 0;
+      try {
+        FileOutputStream fos =
+                new FileOutputStream(DiDsFile);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(didStorage);
+        oos.writeObject(consensusTimeStamp);
+        oos.close();
+        fos.close();
+        log.info("Serialized DiD HashMap data is saved in persistedDID.ser");
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Persists VCss from memory into a file
+   *
+   * @param consensusTimeStamp  The consensusTimeStamp of the last message received from mirror node
+   */
+  private void persistVCs(Instant consensusTimeStamp) {
+    vcCount += 1;
+    if (vcCount == vcStoreInterval) {
+      vcCount = 0;
+      try {
+        FileOutputStream fos =
+                new FileOutputStream(VCsFile);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(vcStorage);
+        oos.writeObject(consensusTimeStamp);
+        oos.close();
+        fos.close();
+        log.info("Serialized VC HashMap data is saved in persistedVC.ser");
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Persists signatures to a file
+   */
+  private void persistSignatures() {
+    try {
+      FileOutputStream fos =
+              new FileOutputStream(signaturesFile);
+      ObjectOutputStream oos = new ObjectOutputStream(fos);
+      oos.writeObject(signatures);
+      oos.close();
+      fos.close();
+      log.info("Serialized signatures data is saved in signatures.ser");
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
+  }
+
+  /**
+   * Persists crediential issuers to a file
+   */
+  private void persistCredentialIssuers() {
+    try {
+      FileOutputStream fos =
+              new FileOutputStream(credentialIssuersFile);
+      ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+      Map<String, String> persistedCredentialIssuers = new HashMap<>();
+      // Ed25519public key is not serializable, perform the conversion here
+      for (Map.Entry<String, Ed25519PublicKey> entry : this.credentialIssuers.entrySet()) {
+        persistedCredentialIssuers.put(entry.getKey(), entry.getValue().toString());
+      }
+
+      oos.writeObject(persistedCredentialIssuers);
+      oos.close();
+      fos.close();
+      log.info("Serialized signatures data is saved in credentialIssuers.ser");
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
+  }
+
+  /**
+   * Getter for lastDidConsensusTimestamp
+   *
+   * @return Instant the last consensus timestamp for DiD
+   */
+  public Instant getLastDiDConsensusTimeStamp() {
+    return this.lastDiDConsensusTimeStamp;
+  }
+  /**
+   * Getter for lastVCConsensusTimestamp
+   *
+   * @return Instant the last consensus timestamp for VC
+   */
+  public Instant getLastVCConsensusTimeStamp() {
+    return this.lastVCConsensusTimeStamp;
   }
 }
