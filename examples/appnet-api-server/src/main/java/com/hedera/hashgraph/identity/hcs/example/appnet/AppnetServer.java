@@ -117,9 +117,8 @@ public class AppnetServer {
       didListener.unsubscribe();
     }
 
-    Instant startTime = Instant.now().minusSeconds(10);
     didListener = identityNetwork.getDidTopicListener()
-        .setStartTime(startTime)
+        .setStartTime(storage.getLastDiDConsensusTimeStamp().plusNanos(1))
         .onInvalidMessageReceived((resp, reason) -> {
           log.warn("Invalid message received from DID topic: " + reason);
           log.warn(new String(resp.message, StandardCharsets.UTF_8));
@@ -151,9 +150,8 @@ public class AppnetServer {
       vcListener.unsubscribe();
     }
 
-    Instant startTime = Instant.now().minusSeconds(10);
     vcListener = identityNetwork.getVcTopicListener(vc -> storage.getAcceptableCredentialHashPublicKeys(vc))
-        .setStartTime(startTime)
+        .setStartTime(storage.getLastVCConsensusTimeStamp().plusNanos(1))
         .onInvalidMessageReceived((resp, reason) -> {
           log.warn("Invalid message received from VC topic: " + reason);
           log.warn(new String(resp.message, StandardCharsets.UTF_8));
@@ -309,9 +307,16 @@ public class AppnetServer {
     // If identity network is provided as environment variable read from there, otherwise setup new one:
     String abJson = dotenv.get("EXISTING_ADDRESS_BOOK_JSON");
     String abFileId = dotenv.get("EXISTING_ADDRESS_BOOK_FILE_ID");
-    if (Strings.isNullOrEmpty(abJson) || Strings.isNullOrEmpty(abFileId)) {
-      setupIdentityNetwork(network, operatorKey.publicKey);
+    if (Strings.isNullOrEmpty(abJson)) {
+      if (Strings.isNullOrEmpty(abFileId)) {
+        // no file, no JSON, create from new
+        setupIdentityNetwork(network, operatorKey.publicKey);
+      } else {
+        // We have a file ID, load from the network
+        identityNetwork = HcsIdentityNetwork.fromAddressBookFile(client, network, FileId.fromString(abFileId));
+      }
     } else {
+      // we have json, use it
       AddressBook addressBook = AddressBook.fromJson(abJson, FileId.fromString(abFileId));
       identityNetwork = HcsIdentityNetwork.fromAddressBook(network, addressBook);
     }
