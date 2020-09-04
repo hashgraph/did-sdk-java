@@ -18,9 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class simulates appnet's storage, that would normally be persistent (e.g. a database or files).
- * This example application does not preserver any data.
- * It also ignores messages sent to HCS topics before its startup operating only on what is received during runtime.
+ * This class implements appnet storage by persisting data to files.
+ * Signatures and credential issuers are stored in two separate files, everytime a signature or issuer is added,
+ * the complete set is persisted to file.
+ * Additionally, DIDs and VCs are stored in their own files, along with the consensus timestamp of the last notification received
+ * from mirror node. Persistence does not occur for every additional DiD or VC. Persistence occurs every n and m notifications
+ * as determined by the .env file.
+ * Upon restart, the persisted data is reloaded in memory and mirror subscriptions for the topic ids restarts from the last
+ * persisted notification + 1 nano second.
  */
 public class AppnetStorage {
   private final String credentialIssuersFile = "persistedCredentialIssuers.ser";
