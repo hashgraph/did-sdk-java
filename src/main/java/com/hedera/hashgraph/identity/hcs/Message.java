@@ -2,9 +2,14 @@ package com.hedera.hashgraph.identity.hcs;
 
 import com.google.gson.annotations.Expose;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
+
+import java.io.Serializable;
 import java.time.Instant;
 
-public abstract class Message {
+public abstract class Message implements Serializable {
+
+  @Expose(serialize = false, deserialize = false)
+  private static final long serialVersionUID = 1L;
 
   @Expose(serialize = true, deserialize = true)
   protected final Instant timestamp;

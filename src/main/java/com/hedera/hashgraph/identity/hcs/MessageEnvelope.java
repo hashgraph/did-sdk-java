@@ -10,6 +10,8 @@ import com.google.gson.reflect.TypeToken;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
 import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
 import com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse;
+
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -22,9 +24,12 @@ import org.bouncycastle.math.ec.rfc8032.Ed25519;
 /**
  * The envelope for Hedera identity messages sent to HCS DID or VC topics.
  */
-public class MessageEnvelope<T extends Message> {
+public class MessageEnvelope<T extends Message> implements Serializable {
   private static final String MESSAGE_KEY = "message";
   private static final String SIGNATURE_KEY = "signature";
+
+  @Expose(serialize = false, deserialize = false)
+  private static final long serialVersionUID = 1L;
 
   @Expose(serialize = true, deserialize = true)
   protected MessageMode mode;
@@ -44,7 +49,7 @@ public class MessageEnvelope<T extends Message> {
   protected T decryptedMessage;
 
   @Expose(serialize = false, deserialize = false)
-  protected MirrorConsensusTopicResponse mirrorResponse;
+  protected SerializableMirrorConsensusResponse mirrorResponse;
 
   /**
    * Creates a new message envelope for the given message.
@@ -130,7 +135,7 @@ public class MessageEnvelope<T extends Message> {
     String msgJson = new String(response.message, StandardCharsets.UTF_8);
 
     MessageEnvelope<U> result = MessageEnvelope.fromJson(msgJson, messageClass);
-    result.mirrorResponse = response;
+    result.mirrorResponse = new SerializableMirrorConsensusResponse(response);
 
     return result;
   }
@@ -225,7 +230,7 @@ public class MessageEnvelope<T extends Message> {
     return mode;
   }
 
-  public MirrorConsensusTopicResponse getMirrorResponse() {
+  public SerializableMirrorConsensusResponse getMirrorResponse() {
     return mirrorResponse;
   }
 }
