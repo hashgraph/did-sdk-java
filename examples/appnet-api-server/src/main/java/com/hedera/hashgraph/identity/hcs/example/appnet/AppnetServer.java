@@ -82,7 +82,6 @@ public class AppnetServer {
 
     try {
       initHederaIdentityNetwork();
-      Thread.sleep(10000);
       initStorageAndTopicListeners();
       initHandlers();
       startApiServer();
