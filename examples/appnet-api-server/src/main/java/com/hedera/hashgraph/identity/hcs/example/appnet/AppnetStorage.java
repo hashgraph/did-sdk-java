@@ -28,10 +28,11 @@ import org.slf4j.LoggerFactory;
  * persisted notification + 1 nano second.
  */
 public class AppnetStorage {
-  private final String credentialIssuersFile = "persistedCredentialIssuers.ser";
-  private final String signaturesFile = "persistedSignatures.ser";
-  private final String DiDsFile = "persistedDiDs.ser";
-  private final String VCsFile = "persistedVCs.ser";;
+  private final String persistenceDir = "data/";
+  private final String credentialIssuersFilePath = persistenceDir  + "persistedCredentialIssuers.ser";
+  private final String signaturesFilePath = persistenceDir + "persistedSignatures.ser";
+  private final String DiDsFilePath = persistenceDir + "persistedDiDs.ser";
+  private final String VCsFilePath = persistenceDir + "persistedVCs.ser";
 
   private static Logger log = LoggerFactory.getLogger(AppnetStorage.class);
   private Set<String> signatures;
@@ -51,10 +52,11 @@ public class AppnetStorage {
   @SuppressWarnings({"unchecked"})
   public AppnetStorage() {
     // load persisted data if it exists
-    if (new File(DiDsFile).exists()) {
+
+    if (new File(DiDsFilePath).exists()) {
       log.info("Loading DiDs from persistence");
       try {
-        FileInputStream fis = new FileInputStream(DiDsFile);
+        FileInputStream fis = new FileInputStream(DiDsFilePath);
         ObjectInputStream ois = new ObjectInputStream(fis);
         this.didStorage = (Map<String, HcsDidMessage>) ois.readObject();
         this.lastDiDConsensusTimeStamp = (Instant) ois.readObject();
@@ -72,10 +74,10 @@ public class AppnetStorage {
       this.didStorage = new HashMap<>();
     }
 
-    if (new File(VCsFile).exists()) {
+    if (new File(VCsFilePath).exists()) {
       log.info("Loading VCs from persistence");
       try {
-        FileInputStream fis = new FileInputStream(VCsFile);
+        FileInputStream fis = new FileInputStream(VCsFilePath);
         ObjectInputStream ois = new ObjectInputStream(fis);
         this.vcStorage = (Map<String, MessageEnvelope<HcsVcMessage>>) ois.readObject();
         this.lastVCConsensusTimeStamp = (Instant) ois.readObject();
@@ -93,10 +95,10 @@ public class AppnetStorage {
       this.vcStorage = new HashMap<>();
     }
 
-    if (new File(signaturesFile).exists()) {
+    if (new File(signaturesFilePath).exists()) {
       log.info("Loading Signatures from persistence");
       try {
-        FileInputStream fis = new FileInputStream(signaturesFile);
+        FileInputStream fis = new FileInputStream(signaturesFilePath);
         ObjectInputStream ois = new ObjectInputStream(fis);
         this.signatures = (HashSet) ois.readObject();
         ois.close();
@@ -114,10 +116,10 @@ public class AppnetStorage {
     }
 
     this.credentialIssuers = new HashMap<>();
-    if (new File(credentialIssuersFile).exists()) {
+    if (new File(credentialIssuersFilePath).exists()) {
       log.info("Loading credential issuers from persistence");
       try {
-        FileInputStream fis = new FileInputStream(credentialIssuersFile);
+        FileInputStream fis = new FileInputStream(credentialIssuersFilePath);
         ObjectInputStream ois = new ObjectInputStream(fis);
         Map<String, String> persistedCredentialIssuers = (Map<String, String>) ois.readObject();
         ois.close();
@@ -300,8 +302,9 @@ public class AppnetStorage {
     if (didCount == didStoreInterval) {
       didCount = 0;
       try {
+        File didsFile = new File(DiDsFilePath);
         FileOutputStream fos =
-                new FileOutputStream(DiDsFile);
+                new FileOutputStream(didsFile);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(didStorage);
         oos.writeObject(consensusTimeStamp);
@@ -324,8 +327,9 @@ public class AppnetStorage {
     if (vcCount == vcStoreInterval) {
       vcCount = 0;
       try {
+        File vcsFile = new File(VCsFilePath);
         FileOutputStream fos =
-                new FileOutputStream(VCsFile);
+                new FileOutputStream(vcsFile);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(vcStorage);
         oos.writeObject(consensusTimeStamp);
@@ -343,6 +347,7 @@ public class AppnetStorage {
    */
   private void persistSignatures() {
     try {
+      File signaturesFile = new File(signaturesFilePath);
       FileOutputStream fos =
               new FileOutputStream(signaturesFile);
       ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -360,6 +365,7 @@ public class AppnetStorage {
    */
   private void persistCredentialIssuers() {
     try {
+      File credentialIssuersFile = new File(credentialIssuersFilePath);
       FileOutputStream fos =
               new FileOutputStream(credentialIssuersFile);
       ObjectOutputStream oos = new ObjectOutputStream(fos);

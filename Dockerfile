@@ -26,6 +26,8 @@ COPY --from=build /opt/hedera-did/previewnet.json /srv/previewnet.json
 COPY --from=build /opt/hedera-did/testnet.json /srv/testnet.json
 COPY --from=build /opt/hedera-did/mainnet.json /srv/mainnet.json
 
+VOLUME /srv/data
+
 # run the micro service
 CMD java "-jar" "appnet-api-server.jar"
 
