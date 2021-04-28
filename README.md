@@ -88,8 +88,7 @@ Please refer to the [README](/examples/appnet-api-server/README.md) file of the 
 
 Install [Docker for Mac](https://www.docker.com/docker-mac), or [Docker for Windows](https://www.docker.com/docker-windows)
 
-```cmd
-cd identity-sdk/examples
+cd did-sdk-java/examples
 cp .env.sample .env
 nano .env
 ```
@@ -112,7 +111,7 @@ docker run -p 5050:5050 did-demo:latest
 #### With Gradle
 
 ```cmd
-cd identity-sdk/examples
+cd did-sdk-java/examples
 cp .env.sample .env
 nano .env
 ```
@@ -127,7 +126,7 @@ you may also edit the following to use a different network (ensure your OPERATOR
 * NETWORK=testnet (can be `testnet`, `previewnet` or `mainnet`)
 * MIRROR_PROVIDER=hedera (can be `hedera` or `kabuto` (note `kabuto` not available on `previewnet`))
 
-return to the `identity-sdk` folder
+return to the `did-sdk-java` folder
 ```cmd
 cd ..
 ```
