@@ -140,7 +140,7 @@ public class HcsIdentityNetworkTest {
 
     // Test if address book file was created
     HcsIdentityNetwork createdNetwork = HcsIdentityNetwork.fromAddressBookFile(client, network,
-        addressBook.getFileId(), FEE);
+        addressBook.getFileId());
     assertNotNull(createdNetwork);
     assertEquals(addressBook.toJson(), createdNetwork.getAddressBook().toJson());
   }
@@ -161,7 +161,7 @@ public class HcsIdentityNetworkTest {
     HcsDid did = new HcsDid(network, HcsDid.generateDidRootKey().publicKey, addressBookFileId);
 
     // Initialize network from this DID, reading address book file from Hedera File Service
-    HcsIdentityNetwork didNetwork = HcsIdentityNetwork.fromHcsDid(client, did, FEE);
+    HcsIdentityNetwork didNetwork = HcsIdentityNetwork.fromHcsDid(client, did);
 
     assertNotNull(didNetwork);
     assertNotNull(didNetwork.getAddressBook().getFileId());

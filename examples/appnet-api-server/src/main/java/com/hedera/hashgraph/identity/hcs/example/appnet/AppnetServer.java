@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ratpack.http.MutableHeaders;
 import ratpack.server.RatpackServer;
 
 /**
@@ -82,7 +83,6 @@ public class AppnetServer {
 
     try {
       initHederaIdentityNetwork();
-      Thread.sleep(10000);
       initStorageAndTopicListeners();
       initHandlers();
       startApiServer();
@@ -117,9 +117,8 @@ public class AppnetServer {
       didListener.unsubscribe();
     }
 
-    Instant startTime = Instant.now().minusSeconds(10);
     didListener = identityNetwork.getDidTopicListener()
-        .setStartTime(startTime)
+        .setStartTime(storage.getLastDiDConsensusTimeStamp().plusNanos(1))
         .onInvalidMessageReceived((resp, reason) -> {
           log.warn("Invalid message received from DID topic: " + reason);
           log.warn(new String(resp.message, StandardCharsets.UTF_8));
@@ -151,9 +150,8 @@ public class AppnetServer {
       vcListener.unsubscribe();
     }
 
-    Instant startTime = Instant.now().minusSeconds(10);
     vcListener = identityNetwork.getVcTopicListener(vc -> storage.getAcceptableCredentialHashPublicKeys(vc))
-        .setStartTime(startTime)
+        .setStartTime(storage.getLastVCConsensusTimeStamp().plusNanos(1))
         .onInvalidMessageReceived((resp, reason) -> {
           log.warn("Invalid message received from VC topic: " + reason);
           log.warn(new String(resp.message, StandardCharsets.UTF_8));
@@ -198,11 +196,13 @@ public class AppnetServer {
                 + "Please refer to documentation for more details about available APIs."))
 
             // REST API endpoints for DID
-            .path("did", ctx -> ctx.byMethod(m -> m
+            .path("did", ctx ->
+              ctx.byMethod(m -> m
                 .post(() -> didHandler.create(ctx))
                 .put(() -> didHandler.update(ctx))
-                .delete(() -> didHandler.delete(ctx))
-                .get(() -> didHandler.resolve(ctx))))
+                .delete(() -> didHandler.delete(ctx)))
+            )
+            .post("did-resolve", ctx -> didHandler.resolve(ctx))
             .post("did-submit", ctx -> didHandler.submit(ctx, client, mirrorClient))
 
             // REST API endpoints for VC
@@ -219,7 +219,7 @@ public class AppnetServer {
             .post("demo/sign-did-message", ctx -> demoHandler.signDidMessage(ctx))
             .post("demo/generate-driving-license", ctx -> demoHandler.generateDrivingLicense(ctx))
             .post("demo/sign-vc-message", ctx -> demoHandler.signVcMessage(ctx))
-            .get("demo/get-credential-hash", ctx -> demoHandler.determineCredentialHash(ctx))
+            .post("demo/get-credential-hash", ctx -> demoHandler.determineCredentialHash(ctx))
 
             // Schema files
             .files(f -> f.dir("schemas").files("driving-license-schema.json"))
@@ -268,7 +268,7 @@ public class AppnetServer {
    */
   private void initHederaIdentityNetwork() throws HederaNetworkException, HederaStatusException, FileNotFoundException {
     log.info("Initializing identity network...");
-    Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
+    Dotenv dotenv = Dotenv.configure().load();
 
     // Grab the OPERATOR_ID and OPERATOR_KEY from environment variable
     final AccountId operatorId = AccountId.fromString(Objects.requireNonNull(dotenv.get("OPERATOR_ID")));
@@ -309,9 +309,16 @@ public class AppnetServer {
     // If identity network is provided as environment variable read from there, otherwise setup new one:
     String abJson = dotenv.get("EXISTING_ADDRESS_BOOK_JSON");
     String abFileId = dotenv.get("EXISTING_ADDRESS_BOOK_FILE_ID");
-    if (Strings.isNullOrEmpty(abJson) || Strings.isNullOrEmpty(abFileId)) {
-      setupIdentityNetwork(network, operatorKey.publicKey);
+    if (Strings.isNullOrEmpty(abJson)) {
+      if (Strings.isNullOrEmpty(abFileId)) {
+        // no file, no JSON, create from new
+        setupIdentityNetwork(network, operatorKey.publicKey);
+      } else {
+        // We have a file ID, load from the network
+        identityNetwork = HcsIdentityNetwork.fromAddressBookFile(client, network, FileId.fromString(abFileId));
+      }
     } else {
+      // we have json, use it
       AddressBook addressBook = AddressBook.fromJson(abJson, FileId.fromString(abFileId));
       identityNetwork = HcsIdentityNetwork.fromAddressBook(network, addressBook);
     }

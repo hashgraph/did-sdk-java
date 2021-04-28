@@ -38,11 +38,23 @@ The following environment variables are required to be set up before running the
 - `OPERATOR_KEY` - Your testnet account ID private key
 - `MIRROR_NODE_ADDRESS` - Address of the mirror node this application should connect to
 
-Additionally the following configuration of already initialized identity network can be provided.
-If it is missing, the application will create identity network artifacts upon startup and print them into system console:
 
-- `EXISTING_ADDRESS_BOOK_JSON` - identity network's address book as JSON string. If provided appnet will not query Hedera File Service for its content.
-- `EXISTING_ADDRESS_BOOK_FILE_ID` - File ID of the address book on Hedera File Service.
+Additionally the following configuration of already initialized identity network can be provided.
+If it is missing, the application will create identity network artifacts upon startup and print them into system console. A new Hedera file containing the address book and two topic IDs will be created.
+
+If the file id below alone is provided, it will be used to fetch the VC and DiD topic IDs from the Hedera Network
+- `EXISTING_ADDRESS_BOOK_FILE_ID` (e.g. 0.0.19087)
+
+If the below is provided, topic IDs won't be fetched from the network, saving the cost of a file query
+- `EXISTING_ADDRESS_BOOK_JSON` (e.g. {"appnetName":"Example appnet using Hedera Identity SDK","didTopicId":"0.0.19085","vcTopicId":"0.0.19086","appnetDidServers":["http://localhost:5050/"]})
+
+Finally, the following two optional parameters may be set (they will default to 10 if unset). They determine how frequently DiDs and VCs are persisted to file. If for example the value is 5, then every 5 VC operations, the state of the VCs will be persisted.
+Providing a large number may improve performance due to fewer file operations, however upon restart, catching up with mirror node to rebuild state to its latest may take longer.
+
+- `DID_PERSIST_INTERVAL` - how frequently should DiDs be persisted to file
+- `VC_PERSIST_INTERVAL` - how frequently should VCs be persisted to file
+
+Persisted data resides in the `persistedCredentialIssuers.ser`, `persistedDiDs.ser`, `persistedSignatures.ser` and `persistedVCs.ser` of the application's folder. They are binary files and not human readable.
 
 [did-method-spec]: https://github.com/hashgraph/did-method
 [postman]: https://www.postman.com/

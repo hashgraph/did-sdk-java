@@ -88,8 +88,7 @@ Please refer to the [README](/examples/appnet-api-server/README.md) file of the 
 
 Install [Docker for Mac](https://www.docker.com/docker-mac), or [Docker for Windows](https://www.docker.com/docker-windows)
 
-```cmd
-cd did-sdk-java
+cd did-sdk-java/examples
 cp .env.sample .env
 nano .env
 ```

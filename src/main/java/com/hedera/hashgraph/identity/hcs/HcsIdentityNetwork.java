@@ -68,18 +68,17 @@ public final class HcsIdentityNetwork {
    * @param  client                 The Hedera network client.
    * @param  network                The Hedera network.
    * @param  addressBookFileId      The FileID of {@link AddressBook} file stored on Hedera File Service.
-   * @param  maxQueryPayment        Maximum HBAR payment for querying the address book file content.
    * @return                        The identity network instance.
    * @throws HederaStatusException  In case querying Hedera File Service fails.
    * @throws HederaNetworkException In case of querying Hedera File Service fails due to transport calls.
    */
   public static HcsIdentityNetwork fromAddressBookFile(final Client client, final String network,
-      final FileId addressBookFileId,
-      final Hbar maxQueryPayment)
+      final FileId addressBookFileId)
       throws HederaNetworkException, HederaStatusException {
 
+    long fileContentsQueryCost = new FileContentsQuery().setFileId(addressBookFileId).getCost(client);
     final FileContentsQuery fileQuery = new FileContentsQuery().setFileId(addressBookFileId);
-    fileQuery.setMaxQueryPayment(maxQueryPayment);
+    fileQuery.setMaxQueryPayment(fileContentsQueryCost);
 
     final byte[] contents = fileQuery.execute(client);
 
@@ -95,16 +94,15 @@ public final class HcsIdentityNetwork {
    *
    * @param  client                 The Hedera network client.
    * @param  hcsDid                 The Hedera HCS DID.
-   * @param  maxQueryPayment        Maximum HBAR payment for querying the address book file content.
    * @return                        The identity network instance.
    * @throws HederaStatusException  In case querying Hedera File Service fails.
    * @throws HederaNetworkException In case of querying Hedera File Service fails due to transport calls.
    */
-  public static HcsIdentityNetwork fromHcsDid(final Client client, final HcsDid hcsDid, final Hbar maxQueryPayment)
+  public static HcsIdentityNetwork fromHcsDid(final Client client, final HcsDid hcsDid)
       throws HederaNetworkException, HederaStatusException {
 
     final FileId addressBookFileId = hcsDid.getAddressBookFileId();
-    return HcsIdentityNetwork.fromAddressBookFile(client, hcsDid.getNetwork(), addressBookFileId, maxQueryPayment);
+    return HcsIdentityNetwork.fromAddressBookFile(client, hcsDid.getNetwork(), addressBookFileId);
   }
 
   /**
