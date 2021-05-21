@@ -2,7 +2,6 @@ package com.hedera.hashgraph.identity.hcs.did;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.Expose;
 import com.hedera.hashgraph.identity.DidDocumentBase;
 import com.hedera.hashgraph.identity.DidDocumentJsonProperties;
@@ -11,15 +10,15 @@ import com.hedera.hashgraph.identity.hcs.Message;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.utils.Iso8601InstantTypeAdapter;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
+import com.hedera.hashgraph.sdk.PublicKey;
+import com.hedera.hashgraph.sdk.TopicId;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.Base64;
-import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
+import java8.util.function.BiFunction;
 import javax.annotation.Nullable;
 import org.bitcoinj.core.Base58;
+import org.threeten.bp.Instant;
 
 /**
  * The DID document message submitted to appnet's DID Topic.
@@ -66,12 +65,12 @@ public class HcsDidMessage extends Message {
   /**
    * Creates a new DID message for submission to HCS topic.
    *
-   * @param  didDocumentJson DID document as JSON string.
-   * @param  operation       The operation on DID document.
-   * @return                 The HCS message wrapped in an envelope for the given DID document and method operation.
+   * @param didDocumentJson DID document as JSON string.
+   * @param operation       The operation on DID document.
+   * @return The HCS message wrapped in an envelope for the given DID document and method operation.
    */
   public static MessageEnvelope<HcsDidMessage> fromDidDocumentJson(final String didDocumentJson,
-      final DidMethodOperation operation) {
+                                                                   final DidMethodOperation operation) {
     DidDocumentBase didDocumentBase = DidDocumentBase.fromJson(didDocumentJson);
 
     byte[] encodedDoc = Base64.getEncoder().encode(didDocumentJson.getBytes(StandardCharsets.UTF_8));
@@ -85,8 +84,8 @@ public class HcsDidMessage extends Message {
   /**
    * Provides an encryption operator that converts an {@link HcsDidMessage} into encrypted one.
    *
-   * @param  encryptionFunction The encryption function to use for encryption of single attributes.
-   * @return                    The encryption operator instance.
+   * @param encryptionFunction The encryption function to use for encryption of single attributes.
+   * @return The encryption operator instance.
    */
   public static UnaryOperator<HcsDidMessage> getEncrypter(final UnaryOperator<byte[]> encryptionFunction) {
     if (encryptionFunction == null) {
@@ -110,11 +109,11 @@ public class HcsDidMessage extends Message {
   /**
    * Provides a decryption function that converts {@link HcsDidMessage} in encrypted for into a plain form.
    *
-   * @param  decryptionFunction The decryption function to use for decryption of single attributes.
-   * @return                    The Decryption function for the {@link HcsDidMessage}
+   * @param decryptionFunction The decryption function to use for decryption of single attributes.
+   * @return The Decryption function for the {@link HcsDidMessage}
    */
   public static BiFunction<HcsDidMessage, Instant, HcsDidMessage> getDecrypter(
-      final BiFunction<byte[], Instant, byte[]> decryptionFunction) {
+          final BiFunction<byte[], Instant, byte[]> decryptionFunction) {
     if (decryptionFunction == null) {
       throw new IllegalArgumentException("Decryption function is missing or null.");
     }
@@ -153,10 +152,10 @@ public class HcsDidMessage extends Message {
   /**
    * Validates this DID message by checking its completeness, signature and DID document.
    *
-   * @param  didTopicId The DID topic ID against which the message is validated.
-   * @return            True if the message is valid, false otherwise.
+   * @param didTopicId The DID topic ID against which the message is validated.
+   * @return True if the message is valid, false otherwise.
    */
-  public boolean isValid(@Nullable final ConsensusTopicId didTopicId) {
+  public boolean isValid(@Nullable final TopicId didTopicId) {
     if (did == null || didDocumentBase64 == null) {
       return false;
     }
@@ -179,7 +178,7 @@ public class HcsDidMessage extends Message {
 
       // Extract public key from the DID document
       byte[] publicKeyBytes = Base58.decode(doc.getDidRootKey().getPublicKeyBase58());
-      Ed25519PublicKey publicKey = Ed25519PublicKey.fromBytes(publicKeyBytes);
+      PublicKey publicKey = PublicKey.fromBytes(publicKeyBytes);
 
       if (!HcsDid.publicKeyToIdString(publicKey).equals(hcsDid.getIdString())) {
         return false;
@@ -201,8 +200,8 @@ public class HcsDidMessage extends Message {
    *
    * @return Public key of the DID subject.
    */
-  public Ed25519PublicKey extractDidRootKey() {
-    Ed25519PublicKey result = null;
+  public PublicKey extractDidRootKey() {
+    PublicKey result = null;
 
     try {
       DidDocumentBase doc = DidDocumentBase.fromJson(getDidDocument());
@@ -210,10 +209,10 @@ public class HcsDidMessage extends Message {
       // Make sure that DID root key is present in the document
       if (doc.getDidRootKey() != null && doc.getDidRootKey().getPublicKeyBase58() != null) {
         byte[] publicKeyBytes = Base58.decode(doc.getDidRootKey().getPublicKeyBase58());
-        result = Ed25519PublicKey.fromBytes(publicKeyBytes);
+        result = PublicKey.fromBytes(publicKeyBytes);
       }
 
-      // ArrayIndexOutOfBoundsException is thrown in case public key is invalid in Ed25519PublicKey.fromBytes
+      // ArrayIndexOutOfBoundsException is thrown in case public key is invalid in PublicKey.fromBytes
     } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
       return null;
     }
@@ -241,7 +240,7 @@ public class HcsDidMessage extends Message {
     // inject timestamps
     if (created != null || updated != null) {
       JsonObject root = JsonParser.parseString(document).getAsJsonObject();
-      TypeAdapter<Instant> adapter = Iso8601InstantTypeAdapter.getInstance();
+      Iso8601InstantTypeAdapter adapter = Iso8601InstantTypeAdapter.getInstance();
 
       if (created != null) {
         root.add(DidDocumentJsonProperties.CREATED, adapter.toJsonTree(created));

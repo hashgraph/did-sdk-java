@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
-import com.hedera.hashgraph.sdk.file.FileId;
+import com.hedera.hashgraph.sdk.PrivateKey;
+import com.hedera.hashgraph.sdk.PublicKey;
+import com.hedera.hashgraph.sdk.FileId;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bitcoinj.core.Base58;
 import org.junit.jupiter.api.Test;
@@ -28,24 +28,24 @@ public class HcsDidRootKeyTest {
     final String addressBook = "0.0.1";
 
     // Generate pair of HcsDid root keys
-    Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
+    PrivateKey privateKey = HcsDid.generateDidRootKey();
 
     // Generate HcsDid
-    HcsDid did =  new HcsDid(network, privateKey.publicKey, FileId.fromString(addressBook));
+    HcsDid did = new HcsDid(network, privateKey.getPublicKey(), FileId.fromString(addressBook));
 
     assertThrows(IllegalArgumentException.class, () -> HcsDidRootKey.fromHcsIdentity(null, null));
     assertThrows(IllegalArgumentException.class, () -> HcsDidRootKey.fromHcsIdentity(did, null));
-    assertThrows(IllegalArgumentException.class, () -> HcsDidRootKey.fromHcsIdentity(null, privateKey.publicKey));
+    assertThrows(IllegalArgumentException.class, () -> HcsDidRootKey.fromHcsIdentity(null, privateKey.getPublicKey()));
 
-    Ed25519PublicKey differentPublicKey = HcsDid.generateDidRootKey().publicKey;
+    PublicKey differentPublicKey = HcsDid.generateDidRootKey().getPublicKey();
     assertThrows(IllegalArgumentException.class, () -> HcsDidRootKey.fromHcsIdentity(did, differentPublicKey));
 
-    HcsDidRootKey didRootKey = HcsDidRootKey.fromHcsIdentity(did, privateKey.publicKey);
+    HcsDidRootKey didRootKey = HcsDidRootKey.fromHcsIdentity(did, privateKey.getPublicKey());
     assertNotNull(didRootKey);
 
     assertEquals(didRootKey.getType(), "Ed25519VerificationKey2018");
     assertEquals(didRootKey.getId(), did.toDid() + HcsDidRootKey.DID_ROOT_KEY_NAME);
     assertEquals(didRootKey.getController(), did.toDid());
-    assertEquals(didRootKey.getPublicKeyBase58(), Base58.encode(privateKey.publicKey.toBytes()));
+    assertEquals(didRootKey.getPublicKeyBase58(), Base58.encode(privateKey.getPublicKey().toBytes()));
   }
 }

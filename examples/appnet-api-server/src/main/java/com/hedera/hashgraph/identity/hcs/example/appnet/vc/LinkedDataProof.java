@@ -1,7 +1,7 @@
 package com.hedera.hashgraph.identity.hcs.example.appnet.vc;
 
 import com.google.gson.annotations.Expose;
-import java.time.Instant;
+import org.threeten.bp.Instant;
 
 /**
  * A simple DTO for manually constructed example of a linked data proof.

@@ -8,18 +8,17 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
-import com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse;
-
+import com.hedera.hashgraph.sdk.PublicKey;
+import com.hedera.hashgraph.sdk.TopicMessage;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.Base64;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java8.util.function.BiFunction;
 import org.bouncycastle.math.ec.rfc8032.Ed25519;
+import org.threeten.bp.Instant;
 
 /**
  * The envelope for Hedera identity messages sent to HCS DID or VC topics.
@@ -73,10 +72,50 @@ public class MessageEnvelope<T extends Message> implements Serializable {
   }
 
   /**
+   * Converts a message from a DID or VC topic response into object instance.
+   *
+   * @param <U>          Type of the message inside envelope.
+   * @param response     Topic message as a response from mirror node.
+   * @param messageClass Class type of the message inside envelope.
+   * @return The {@link MessageEnvelope}.
+   */
+  public static <U extends Message> MessageEnvelope<U> fromMirrorResponse(
+          final TopicMessage response, final Class<U> messageClass) {
+
+    String msgJson = new String(response.contents, StandardCharsets.UTF_8);
+
+    MessageEnvelope<U> result = MessageEnvelope.fromJson(msgJson, messageClass);
+    result.mirrorResponse = new SerializableMirrorConsensusResponse(response);
+
+    return result;
+  }
+
+  /**
+   * Converts a VC topic message from a JSON string into object instance.
+   *
+   * @param <U>          Type of the message inside envelope.
+   * @param json         VC topic message as JSON string.
+   * @param messageClass Class of the message inside envelope.
+   * @return The {@link MessageEnvelope}.
+   */
+  public static <U extends Message> MessageEnvelope<U> fromJson(final String json, final Class<U> messageClass) {
+    Gson gson = JsonUtils.getGson();
+    Type envelopeType = TypeToken.getParameterized(MessageEnvelope.class, messageClass).getType();
+
+    MessageEnvelope<U> result = gson.fromJson(json, envelopeType);
+
+    // extract original message JSON part separately to be able to verify signature.
+    JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+    result.messageJson = root.has(MESSAGE_KEY) ? root.get(MESSAGE_KEY).toString() : null;
+
+    return result;
+  }
+
+  /**
    * Signs this message envelope with the given signing function.
    *
-   * @param  signer The signing function.
-   * @return        This envelope signed and serialized to JSON, ready for submission to HCS topic.
+   * @param signer The signing function.
+   * @return This envelope signed and serialized to JSON, ready for submission to HCS topic.
    */
   public byte[] sign(final UnaryOperator<byte[]> signer) {
     if (signer == null) {
@@ -106,8 +145,8 @@ public class MessageEnvelope<T extends Message> implements Serializable {
   /**
    * Encrypts the message in this envelope and returns its encrypted instance.
    *
-   * @param  encrypter The function used to encrypt the message.
-   * @return           This envelope instance.
+   * @param encrypter The function used to encrypt the message.
+   * @return This envelope instance.
    */
   public MessageEnvelope<T> encrypt(final UnaryOperator<T> encrypter) {
     if (encrypter == null) {
@@ -122,57 +161,17 @@ public class MessageEnvelope<T extends Message> implements Serializable {
   }
 
   /**
-   * Converts a message from a DID or VC topic response into object instance.
-   *
-   * @param  <U>          Type of the message inside envelope.
-   * @param  response     Topic message as a response from mirror node.
-   * @param  messageClass Class type of the message inside envelope.
-   * @return              The {@link MessageEnvelope}.
-   */
-  public static <U extends Message> MessageEnvelope<U> fromMirrorResponse(
-      final MirrorConsensusTopicResponse response, final Class<U> messageClass) {
-
-    String msgJson = new String(response.message, StandardCharsets.UTF_8);
-
-    MessageEnvelope<U> result = MessageEnvelope.fromJson(msgJson, messageClass);
-    result.mirrorResponse = new SerializableMirrorConsensusResponse(response);
-
-    return result;
-  }
-
-  /**
-   * Converts a VC topic message from a JSON string into object instance.
-   *
-   * @param  <U>          Type of the message inside envelope.
-   * @param  json         VC topic message as JSON string.
-   * @param  messageClass Class of the message inside envelope.
-   * @return              The {@link MessageEnvelope}.
-   */
-  public static <U extends Message> MessageEnvelope<U> fromJson(final String json, final Class<U> messageClass) {
-    Gson gson = JsonUtils.getGson();
-    Type envelopeType = TypeToken.getParameterized(MessageEnvelope.class, messageClass).getType();
-
-    MessageEnvelope<U> result = gson.fromJson(json, envelopeType);
-
-    // extract original message JSON part separately to be able to verify signature.
-    JsonObject root = JsonParser.parseString(json).getAsJsonObject();
-    result.messageJson = root.has(MESSAGE_KEY) ? root.get(MESSAGE_KEY).toString() : null;
-
-    return result;
-  }
-
-  /**
    * Verifies the signature of the envelope against the public key of it's signer.
    *
-   * @param  publicKeyProvider Provider of a public key of this envelope signer.
-   * @return                   True if the message is valid, false otherwise.
+   * @param publicKeyProvider Provider of a public key of this envelope signer.
+   * @return True if the message is valid, false otherwise.
    */
-  public boolean isSignatureValid(final Function<MessageEnvelope<T>, Ed25519PublicKey> publicKeyProvider) {
+  public boolean isSignatureValid(final Function<MessageEnvelope<T>, PublicKey> publicKeyProvider) {
     if (signature == null || messageJson == null) {
       return false;
     }
 
-    Ed25519PublicKey publicKey = publicKeyProvider.apply(this);
+    PublicKey publicKey = publicKeyProvider.apply(this);
     if (publicKey == null) {
       return false;
     }
@@ -198,8 +197,8 @@ public class MessageEnvelope<T extends Message> implements Serializable {
    * If the message is encrypted, the given decrypter will be used first to decrypt it.
    * If the message is not encrypted, it will be immediately returned.
    *
-   * @param  decrypter The function used to decrypt the message.
-   * @return           The message object in a plain mode.
+   * @param decrypter The function used to decrypt the message.
+   * @return The message object in a plain mode.
    */
   public T open(final BiFunction<T, Instant, T> decrypter) {
     if (decryptedMessage != null) {

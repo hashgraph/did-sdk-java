@@ -148,13 +148,13 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageReso
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcStatusResolver.html#HcsVcStatusResolver-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">HcsVcStatusResolver</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcStatusResolver.html#HcsVcStatusResolver-com.hedera.hashgraph.sdk.consensus.TopicId-">HcsVcStatusResolver</a></span>(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId)</code>
 <div class="block">Instantiates a new status resolver for the given VC topic.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcStatusResolver.html#HcsVcStatusResolver-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-java.util.function.Function-">HcsVcStatusResolver</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId,
-                   java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcStatusResolver.html#HcsVcStatusResolver-com.hedera.hashgraph.sdk.consensus.TopicId-java.util.function.Function-">HcsVcStatusResolver</a></span>(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId,
+                   java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
 <div class="block">Instantiates a new status resolver for the given VC topic with signature validation.</div>
 </td>
 </tr>
@@ -209,7 +209,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageReso
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;com.hedera.hashgraph.identity.hcs.<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html" title="class in com.hedera.hashgraph.identity.hcs">MessageResolver</a></h3>
-<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#execute-com.hedera.hashgraph.sdk.mirror.MirrorClient-">execute</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#onDecrypt-java.util.function.BiFunction-">onDecrypt</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#onError-java.util.function.Consumer-">onError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#setTimeout-long-">setTimeout</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#validate-com.hedera.hashgraph.identity.utils.Validator-">validate</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#whenFinished-java.util.function.Consumer-">whenFinished</a></code></li>
+<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#execute-com.hedera.hashgraph.sdk.mirror.client-">execute</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#onDecrypt-java.util.function.BiFunction-">onDecrypt</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#onError-java.util.function.Consumer-">onError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#setTimeout-long-">setTimeout</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#validate-com.hedera.hashgraph.identity.utils.Validator-">validate</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageResolver.html#whenFinished-java.util.function.Consumer-">whenFinished</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -232,13 +232,13 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageReso
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="HcsVcStatusResolver-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
+<a name="HcsVcStatusResolver-com.hedera.hashgraph.sdk.consensus.TopicId-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>HcsVcStatusResolver</h4>
-<pre>public&nbsp;HcsVcStatusResolver(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</pre>
+<pre>public&nbsp;HcsVcStatusResolver(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId)</pre>
 <div class="block">Instantiates a new status resolver for the given VC topic.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -246,14 +246,14 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageReso
 </dl>
 </li>
 </ul>
-<a name="HcsVcStatusResolver-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-java.util.function.Function-">
+<a name="HcsVcStatusResolver-com.hedera.hashgraph.sdk.consensus.TopicId-java.util.function.Function-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>HcsVcStatusResolver</h4>
-<pre>public&nbsp;HcsVcStatusResolver(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId,
-                           java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</pre>
+<pre>public&nbsp;HcsVcStatusResolver(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId,
+                           java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&gt;&gt;&nbsp;publicKeysProvider)</pre>
 <div class="block">Instantiates a new status resolver for the given VC topic with signature validation.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

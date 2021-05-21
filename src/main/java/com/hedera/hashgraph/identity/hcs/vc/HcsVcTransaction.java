@@ -1,15 +1,15 @@
 package com.hedera.hashgraph.identity.hcs.vc;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.hcs.MessageListener;
 import com.hedera.hashgraph.identity.hcs.MessageTransaction;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidMessage;
 import com.hedera.hashgraph.identity.utils.Validator;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
+import com.hedera.hashgraph.sdk.PublicKey;
+import com.hedera.hashgraph.sdk.TopicId;
 import java.util.function.UnaryOperator;
+import java8.util.Lists;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The DID document creation, update or deletion transaction.
@@ -18,7 +18,7 @@ import java.util.function.UnaryOperator;
 public class HcsVcTransaction extends MessageTransaction<HcsVcMessage> {
   private final HcsVcOperation operation;
   private final String credentialHash;
-  private final Ed25519PublicKey signerPublicKey;
+  private final PublicKey signerPublicKey;
 
   /**
    * Instantiates a new transaction object.
@@ -28,8 +28,8 @@ public class HcsVcTransaction extends MessageTransaction<HcsVcMessage> {
    * @param credentialHash  The hash of a credential.
    * @param signerPublicKey Public key of the signer of this operation.
    */
-  public HcsVcTransaction(final ConsensusTopicId topicId, final HcsVcOperation operation,
-      final String credentialHash, final Ed25519PublicKey signerPublicKey) {
+  public HcsVcTransaction(final TopicId topicId, final HcsVcOperation operation,
+                          final String credentialHash, final PublicKey signerPublicKey) {
     super(topicId);
     this.operation = operation;
     this.credentialHash = credentialHash;
@@ -43,8 +43,8 @@ public class HcsVcTransaction extends MessageTransaction<HcsVcMessage> {
    * @param message         The message envelope.
    * @param signerPublicKey Public key of the signer of this operation.
    */
-  public HcsVcTransaction(final ConsensusTopicId topicId, final MessageEnvelope<HcsVcMessage> message,
-      final Ed25519PublicKey signerPublicKey) {
+  public HcsVcTransaction(final TopicId topicId, final MessageEnvelope<HcsVcMessage> message,
+                          final PublicKey signerPublicKey) {
     super(topicId, message);
     this.signerPublicKey = signerPublicKey;
     this.operation = null;
@@ -56,8 +56,8 @@ public class HcsVcTransaction extends MessageTransaction<HcsVcMessage> {
     super.validate(validator);
 
     // If built message was provided credential hash and operation are not mandatory
-    validator.require(!Strings.isNullOrEmpty(credentialHash) || message != null,
-        "Verifiable credential hash is null or empty.");
+    validator.require(!StringUtils.isEmpty(credentialHash) || message != null,
+            "Verifiable credential hash is null or empty.");
     validator.require(operation != null || message != null, "Operation on verifiable credential is not defined.");
   }
 
@@ -67,8 +67,8 @@ public class HcsVcTransaction extends MessageTransaction<HcsVcMessage> {
   }
 
   @Override
-  protected MessageListener<HcsVcMessage> provideTopicListener(final ConsensusTopicId topicIdToListen) {
-    return new HcsVcTopicListener(topicIdToListen, s -> Lists.newArrayList(signerPublicKey));
+  protected MessageListener<HcsVcMessage> provideTopicListener(final TopicId topicIdToListen) {
+    return new HcsVcTopicListener(topicIdToListen, s -> Lists.of(signerPublicKey));
   }
 
   @Override

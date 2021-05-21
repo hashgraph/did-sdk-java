@@ -1,51 +1,31 @@
 package com.hedera.hashgraph.identity.hcs;
 
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
-import com.hedera.hashgraph.sdk.mirror.MirrorClient;
-import com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicQuery;
-import com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse;
-import com.hedera.hashgraph.sdk.mirror.MirrorSubscriptionHandle;
-import io.grpc.Status.Code;
-import io.grpc.StatusRuntimeException;
-import java.time.Instant;
+import com.hedera.hashgraph.sdk.Client;
+import com.hedera.hashgraph.sdk.SubscriptionHandle;
+import com.hedera.hashgraph.sdk.TopicId;
+import com.hedera.hashgraph.sdk.TopicMessage;
+import com.hedera.hashgraph.sdk.TopicMessageQuery;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java8.util.function.BiConsumer;
+import java8.util.function.BiFunction;
+import org.threeten.bp.Instant;
 
 /**
  * A listener of confirmed messages from a HCS identity topic.
  * Messages are received from a given mirror node, parsed and validated.
  */
 public abstract class MessageListener<T extends Message> {
-  protected final ConsensusTopicId topicId;
-  protected final MirrorConsensusTopicQuery query;
+  protected final TopicId topicId;
+  protected final TopicMessageQuery query;
   protected Consumer<Throwable> errorHandler;
   protected boolean ignoreErrors;
   protected BiFunction<byte[], Instant, byte[]> decrypter;
-  protected MirrorSubscriptionHandle subscriptionHandle;
-  protected List<Predicate<MirrorConsensusTopicResponse>> filters;
-  protected BiConsumer<MirrorConsensusTopicResponse, String> invalidMessageHandler;
-
-  /**
-   * Extracts and parses the message inside the response object into the given type.
-   *
-   * @param  response Response message coming from the mirror node for for this listener's topic.
-   * @return          The message inside an envelope.
-   */
-  protected abstract MessageEnvelope<T> extractMessage(final MirrorConsensusTopicResponse response);
-
-  /**
-   * Validates the message and its envelope signature.
-   *
-   * @param  message  The message inside an envelope.
-   * @param  response Response message coming from the mirror node for for this listener's topic.
-   * @return          True if the message is valid, False otherwise.
-   */
-  protected abstract boolean isMessageValid(final MessageEnvelope<T> message,
-      final MirrorConsensusTopicResponse response);
+  protected SubscriptionHandle subscriptionHandle;
+  protected List<Predicate<TopicMessage>> filters;
+  protected BiConsumer<TopicMessage, String> invalidMessageHandler;
 
   /**
    * Creates a new instance of a topic listener for the given consensus topic.
@@ -53,21 +33,39 @@ public abstract class MessageListener<T extends Message> {
    *
    * @param topicId The consensus topic ID.
    */
-  public MessageListener(final ConsensusTopicId topicId) {
+  public MessageListener(final TopicId topicId) {
     this.topicId = topicId;
-    this.query = new MirrorConsensusTopicQuery().setTopicId(topicId);
+    this.query = new TopicMessageQuery().setTopicId(topicId);
     this.ignoreErrors = false;
 
   }
 
   /**
+   * Extracts and parses the message inside the response object into the given type.
+   *
+   * @param response Response message coming from the mirror node for for this listener's topic.
+   * @return The message inside an envelope.
+   */
+  protected abstract MessageEnvelope<T> extractMessage(final TopicMessage response);
+
+  /**
+   * Validates the message and its envelope signature.
+   *
+   * @param message  The message inside an envelope.
+   * @param response Response message coming from the mirror node for for this listener's topic.
+   * @return True if the message is valid, False otherwise.
+   */
+  protected abstract boolean isMessageValid(final MessageEnvelope<T> message,
+                                            final TopicMessage response);
+
+  /**
    * Adds a custom filter for topic responses from a mirror node.
    * Messages that do not pass the test are skipped before any other checks are run.
    *
-   * @param  filter The filter function.
-   * @return        This listener instance.
+   * @param filter The filter function.
+   * @return This listener instance.
    */
-  public MessageListener<T> addFilter(final Predicate<MirrorConsensusTopicResponse> filter) {
+  public MessageListener<T> addFilter(final Predicate<TopicMessage> filter) {
     if (filters == null) {
       filters = new ArrayList<>();
     }
@@ -79,15 +77,15 @@ public abstract class MessageListener<T extends Message> {
   /**
    * Subscribes to mirror node topic messages stream.
    *
-   * @param  mirrorClient Mirror client instance.
-   * @param  receiver     Receiver of parsed messages.
-   * @return              This listener instance.
+   * @param client   Mirror client instance.
+   * @param receiver Receiver of parsed messages.
+   * @return This listener instance.
    */
-  public MessageListener<T> subscribe(final MirrorClient mirrorClient, final Consumer<MessageEnvelope<T>> receiver) {
+  public MessageListener<T> subscribe(final Client client, final Consumer<MessageEnvelope<T>> receiver) {
     subscriptionHandle = query.subscribe(
-        mirrorClient,
-        resp -> handleResponse(resp, receiver),
-        err -> handleError(err));
+      client,
+      resp -> handleResponse(resp, receiver)
+    );
 
     return this;
   }
@@ -107,12 +105,12 @@ public abstract class MessageListener<T extends Message> {
    * @param response Response message coming from the mirror node for the topic.
    * @param receiver Consumer of the result message.
    */
-  protected void handleResponse(final MirrorConsensusTopicResponse response,
-      final Consumer<MessageEnvelope<T>> receiver) {
+  protected void handleResponse(final TopicMessage response,
+                                final Consumer<MessageEnvelope<T>> receiver) {
 
     // Run external filters first
     if (filters != null) {
-      for (Predicate<MirrorConsensusTopicResponse> filter : filters) {
+      for (Predicate<TopicMessage> filter : filters) {
         if (!filter.test(response)) {
           reportInvalidMessage(response, "Message was rejected by external filter");
           return;
@@ -145,16 +143,17 @@ public abstract class MessageListener<T extends Message> {
    * If external error handler is defined, passes the error there, otherwise raises RuntimeException or ignores it
    * depending on a ignoreErrors flag.
    *
-   * @param  err              The error.
+   * @param err The error.
    * @throws RuntimeException Runtime exception with the given error in case external error handler is not defined
    *                          and errors were not requested to be ignored.
    */
   protected void handleError(final Throwable err) {
     // Ignore Status cancelled error. It happens on unsubscribe.
-    if (err instanceof StatusRuntimeException
-        && Code.CANCELLED.equals(((StatusRuntimeException) err).getStatus().getCode())) {
-      return;
-    }
+    //TODO: Review below
+    //    if (err instanceof StatusRuntimeException
+    //        && Code.CANCELLED.equals(((StatusRuntimeException) err).getStatus().getCode())) {
+    //      return;
+    //    }
 
     if (errorHandler != null) {
       errorHandler.accept(err);
@@ -169,7 +168,7 @@ public abstract class MessageListener<T extends Message> {
    * @param response The mirror response.
    * @param reason   The reason why message validation failed.
    */
-  protected void reportInvalidMessage(final MirrorConsensusTopicResponse response, final String reason) {
+  protected void reportInvalidMessage(final TopicMessage response, final String reason) {
     if (invalidMessageHandler != null) {
       invalidMessageHandler.accept(response, reason);
     }
@@ -178,8 +177,8 @@ public abstract class MessageListener<T extends Message> {
   /**
    * Defines a handler for errors when they happen during execution.
    *
-   * @param  handler The error handler.
-   * @return         This transaction instance.
+   * @param handler The error handler.
+   * @return This transaction instance.
    */
   public MessageListener<T> onError(final Consumer<Throwable> handler) {
     this.errorHandler = handler;
@@ -191,10 +190,10 @@ public abstract class MessageListener<T extends Message> {
    * The first parameter of the handler is the mirror response.
    * The second parameter is the reason why the message failed validation (if available).
    *
-   * @param  handler The invalid message handler.
-   * @return         This transaction instance.
+   * @param handler The invalid message handler.
+   * @return This transaction instance.
    */
-  public MessageListener<T> onInvalidMessageReceived(final BiConsumer<MirrorConsensusTopicResponse, String> handler) {
+  public MessageListener<T> onInvalidMessageReceived(final BiConsumer<TopicMessage, String> handler) {
     this.invalidMessageHandler = handler;
     return this;
   }
@@ -204,8 +203,8 @@ public abstract class MessageListener<T extends Message> {
    * Decryption function must accept a byte array of encrypted message and an Instant that is its consensus timestamp,
    * If decrypter is not specified, encrypted messages will be ignored.
    *
-   * @param  decrypter The decryption function to use.
-   * @return           This transaction instance.
+   * @param decrypter The decryption function to use.
+   * @return This transaction instance.
    */
   public MessageListener<T> onDecrypt(final BiFunction<byte[], Instant, byte[]> decrypter) {
     this.decrypter = decrypter;

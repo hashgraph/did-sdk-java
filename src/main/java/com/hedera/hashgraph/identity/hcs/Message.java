@@ -2,9 +2,8 @@ package com.hedera.hashgraph.identity.hcs;
 
 import com.google.gson.annotations.Expose;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
-
 import java.io.Serializable;
-import java.time.Instant;
+import org.threeten.bp.Instant;
 
 public abstract class Message implements Serializable {
 

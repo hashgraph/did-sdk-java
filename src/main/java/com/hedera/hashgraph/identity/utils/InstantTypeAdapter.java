@@ -9,11 +9,11 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.TemporalAccessor;
 import java.util.Iterator;
+import org.threeten.bp.Instant;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.DateTimeParseException;
+import org.threeten.bp.temporal.TemporalAccessor;
 
 /**
  * Gson type adapter for {@link Instant} type and configurable date/time string format.
@@ -31,7 +31,7 @@ public class InstantTypeAdapter extends TypeAdapter<Instant> {
    * @param inputDateTimeParsers Date/time parsers list.
    */
   public InstantTypeAdapter(final DateTimeFormatter dateTimeFormatter,
-      final Iterable<DateTimeFormatter> inputDateTimeParsers) {
+                            final Iterable<DateTimeFormatter> inputDateTimeParsers) {
     this.outputDateTimeFormatter = checkNotNull(dateTimeFormatter);
     Iterator<DateTimeFormatter> parsers = inputDateTimeParsers.iterator();
     checkArgument(parsers.hasNext(), "input parsers list must be nonempty");
@@ -62,8 +62,8 @@ public class InstantTypeAdapter extends TypeAdapter<Instant> {
   /**
    * Parses the given string into {@link Instant} object.
    *
-   * @param  instantStr               Instant as string.
-   * @return                          {@link Instant} object.
+   * @param instantStr Instant as string.
+   * @return {@link Instant} object.
    * @throws IllegalArgumentException In case parsing fails.
    */
   protected Instant parse(final String instantStr) {

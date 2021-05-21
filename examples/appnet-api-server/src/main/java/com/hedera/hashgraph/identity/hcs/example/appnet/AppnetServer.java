@@ -10,26 +10,24 @@ import com.hedera.hashgraph.identity.hcs.example.appnet.handlers.DemoHandler;
 import com.hedera.hashgraph.identity.hcs.example.appnet.handlers.DidHandler;
 import com.hedera.hashgraph.identity.hcs.example.appnet.handlers.VcHandler;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcMessage;
+import com.hedera.hashgraph.sdk.AccountId;
 import com.hedera.hashgraph.sdk.Client;
+import com.hedera.hashgraph.sdk.FileId;
 import com.hedera.hashgraph.sdk.Hbar;
-import com.hedera.hashgraph.sdk.HederaNetworkException;
-import com.hedera.hashgraph.sdk.HederaStatusException;
-import com.hedera.hashgraph.sdk.account.AccountId;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
-import com.hedera.hashgraph.sdk.file.FileId;
-import com.hedera.hashgraph.sdk.mirror.MirrorClient;
+import com.hedera.hashgraph.sdk.PrecheckStatusException;
+import com.hedera.hashgraph.sdk.PrivateKey;
+import com.hedera.hashgraph.sdk.PublicKey;
+import com.hedera.hashgraph.sdk.ReceiptStatusException;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.grpc.Status.Code;
 import io.grpc.StatusRuntimeException;
-
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ratpack.http.MutableHeaders;
 import ratpack.server.RatpackServer;
 
 /**
@@ -41,11 +39,9 @@ import ratpack.server.RatpackServer;
  * All messages submitted to the same topic in the past are ignored.
  */
 public class AppnetServer {
-  private static Logger log = LoggerFactory.getLogger(AppnetServer.class);
   private static final int SERVER_PORT = 5050;
-
+  private static Logger log = LoggerFactory.getLogger(AppnetServer.class);
   private Client client;
-  private MirrorClient mirrorClient;
 
   private HcsIdentityNetwork identityNetwork;
 
@@ -53,7 +49,6 @@ public class AppnetServer {
   private VcHandler vcHandler;
   private DemoHandler demoHandler;
 
-  private RatpackServer apiServer;
   private AppnetStorage storage;
   private MessageListener<HcsDidMessage> didListener;
   private MessageListener<HcsVcMessage> vcListener;
@@ -98,7 +93,7 @@ public class AppnetServer {
    * This application uses only in-memory storage for demonstration purposes.
    * Upon server shutdown all data is lost.
    */
-  private void initStorageAndTopicListeners() {
+  private void initStorageAndTopicListeners() throws IOException, ClassNotFoundException {
     log.info("Initializing storage and topic listeners...");
     storage = new AppnetStorage();
 
@@ -118,25 +113,25 @@ public class AppnetServer {
     }
 
     didListener = identityNetwork.getDidTopicListener()
-        .setStartTime(storage.getLastDiDConsensusTimeStamp().plusNanos(1))
-        .onInvalidMessageReceived((resp, reason) -> {
-          log.warn("Invalid message received from DID topic: " + reason);
-          log.warn(new String(resp.message, StandardCharsets.UTF_8));
-        })
-        .onError(e -> {
-          Code code = null;
-          if (e instanceof StatusRuntimeException) {
-            code = ((StatusRuntimeException) e).getStatus().getCode();
-          }
+            .setStartTime(storage.getLastDiDConsensusTimeStamp().plusNanos(1))
+            .onInvalidMessageReceived((resp, reason) -> {
+              log.warn("Invalid message received from DID topic: " + reason);
+              log.warn(new String(resp.contents, StandardCharsets.UTF_8));
+            })
+            .onError(e -> {
+              Code code = null;
+              if (e instanceof StatusRuntimeException) {
+                code = ((StatusRuntimeException) e).getStatus().getCode();
+              }
 
-          if (Code.UNAVAILABLE.equals(code)) {
-            // Restart if listener crashed.
-            startDidTopicListener();
-          } else {
-            log.error("Error while processing message from DID topic: ", e);
-          }
-        })
-        .subscribe(mirrorClient, envelope -> storage.storeDid(envelope));
+              if (Code.UNAVAILABLE.equals(code)) {
+                // Restart if listener crashed.
+                startDidTopicListener();
+              } else {
+                log.error("Error while processing message from DID topic: ", e);
+              }
+            })
+            .subscribe(client, envelope -> storage.storeDid(envelope));
   }
 
   /**
@@ -151,25 +146,25 @@ public class AppnetServer {
     }
 
     vcListener = identityNetwork.getVcTopicListener(vc -> storage.getAcceptableCredentialHashPublicKeys(vc))
-        .setStartTime(storage.getLastVCConsensusTimeStamp().plusNanos(1))
-        .onInvalidMessageReceived((resp, reason) -> {
-          log.warn("Invalid message received from VC topic: " + reason);
-          log.warn(new String(resp.message, StandardCharsets.UTF_8));
-        })
-        .onError(e -> {
-          Code code = null;
-          if (e instanceof StatusRuntimeException) {
-            code = ((StatusRuntimeException) e).getStatus().getCode();
-          }
+            .setStartTime(storage.getLastVCConsensusTimeStamp().plusNanos(1))
+            .onInvalidMessageReceived((resp, reason) -> {
+              log.warn("Invalid message received from VC topic: " + reason);
+              log.warn(new String(resp.contents, StandardCharsets.UTF_8));
+            })
+            .onError(e -> {
+              Code code = null;
+              if (e instanceof StatusRuntimeException) {
+                code = ((StatusRuntimeException) e).getStatus().getCode();
+              }
 
-          if (Code.UNAVAILABLE.equals(code)) {
-            // Restart if listener crashed.
-            startVcTopicListener();
-          } else {
-            log.error("Error while processing message from VC topic: ", e);
-          }
-        })
-        .subscribe(mirrorClient, envelope -> storage.storeVcStatus(envelope));
+              if (Code.UNAVAILABLE.equals(code)) {
+                // Restart if listener crashed.
+                startVcTopicListener();
+              } else {
+                log.error("Error while processing message from VC topic: ", e);
+              }
+            })
+            .subscribe(client, envelope -> storage.storeVcStatus(envelope));
   }
 
   /**
@@ -188,41 +183,42 @@ public class AppnetServer {
    * @throws Exception In case startup failed.
    */
   private void startApiServer() throws Exception {
-    apiServer = RatpackServer.start(server -> server
-        .serverConfig(b -> b.port(SERVER_PORT).registerShutdownHook(true).findBaseDir())
-        .handlers(chain -> chain
-            .all(new CommonHeaders())
-            .get(ctx -> ctx.render("This is an example appnet API server.\n"
-                + "Please refer to documentation for more details about available APIs."))
+    RatpackServer.start(server -> server
+            .serverConfig(b -> b.port(SERVER_PORT).registerShutdownHook(true).findBaseDir())
+            .handlers(chain -> chain
+                    .all(new CommonHeaders())
+                    .get(ctx -> ctx.render("This is an example appnet API server.\n"
+                            + "Please refer to documentation for more details about available APIs."))
 
-            // REST API endpoints for DID
-            .path("did", ctx ->
-              ctx.byMethod(m -> m
-                .post(() -> didHandler.create(ctx))
-                .put(() -> didHandler.update(ctx))
-                .delete(() -> didHandler.delete(ctx)))
-            )
-            .post("did-resolve", ctx -> didHandler.resolve(ctx))
-            .post("did-submit", ctx -> didHandler.submit(ctx, client, mirrorClient))
+                    // REST API endpoints for DID
+                    .path("did", ctx ->
+                            ctx.byMethod(m -> m
+                                    .post(() -> didHandler.create(ctx))
+                                    .put(() -> didHandler.update(ctx))
+                                    .delete(() -> didHandler.delete(ctx)))
+                    )
+                    .post("did-resolve", ctx -> didHandler.resolve(ctx))
+                    .post("did-submit", ctx -> didHandler.submit(ctx, client))
 
-            // REST API endpoints for VC
-            .path("vc/:credentialHash", ctx -> ctx.byMethod(m -> m
-                .post(() -> vcHandler.issue(ctx))
-                .put(() -> vcHandler.suspend(ctx))
-                .patch(() -> vcHandler.resume(ctx))
-                .delete(() -> vcHandler.revoke(ctx))
-                .get(() -> vcHandler.resolveVcStatus(ctx))))
-            .post("vc-submit", ctx -> vcHandler.submit(ctx, client, mirrorClient))
+                    // REST API endpoints for VC
+                    .path("vc/:credentialHash", ctx -> ctx.byMethod(m -> m
+                            .post(() -> vcHandler.issue(ctx))
+                            .put(() -> vcHandler.suspend(ctx))
+                            .patch(() -> vcHandler.resume(ctx))
+                            .delete(() -> vcHandler.revoke(ctx))
+                            .get(() -> vcHandler.resolveVcStatus(ctx))))
+                    .post("vc-submit", ctx -> vcHandler.submit(ctx, client))
 
-            // REST API endpoints for demo functions that in a normal environment would be run on the client side.
-            .post("demo/generate-did", ctx -> demoHandler.generateDid(ctx))
-            .post("demo/sign-did-message", ctx -> demoHandler.signDidMessage(ctx))
-            .post("demo/generate-driving-license", ctx -> demoHandler.generateDrivingLicense(ctx))
-            .post("demo/sign-vc-message", ctx -> demoHandler.signVcMessage(ctx))
-            .post("demo/get-credential-hash", ctx -> demoHandler.determineCredentialHash(ctx))
+                    // REST API endpoints for demo functions that in a normal environment
+                    // would be run on the client side.
+                    .post("demo/generate-did", ctx -> demoHandler.generateDid(ctx))
+                    .post("demo/sign-did-message", ctx -> demoHandler.signDidMessage(ctx))
+                    .post("demo/generate-driving-license", ctx -> demoHandler.generateDrivingLicense(ctx))
+                    .post("demo/sign-vc-message", ctx -> demoHandler.signVcMessage(ctx))
+                    .post("demo/get-credential-hash", ctx -> demoHandler.determineCredentialHash(ctx))
 
-            // Schema files
-            .files(f -> f.dir("schemas").files("driving-license-schema.json"))
+                    // Schema files
+                    .files(f -> f.dir("schemas").files("driving-license-schema.json"))
 
             ));
   }
@@ -245,8 +241,8 @@ public class AppnetServer {
         client.close();
       }
 
-      if (mirrorClient != null) {
-        mirrorClient.close();
+      if (client != null) {
+        client.close();
       }
     } catch (Exception e) {
       log.error("Error during shutdown: ", e);
@@ -262,49 +258,48 @@ public class AppnetServer {
    * - address book in Hedera File Service
    * - DID topic in HCS
    * - VC topic in HCS
-   *
-   * @throws HederaNetworkException In case communication with Hedera network fails.
-   * @throws HederaStatusException  In case setting up identity network artifacts fail.
    */
-  private void initHederaIdentityNetwork() throws HederaNetworkException, HederaStatusException, FileNotFoundException {
+  private void initHederaIdentityNetwork()
+          throws InterruptedException, ReceiptStatusException, PrecheckStatusException, TimeoutException {
     log.info("Initializing identity network...");
     Dotenv dotenv = Dotenv.configure().load();
-
-    // Grab the OPERATOR_ID and OPERATOR_KEY from environment variable
-    final AccountId operatorId = AccountId.fromString(Objects.requireNonNull(dotenv.get("OPERATOR_ID")));
-    final Ed25519PrivateKey operatorKey = Ed25519PrivateKey
-        .fromString(Objects.requireNonNull(dotenv.get("OPERATOR_KEY")));
 
     // Grab the network to use from environment variables
     final String network = Objects.requireNonNull(dotenv.get("NETWORK"));
 
     // Build Hedera testnet client
-    client = Client.fromFile(network.concat(".json"));
-
-    // Set the operator account ID and operator private key
-    client.setOperator(operatorId, operatorKey);
 
     // Grab the desired mirror from environment variables
     final String mirrorProvider = Objects.requireNonNull(dotenv.get("MIRROR_PROVIDER"));
 
     // Grab the mirror node address MIRROR_NODE_ADDRESS from environment variable
     String mirrorNodeAddress = "hcs." + network + ".mirrornode.hedera.com:5600";
-    if (mirrorProvider.equals("kabuto")) {
+    if ("kabuto".equals(mirrorProvider)) {
       switch (network) {
         case "mainnet":
+          client = Client.forMainnet();
           mirrorNodeAddress = "api.kabuto.sh:50211";
           break;
         case "testnet":
+          client = Client.forTestnet();
           mirrorNodeAddress = "api.testnet.kabuto.sh:50211";
           break;
-        case "previewnet":
+        default:
           log.error("invalid previewnet network for Kabuto, please edit .env file");
-          System.exit(1);
+          throw new RuntimeException("invalid previewnet network for Kabuto, please edit .env file");
       }
     }
 
+    // Grab the OPERATOR_ID and OPERATOR_KEY from environment variable
+    final AccountId operatorId = AccountId.fromString(Objects.requireNonNull(dotenv.get("OPERATOR_ID")));
+    final PrivateKey operatorKey = PrivateKey
+            .fromString(Objects.requireNonNull(dotenv.get("OPERATOR_KEY")));
+
+    // Set the operator account ID and operator private key
+    client.setOperator(operatorId, operatorKey);
+
     // Build the mirror node client
-    mirrorClient = new MirrorClient(mirrorNodeAddress);
+    client.setMirrorNetwork(List.of(mirrorNodeAddress));
 
     // If identity network is provided as environment variable read from there, otherwise setup new one:
     String abJson = dotenv.get("EXISTING_ADDRESS_BOOK_JSON");
@@ -312,7 +307,7 @@ public class AppnetServer {
     if (Strings.isNullOrEmpty(abJson)) {
       if (Strings.isNullOrEmpty(abFileId)) {
         // no file, no JSON, create from new
-        setupIdentityNetwork(network, operatorKey.publicKey);
+        setupIdentityNetwork(network, operatorKey.getPublicKey());
       } else {
         // We have a file ID, load from the network
         identityNetwork = HcsIdentityNetwork.fromAddressBookFile(client, network, FileId.fromString(abFileId));
@@ -335,13 +330,14 @@ public class AppnetServer {
    * - DID topic in HCS
    * - VC topic in HCS
    *
-   * @param  publicKey              Public key of the account operator.
-   * @param  network                The network to use
-   * @throws HederaNetworkException In case communication with Hedera network fails.
-   * @throws HederaStatusException  In case setting up identity network artifacts fail.
+   * @param publicKey Public key of the account operator.
+   * @param network   The network to use
+   * @throws PrecheckStatusException in the event the transaction is not validated by the node
+   * @throws ReceiptStatusException  in the event a receipt contains an error
+   * @throws TimeoutException        in the event the client cannot connect to the network in a timely manner
    */
-  private void setupIdentityNetwork(final String network, final Ed25519PublicKey publicKey)
-      throws HederaNetworkException, HederaStatusException {
+  private void setupIdentityNetwork(final String network, final PublicKey publicKey)
+          throws PrecheckStatusException, ReceiptStatusException, TimeoutException {
     log.info("Setting up new identity network...");
     final Hbar fee = new Hbar(2);
     final String appnetName = "Example appnet using Hedera Identity SDK";
@@ -350,33 +346,21 @@ public class AppnetServer {
     final String vcTopicMemo = "Example appnet VC topic";
 
     identityNetwork = new HcsIdentityNetworkBuilder()
-        .setNetwork(network)
-        .setAppnetName(appnetName)
-        .addAppnetDidServer(didServerUrl)
-        .buildAndSignAddressBookCreateTransaction(tx -> tx
-            .addKey(publicKey)
+            .setNetwork(network)
+            .setAppnetName(appnetName)
+            .addAppnetDidServer(didServerUrl)
+            .setPublicKey(publicKey)
             .setMaxTransactionFee(fee)
-            .build(client))
-        .buildAndSignDidTopicCreateTransaction(tx -> tx
-            .setAdminKey(publicKey)
-            .setMaxTransactionFee(fee)
-            // .setSubmitKey(operatorKey.publicKey)
-            .setTopicMemo(didTopicMemo)
-            .build(client))
-        .buildAndSignVcTopicCreateTransaction(tx -> tx
-            .setAdminKey(publicKey)
-            .setMaxTransactionFee(fee)
-            // .setSubmitKey(operatorKey.publicKey)
-            .setTopicMemo(vcTopicMemo)
-            .build(client))
-        .execute(client);
+            .setDidTopicMemo(didTopicMemo)
+            .setVCTopicMemo(vcTopicMemo)
+            .execute(client);
 
     log.info("New identity network created: " + appnetName);
     log.info("Sleeping 10s to allow propagation of new topics to mirror node");
     try {
-      Thread.sleep(10000);
+      Thread.sleep(10_000);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      log.error(e.getMessage());
     }
   }
 }

@@ -1,6 +1,5 @@
 package com.hedera.hashgraph.identity.hcs;
 
-import static java.security.SecureRandom.getInstanceStrong;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -8,23 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.base.Charsets;
 import com.hedera.hashgraph.identity.hcs.did.HcsDid;
-import com.hedera.hashgraph.sdk.Client;
-import com.hedera.hashgraph.sdk.Hbar;
-import com.hedera.hashgraph.sdk.HederaNetworkException;
-import com.hedera.hashgraph.sdk.HederaStatusException;
-import com.hedera.hashgraph.sdk.LocalValidationException;
-import com.hedera.hashgraph.sdk.account.AccountId;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicInfo;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicInfoQuery;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
-import com.hedera.hashgraph.sdk.file.FileCreateTransaction;
-import com.hedera.hashgraph.sdk.file.FileId;
+import com.hedera.hashgraph.identity.utils.MirrorNodeAddress;
+import com.hedera.hashgraph.sdk.*;
+import com.sun.tools.javac.util.List;
 import io.github.cdimascio.dotenv.Dotenv;
 
-import java.io.FileNotFoundException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -39,74 +30,65 @@ public class HcsIdentityNetworkTest {
 
   private Client client;
   private AccountId operatorId;
-  private Ed25519PrivateKey operatorKey;
+  private PrivateKey operatorKey;
   private FileId addressBookFileId;
   private String network;
+
   /**
    * Initialize hedera clients and accounts.
    */
   @BeforeAll
-  void setup() throws LocalValidationException, HederaNetworkException, HederaStatusException, FileNotFoundException {
+  void setup() throws Exception {
     Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
 
     // Grab the OPERATOR_ID and OPERATOR_KEY from environment variable
     operatorId = AccountId.fromString(Objects.requireNonNull(dotenv.get("OPERATOR_ID")));
-    operatorKey = Ed25519PrivateKey.fromString(Objects.requireNonNull(dotenv.get("OPERATOR_KEY")));
+    operatorKey = PrivateKey.fromString(Objects.requireNonNull(dotenv.get("OPERATOR_KEY")));
 
     // Grab the network to use from environment variables
     network = Objects.requireNonNull(dotenv.get("NETWORK"));
 
     // Build Hedera testnet client
-    client = Client.fromFile(network.concat(".json"));
+    client = Client.forTestnet();
+    client.setMirrorNetwork(List.of(MirrorNodeAddress.getAddress()));
 
     // Set the operator account ID and operator private key
     client.setOperator(operatorId, operatorKey);
 
     // Create address book file
-    addressBookFileId = new FileCreateTransaction()
-        .setContents(ADDRESS_BOOK_JSON.getBytes(Charsets.UTF_8))
-        .addKey(operatorKey.publicKey)
-        .setMaxTransactionFee(FEE)
-        .build(client)
-        .execute(client)
-        .getReceipt(client)
-        .getFileId();
+    TransactionResponse response = new FileCreateTransaction()
+            .setContents(ADDRESS_BOOK_JSON.getBytes(Charsets.UTF_8))
+            .setKeys(operatorKey.getPublicKey())
+            .setMaxTransactionFee(FEE)
+            .execute(client);
+    TransactionReceipt receipt = response.getReceipt(client);
+
+    addressBookFileId = receipt.fileId;
   }
 
   /**
    * Tests creation of a new identity network.
    *
-   * @throws HederaStatusException  In case querying Hedera File Service fails.
-   * @throws HederaNetworkException In case of querying Hedera File Service fails due to transport calls.
+   * @throws PrecheckStatusException In case a transaction fails precheck.
+   * @throws ReceiptStatusException  In case a receipt contains an error.
+   * @throws TimeoutException        In case the client fails to communicate with the network in a timely manner
    */
   @Test
-  void testCreateIdentityNetwork() throws HederaStatusException, HederaNetworkException {
+  void testCreateIdentityNetwork() throws PrecheckStatusException, ReceiptStatusException, TimeoutException {
     final String appnetName = "Test Identity SDK appnet";
     final String didServerUrl = "http://localhost:3000/api/v1";
     final String didTopicMemo = "Test Identity SDK appnet DID topic";
     final String vcTopicMemo = "Test Identity SDK appnet VC topic";
 
     HcsIdentityNetwork didNetwork = new HcsIdentityNetworkBuilder()
-        .setNetwork(network)
-        .setAppnetName(appnetName)
-        .addAppnetDidServer(didServerUrl)
-        .buildAndSignAddressBookCreateTransaction(tx -> tx
-            .addKey(operatorKey.publicKey)
+            .setNetwork(network)
+            .setAppnetName(appnetName)
+            .addAppnetDidServer(didServerUrl)
+            .setPublicKey(operatorKey.getPublicKey())
             .setMaxTransactionFee(FEE)
-            .build(client))
-        .buildAndSignDidTopicCreateTransaction(tx -> tx
-            .setAdminKey(operatorKey.publicKey)
-            .setMaxTransactionFee(FEE)
-            // .setSubmitKey(operatorKey.publicKey)
-            .setTopicMemo(didTopicMemo)
-            .build(client))
-        .buildAndSignVcTopicCreateTransaction(tx -> tx
-            .setAdminKey(operatorKey.publicKey)
-            .setMaxTransactionFee(FEE)
-            // .setSubmitKey(operatorKey.publicKey)
-            .setTopicMemo(vcTopicMemo)
-            .build(client))
-        .execute(client);
+            .setDidTopicMemo(didTopicMemo)
+            .setVCTopicMemo(vcTopicMemo)
+            .execute(client);
 
     assertNotNull(didNetwork);
     assertNotNull(didNetwork.getAddressBook());
@@ -123,24 +105,24 @@ public class HcsIdentityNetworkTest {
     // Test if HCS topics exist.
 
     // DID topic
-    ConsensusTopicInfo didTopicInfo = new ConsensusTopicInfoQuery()
-        .setTopicId(didNetwork.getDidTopicId())
-        .execute(client);
+    TopicInfo didTopicInfo = new TopicInfoQuery()
+            .setTopicId(didNetwork.getDidTopicId())
+            .execute(client);
 
     assertNotNull(didTopicInfo);
     assertEquals(didTopicInfo.topicMemo, didTopicMemo);
 
     // VC topic
-    ConsensusTopicInfo vcTopicInfo = new ConsensusTopicInfoQuery()
-        .setTopicId(didNetwork.getVcTopicId())
-        .execute(client);
+    TopicInfo vcTopicInfo = new TopicInfoQuery()
+            .setTopicId(didNetwork.getVcTopicId())
+            .execute(client);
 
     assertNotNull(vcTopicInfo);
     assertEquals(vcTopicInfo.topicMemo, vcTopicMemo);
 
     // Test if address book file was created
     HcsIdentityNetwork createdNetwork = HcsIdentityNetwork.fromAddressBookFile(client, network,
-        addressBook.getFileId());
+            addressBook.getFileId());
     assertNotNull(createdNetwork);
     assertEquals(addressBook.toJson(), createdNetwork.getAddressBook().toJson());
   }
@@ -156,9 +138,9 @@ public class HcsIdentityNetworkTest {
   }
 
   @Test
-  void testInitNetworkFromDid() throws HederaNetworkException, HederaStatusException {
+  void testInitNetworkFromDid() throws TimeoutException, PrecheckStatusException {
     // Generate HcsDid
-    HcsDid did = new HcsDid(network, HcsDid.generateDidRootKey().publicKey, addressBookFileId);
+    HcsDid did = new HcsDid(network, HcsDid.generateDidRootKey().getPublicKey(), addressBookFileId);
 
     // Initialize network from this DID, reading address book file from Hedera File Service
     HcsIdentityNetwork didNetwork = HcsIdentityNetwork.fromHcsDid(client, did);
@@ -169,7 +151,7 @@ public class HcsIdentityNetworkTest {
     assertEquals(ADDRESS_BOOK_JSON, didNetwork.getAddressBook().toJson());
   }
 
-  void checkTestGenerateDidForNetwork(HcsDid did, Ed25519PublicKey publicKey, String didTopicId, boolean withTid) {
+  void checkTestGenerateDidForNetwork(HcsDid did, PublicKey publicKey, String didTopicId, boolean withTid) {
     assertNotNull(did);
     assertEquals(HcsDid.publicKeyToIdString(publicKey), did.getIdString());
     assertEquals(did.getNetwork(), network);
@@ -191,35 +173,35 @@ public class HcsIdentityNetworkTest {
     HcsDid did = didNetwork.generateDid(true);
     assertTrue(did.getPrivateDidRootKey().isPresent());
 
-    Ed25519PublicKey publicKey = did.getPrivateDidRootKey().orElseThrow(() -> new NullPointerException()).publicKey;
+    PublicKey publicKey = did.getPrivateDidRootKey().orElseThrow(() -> new NullPointerException()).getPublicKey();
     checkTestGenerateDidForNetwork(did, publicKey, addressBook.getDidTopicId(), true);
 
     // Random DID without tid parameter
     did = didNetwork.generateDid(false);
     assertTrue(did.getPrivateDidRootKey().isPresent());
 
-    publicKey = did.getPrivateDidRootKey().orElseThrow(() -> new NullPointerException()).publicKey;
+    publicKey = did.getPrivateDidRootKey().orElseThrow(() -> new NullPointerException()).getPublicKey();
     checkTestGenerateDidForNetwork(did, publicKey, addressBook.getDidTopicId(), false);
 
     // Secure Random DID with tid parameter
-    did = didNetwork.generateDid(getInstanceStrong(), true);
+    did = didNetwork.generateDid(true);
     assertTrue(did.getPrivateDidRootKey().isPresent());
-    publicKey = did.getPrivateDidRootKey().orElseThrow(() -> new NullPointerException()).publicKey;
+    publicKey = did.getPrivateDidRootKey().orElseThrow(() -> new NullPointerException()).getPublicKey();
     checkTestGenerateDidForNetwork(did, publicKey, addressBook.getDidTopicId(), true);
 
     // Secure Random DID without tid parameter
-    did = didNetwork.generateDid(getInstanceStrong(), false);
+    did = didNetwork.generateDid(false);
     assertTrue(did.getPrivateDidRootKey().isPresent());
-    publicKey = did.getPrivateDidRootKey().orElseThrow(() -> new NullPointerException()).publicKey;
+    publicKey = did.getPrivateDidRootKey().orElseThrow(() -> new NullPointerException()).getPublicKey();
     checkTestGenerateDidForNetwork(did, publicKey, addressBook.getDidTopicId(), false);
 
     // From existing public key with tid parameter.
-    publicKey = HcsDid.generateDidRootKey().publicKey;
+    publicKey = HcsDid.generateDidRootKey().getPublicKey();
     did = didNetwork.generateDid(publicKey, true);
     checkTestGenerateDidForNetwork(did, publicKey, addressBook.getDidTopicId(), true);
 
     // From existing public key without tid parameter.
-    publicKey = HcsDid.generateDidRootKey().publicKey;
+    publicKey = HcsDid.generateDidRootKey().getPublicKey();
     did = didNetwork.generateDid(publicKey, false);
     checkTestGenerateDidForNetwork(did, publicKey, addressBook.getDidTopicId(), false);
   }

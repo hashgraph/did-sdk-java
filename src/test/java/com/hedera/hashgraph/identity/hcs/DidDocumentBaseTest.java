@@ -13,8 +13,8 @@ import com.hedera.hashgraph.identity.DidDocumentJsonProperties;
 import com.hedera.hashgraph.identity.DidSyntax;
 import com.hedera.hashgraph.identity.hcs.did.HcsDid;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
-import com.hedera.hashgraph.sdk.file.FileId;
+import com.hedera.hashgraph.sdk.PrivateKey;
+import com.hedera.hashgraph.sdk.FileId;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bitcoinj.core.Base58;
 import org.junit.jupiter.api.Test;
@@ -33,8 +33,8 @@ public class DidDocumentBaseTest {
 
   @Test
   public void testSerialization() {
-    Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(network, privateKey.publicKey, FileId.fromString("0.0.1"));
+    PrivateKey privateKey = HcsDid.generateDidRootKey();
+    HcsDid did = new HcsDid(network, privateKey.getPublicKey(), FileId.fromString("0.0.1"));
     DidDocumentBase doc = did.generateDidDocument();
 
     String didJson = doc.toJson();
@@ -53,15 +53,15 @@ public class DidDocumentBaseTest {
     JsonObject didRootKey = root.getAsJsonArray(DidDocumentJsonProperties.PUBLIC_KEY).get(0).getAsJsonObject();
     assertEquals(didRootKey.get("type").getAsString(), HcsDidRootKey.DID_ROOT_KEY_TYPE);
     assertEquals(didRootKey.get(DidDocumentJsonProperties.ID).getAsString(),
-        did.toDid() + HcsDidRootKey.DID_ROOT_KEY_NAME);
+            did.toDid() + HcsDidRootKey.DID_ROOT_KEY_NAME);
     assertEquals(didRootKey.get("controller").getAsString(), did.toDid());
-    assertEquals(didRootKey.get("publicKeyBase58").getAsString(), Base58.encode(privateKey.publicKey.toBytes()));
+    assertEquals(didRootKey.get("publicKeyBase58").getAsString(), Base58.encode(privateKey.getPublicKey().toBytes()));
   }
 
   @Test
   public void testDeserialization() {
-    Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(network, privateKey.publicKey, FileId.fromString("0.0.1"));
+    PrivateKey privateKey = HcsDid.generateDidRootKey();
+    HcsDid did = new HcsDid(network, privateKey.getPublicKey(), FileId.fromString("0.0.1"));
     DidDocumentBase doc = did.generateDidDocument();
 
     String didJson = doc.toJson();
@@ -80,20 +80,20 @@ public class DidDocumentBaseTest {
   @Test
   public void testInvalidJsonDeserialization() {
     final String didJson = "{"
-        + "  \"@context\": \"https://www.w3.org/ns/did/v1\","
-        + "  \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1\","
-        + "  \"authentication\": ["
-        + " \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#did-root-key\""
-        + "  ],"
-        + "  \"publicKey\":\"invalidPublicKey\","
-        + "  \"service\": ["
-        + "    {"
-        + "    \"id\":\"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#vcs\","
-        + "    \"type\": \"VerifiableCredentialService\","
-        + "    \"serviceEndpoint\": \"https://example.com/vc/\""
-        + "    }"
-        + "  ]"
-        + "}";
+            + "  \"@context\": \"https://www.w3.org/ns/did/v1\","
+            + "  \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1\","
+            + "  \"authentication\": ["
+            + " \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#did-root-key\""
+            + "  ],"
+            + "  \"publicKey\":\"invalidPublicKey\","
+            + "  \"service\": ["
+            + "    {"
+            + "    \"id\":\"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#vcs\","
+            + "    \"type\": \"VerifiableCredentialService\","
+            + "    \"serviceEndpoint\": \"https://example.com/vc/\""
+            + "    }"
+            + "  ]"
+            + "}";
 
     assertThrows(IllegalArgumentException.class, () -> DidDocumentBase.fromJson(didJson));
   }
@@ -101,55 +101,55 @@ public class DidDocumentBaseTest {
   @Test
   public void testIncompleteJsonDeserialization() {
     final String didJsonMissingPublicKeys = "{"
-        + "  \"@context\": \"https://www.w3.org/ns/did/v1\","
-        + "  \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1\","
-        + "  \"authentication\": ["
-        + " \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#did-root-key\""
-        + "  ]"
-        + "}";
+            + "  \"@context\": \"https://www.w3.org/ns/did/v1\","
+            + "  \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1\","
+            + "  \"authentication\": ["
+            + " \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#did-root-key\""
+            + "  ]"
+            + "}";
 
     final String didJsonMissingRootKey = "{"
-        + "  \"@context\": \"https://www.w3.org/ns/did/v1\","
-        + "  \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1\","
-        + "  \"authentication\": ["
-        + "  \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#did-root-key\""
-        + "  ],"
-        + "  \"publicKey\": ["
-        + "    {"
-        + " \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#key-1\","
-        + " \"type\": \"Ed25519VerificationKey2018\","
-        + "      \"publicKeyBase58\": \"H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV\""
-        + "    }"
-        + "  ],"
-        + "  \"service\": ["
-        + "    {"
-        + " \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#vcs\","
-        + "      \"type\": \"VerifiableCredentialService\","
-        + "      \"serviceEndpoint\": \"https://example.com/vc/\""
-        + "    }"
-        + "  ]"
-        + "}";
+            + "  \"@context\": \"https://www.w3.org/ns/did/v1\","
+            + "  \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1\","
+            + "  \"authentication\": ["
+            + "  \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#did-root-key\""
+            + "  ],"
+            + "  \"publicKey\": ["
+            + "    {"
+            + " \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#key-1\","
+            + " \"type\": \"Ed25519VerificationKey2018\","
+            + "      \"publicKeyBase58\": \"H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV\""
+            + "    }"
+            + "  ],"
+            + "  \"service\": ["
+            + "    {"
+            + " \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#vcs\","
+            + "      \"type\": \"VerifiableCredentialService\","
+            + "      \"serviceEndpoint\": \"https://example.com/vc/\""
+            + "    }"
+            + "  ]"
+            + "}";
 
     final String didJsonMissingPublicKeyId = "{"
-        + "  \"@context\": \"https://www.w3.org/ns/did/v1\","
-        + "  \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1\","
-        + "  \"authentication\": ["
-        + "  \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#did-root-key\""
-        + "  ],"
-        + "  \"publicKey\": ["
-        + "    {"
-        + " \"type\": \"Ed25519VerificationKey2018\","
-        + "      \"publicKeyBase58\": \"H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV\""
-        + "    }"
-        + "  ],"
-        + "  \"service\": ["
-        + "    {"
-        + " \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#vcs\","
-        + "      \"type\": \"VerifiableCredentialService\","
-        + "      \"serviceEndpoint\": \"https://example.com/vc/\""
-        + "    }"
-        + "  ]"
-        + "}";
+            + "  \"@context\": \"https://www.w3.org/ns/did/v1\","
+            + "  \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1\","
+            + "  \"authentication\": ["
+            + "  \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#did-root-key\""
+            + "  ],"
+            + "  \"publicKey\": ["
+            + "    {"
+            + " \"type\": \"Ed25519VerificationKey2018\","
+            + "      \"publicKeyBase58\": \"H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV\""
+            + "    }"
+            + "  ],"
+            + "  \"service\": ["
+            + "    {"
+            + " \"id\": \"did:hedera:mainnet:7Prd74ry1Uct87nZqL3ny7aR7Cg46JamVbJgk8azVgUm;hedera:mainnet:fid=0.0.1#vcs\","
+            + "      \"type\": \"VerifiableCredentialService\","
+            + "      \"serviceEndpoint\": \"https://example.com/vc/\""
+            + "    }"
+            + "  ]"
+            + "}";
 
     DidDocumentBase doc = DidDocumentBase.fromJson(didJsonMissingPublicKeys);
     assertNotNull(doc);

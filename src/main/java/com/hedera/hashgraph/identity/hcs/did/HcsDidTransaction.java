@@ -6,7 +6,7 @@ import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.hcs.MessageListener;
 import com.hedera.hashgraph.identity.hcs.MessageTransaction;
 import com.hedera.hashgraph.identity.utils.Validator;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
+import com.hedera.hashgraph.sdk.TopicId;
 import java.util.function.UnaryOperator;
 
 /**
@@ -23,7 +23,7 @@ public class HcsDidTransaction extends MessageTransaction<HcsDidMessage> {
    * @param operation The operation to be performed on a DID document.
    * @param topicId   The HCS DID topic ID where message will be submitted.
    */
-  public HcsDidTransaction(final DidMethodOperation operation, final ConsensusTopicId topicId) {
+  public HcsDidTransaction(final DidMethodOperation operation, final TopicId topicId) {
     super(topicId);
     this.operation = operation;
   }
@@ -34,7 +34,7 @@ public class HcsDidTransaction extends MessageTransaction<HcsDidMessage> {
    * @param topicId The HCS DID topic ID where message will be submitted.
    * @param message The message envelope.
    */
-  public HcsDidTransaction(final MessageEnvelope<HcsDidMessage> message, final ConsensusTopicId topicId) {
+  public HcsDidTransaction(final MessageEnvelope<HcsDidMessage> message, final TopicId topicId) {
     super(topicId, message);
     this.operation = null;
   }
@@ -42,8 +42,8 @@ public class HcsDidTransaction extends MessageTransaction<HcsDidMessage> {
   /**
    * Sets a DID document as JSON string that will be submitted to HCS.
    *
-   * @param  didDocument The didDocument to be published.
-   * @return             This transaction instance.
+   * @param didDocument The didDocument to be published.
+   * @return This transaction instance.
    */
   public HcsDidTransaction setDidDocument(final String didDocument) {
     this.didDocument = didDocument;
@@ -64,7 +64,7 @@ public class HcsDidTransaction extends MessageTransaction<HcsDidMessage> {
   }
 
   @Override
-  protected MessageListener<HcsDidMessage> provideTopicListener(final ConsensusTopicId topicIdToListen) {
+  protected MessageListener<HcsDidMessage> provideTopicListener(final TopicId topicIdToListen) {
     return new HcsDidTopicListener(topicIdToListen);
   }
 

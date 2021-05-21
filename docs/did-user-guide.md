@@ -21,23 +21,23 @@ A DID is represented in SDK as `HcsDid` object and can be easily converted to it
 HcsIdentityNetwork identityNetwork = ...;
 
 // From a given DID root key:
-Ed25519PrivateKey didRootKey = ...;
+PrivateKey didRootKey = ...;
 HcsDid hcsDid = identityNetwork.generateDid(didRootKey.publicKey, false);
 
 // Without having a DID root key - it will be generated automatically:
 // Here we decided to add DID topic ID parameter `tid` to the DID.
 HcsDid hcsDidWithDidRootKey = identityNetwork.generateDid(true);
-Ed25519PrivateKey didRootKeyPrivateKey = hcsDidWithDidRootKey.getPrivateDidRootKey().get();
+PrivateKey didRootKeyPrivateKey = hcsDidWithDidRootKey.getPrivateDidRootKey().get();
 
 // Without having a DID root key - it will be generated automatically with secure random generator:
 HcsDid hcsDidSRWithDidRootKey = identityNetwork.generateDid(SecureRandom.getInstanceStrong(), false);
-Ed25519PrivateKey srDidRootKeyPrivateKey = hcsDidSRWithDidRootKey.getPrivateDidRootKey().get();
+PrivateKey srDidRootKeyPrivateKey = hcsDidSRWithDidRootKey.getPrivateDidRootKey().get();
 ```
 
 - or by directly constructing `HcsDid` object:
 
 ```java
-Ed25519PrivateKey didRootKey = HcsDid.generateDidRootKey();
+PrivateKey didRootKey = HcsDid.generateDidRootKey();
 FileId addressBookFileId = FileId.fromString("<hedera.address-book-file.id>");
 
 HcsDid did = new HcsDid(HederaNetwork.TESTNET, didRootKey.publicKey, addressBookFileId);
@@ -97,10 +97,10 @@ Here is example DID document creation code:
 
 ```java
 Client client = ...;
-MirrorClient mirrorClient = ...;
+client client = ...;
 HcsIdentityNetwork identityNetwork = ...;
 
-Ed25519PrivateKey didRootKey = ...;
+PrivateKey didRootKey = ...;
 HcsDid hcsDid = ...;
 
 String didDocument = hcsDid.generateDidDocument().toJson();
@@ -119,7 +119,7 @@ identityNetwork.createDidTransaction(DidMethodOperation.CREATE)
       System.out.println(msg.getDidDocument());
     })
     // Execute transaction
-    .execute(client, mirrorClient);
+    .execute(client, client);
 ```
 
 Appnet implementations can optionally add a callback listener and receive an event when the HCS message carrying the DID operation reached consensus and was subsequently propagated to the mirror network.
@@ -137,7 +137,7 @@ listener.setStartTime(Instant.MIN)
     .setIgnoreInvalidMessages(true)
     .setIgnoreErrors(false)
     .onError(err -> System.err.println(err))
-    .subscribe(mirrorClient, msg -> {
+    .subscribe(client, msg -> {
         System.out.println("Message received");
         System.out.println(msg.getDidDocument());
         // Store message in appnet's system
@@ -173,7 +173,7 @@ identityNetwork.getDidResolver()
           System.out.println(msg.getDidDocument());
         }
     })
-    .execute(mirrorClient);
+    .execute(client);
 ```
 
 After the last message is received from the topic, the resolver will wait for a given period of time (by default 30 seconds) to wait for more messages. If at this time no more messages arrive, the resolution is considered completed. The waiting time can be modified with `setTimeout` method.
@@ -214,7 +214,7 @@ MessageListener<HcsDidMessage> didListener = identityNetwork.getDidTopicListener
       }
     })
     // Start listening and decide how to handle valid incoming messages
-    .subscribe(mirrorClient, envelope -> {
+    .subscribe(client, envelope -> {
       // Store message in appnet storage
       ...
     });

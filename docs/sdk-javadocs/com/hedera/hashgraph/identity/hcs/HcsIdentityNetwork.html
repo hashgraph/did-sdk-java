@@ -142,16 +142,16 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTransaction</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createVcTransaction-com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation-java.lang.String-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">createVcTransaction</a></span>(<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcOperation.html" title="enum in com.hedera.hashgraph.identity.hcs.vc">HcsVcOperation</a>&nbsp;operation,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createVcTransaction-com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation-java.lang.String-com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey-">createVcTransaction</a></span>(<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcOperation.html" title="enum in com.hedera.hashgraph.identity.hcs.vc">HcsVcOperation</a>&nbsp;operation,
                    java.lang.String&nbsp;credentialHash,
-                   com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;signerPublicKey)</code>
+                   com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&nbsp;signerPublicKey)</code>
 <div class="block">Instantiates a <a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> to perform the specified operation on the VC document.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTransaction</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createVcTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">createVcTransaction</a></span>(<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcMessage.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcMessage</a>&gt;&nbsp;message,
-                   com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;signerPublicKey)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#createVcTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey-">createVcTransaction</a></span>(<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcMessage.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcMessage</a>&gt;&nbsp;message,
+                   com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&nbsp;signerPublicKey)</code>
 <div class="block">Instantiates a <a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> to perform the specified operation on the VC document status.</div>
 </td>
 </tr>
@@ -187,7 +187,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDid.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDid</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#generateDid-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-boolean-">generateDid</a></span>(com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;publicKey,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#generateDid-com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey-boolean-">generateDid</a></span>(com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&nbsp;publicKey,
            boolean&nbsp;withTid)</code>
 <div class="block">Generates a new DID from the given public DID root key.</div>
 </td>
@@ -212,7 +212,7 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i12" class="altColor">
-<td class="colFirst"><code>com.hedera.hashgraph.sdk.consensus.ConsensusTopicId</code></td>
+<td class="colFirst"><code>com.hedera.hashgraph.sdk.consensus.TopicId</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getDidTopicId--">getDidTopicId</a></span>()</code>
 <div class="block">Returns DID topic ID for this network.</div>
 </td>
@@ -237,12 +237,12 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcStatusResolver.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcStatusResolver</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcStatusResolver-java.util.function.Function-">getVcStatusResolver</a></span>(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcStatusResolver-java.util.function.Function-">getVcStatusResolver</a></span>(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
 <div class="block">Returns a VC status resolver for this network.</div>
 </td>
 </tr>
 <tr id="i17" class="rowColor">
-<td class="colFirst"><code>com.hedera.hashgraph.sdk.consensus.ConsensusTopicId</code></td>
+<td class="colFirst"><code>com.hedera.hashgraph.sdk.consensus.TopicId</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcTopicId--">getVcTopicId</a></span>()</code>
 <div class="block">Returns Verifiable Credentials topic ID for this network.</div>
 </td>
@@ -255,7 +255,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i19" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTopicListener.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTopicListener</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcTopicListener-java.util.function.Function-">getVcTopicListener</a></span>(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/HcsIdentityNetwork.html#getVcTopicListener-java.util.function.Function-">getVcTopicListener</a></span>(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
 <div class="block">Returns a VC topic listener for this network.</div>
 </td>
 </tr>
@@ -383,7 +383,7 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="createVcTransaction-com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation-java.lang.String-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">
+<a name="createVcTransaction-com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation-java.lang.String-com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -391,7 +391,7 @@ extends java.lang.Object</pre>
 <h4>createVcTransaction</h4>
 <pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTransaction</a>&nbsp;createVcTransaction(<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcOperation.html" title="enum in com.hedera.hashgraph.identity.hcs.vc">HcsVcOperation</a>&nbsp;operation,
                                             java.lang.String&nbsp;credentialHash,
-                                            com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;signerPublicKey)</pre>
+                                            com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&nbsp;signerPublicKey)</pre>
 <div class="block">Instantiates a <a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> to perform the specified operation on the VC document.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -403,14 +403,14 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="createVcTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-">
+<a name="createVcTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>createVcTransaction</h4>
 <pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTransaction</a>&nbsp;createVcTransaction(<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcMessage.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcMessage</a>&gt;&nbsp;message,
-                                            com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;signerPublicKey)</pre>
+                                            com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&nbsp;signerPublicKey)</pre>
 <div class="block">Instantiates a <a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTransaction.html" title="class in com.hedera.hashgraph.identity.hcs.vc"><code>HcsVcTransaction</code></a> to perform the specified operation on the VC document status.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -465,13 +465,13 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="generateDid-com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey-boolean-">
+<a name="generateDid-com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey-boolean-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>generateDid</h4>
-<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDid.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDid</a>&nbsp;generateDid(com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;publicKey,
+<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDid.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDid</a>&nbsp;generateDid(com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&nbsp;publicKey,
                           boolean&nbsp;withTid)</pre>
 <div class="block">Generates a new DID from the given public DID root key.</div>
 <dl>
@@ -521,7 +521,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getDidTopicId</h4>
-<pre>public&nbsp;com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;getDidTopicId()</pre>
+<pre>public&nbsp;com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;getDidTopicId()</pre>
 <div class="block">Returns DID topic ID for this network.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -549,7 +549,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getVcTopicId</h4>
-<pre>public&nbsp;com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;getVcTopicId()</pre>
+<pre>public&nbsp;com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;getVcTopicId()</pre>
 <div class="block">Returns Verifiable Credentials topic ID for this network.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -577,7 +577,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>getVcStatusResolver</h4>
-<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcStatusResolver.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcStatusResolver</a>&nbsp;getVcStatusResolver(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</pre>
+<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcStatusResolver.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcStatusResolver</a>&nbsp;getVcStatusResolver(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&gt;&gt;&nbsp;publicKeysProvider)</pre>
 <div class="block">Returns a VC status resolver for this network.
  Resolver will validate signatures of topic messages against public keys supplied
  by the given provider.</div>
@@ -609,7 +609,7 @@ extends java.lang.Object</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>getVcTopicListener</h4>
-<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTopicListener.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTopicListener</a>&nbsp;getVcTopicListener(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</pre>
+<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTopicListener.html" title="class in com.hedera.hashgraph.identity.hcs.vc">HcsVcTopicListener</a>&nbsp;getVcTopicListener(java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&gt;&gt;&nbsp;publicKeysProvider)</pre>
 <div class="block">Returns a VC topic listener for this network.
  This listener will validate signatures of topic messages against public keys supplied
  by the given provider.</div>

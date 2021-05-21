@@ -12,11 +12,11 @@ import com.hedera.hashgraph.identity.utils.JsonUtils;
 import com.hedera.hashgraph.identity.utils.SingleToArrayTypeAdapterFactory;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import org.bitcoinj.core.Base58;
+import org.threeten.bp.Instant;
 
 /**
  * The base for a VC document generation in JSON-LD format.
@@ -37,26 +37,26 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
   protected List<T> credentialSubject;
 
   /**
-   * Converts a VC document in JSON format into a {@link HcsVcDocumentBase} object.
-   * Please note this conversion respects only the fields of the base VC document. All other fields are ignored.
-   *
-   * @param  <U>                    The type of the credential subject.
-   * @param  json                   The VC document as JSON string.
-   * @param  credentialSubjectClass The type of the credential subject inside.
-   * @return                        The {@link HcsVcDocumentBase} object.
-   */
-  public static <U extends CredentialSubject> HcsVcDocumentBase<U> fromJson(final String json,
-      final Class<U> credentialSubjectClass) {
-    Type envelopeType = TypeToken.getParameterized(HcsVcDocumentBase.class, credentialSubjectClass).getType();
-    return JsonUtils.getGson().fromJson(json, envelopeType);
-  }
-
-  /**
    * Creates a new VC Document instance.
    */
   public HcsVcDocumentBase() {
     super();
     this.context = Lists.newArrayList(HcsVcDocumentJsonProperties.FIRST_CONTEXT_ENTRY);
+  }
+
+  /**
+   * Converts a VC document in JSON format into a {@link HcsVcDocumentBase} object.
+   * Please note this conversion respects only the fields of the base VC document. All other fields are ignored.
+   *
+   * @param <U>                    The type of the credential subject.
+   * @param json                   The VC document as JSON string.
+   * @param credentialSubjectClass The type of the credential subject inside.
+   * @return The {@link HcsVcDocumentBase} object.
+   */
+  public static <U extends CredentialSubject> HcsVcDocumentBase<U> fromJson(final String json,
+                                                                            final Class<U> credentialSubjectClass) {
+    Type envelopeType = TypeToken.getParameterized(HcsVcDocumentBase.class, credentialSubjectClass).getType();
+    return JsonUtils.getGson().fromJson(json, envelopeType);
   }
 
   /**
@@ -131,11 +131,11 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
    */
   public boolean isComplete() {
     return context != null && !context.isEmpty()
-        && HcsVcDocumentJsonProperties.FIRST_CONTEXT_ENTRY.equals(context.get(0))
-        && type != null && !type.isEmpty() && type.contains(HcsVcDocumentJsonProperties.VERIFIABLE_CREDENTIAL_TYPE)
-        && issuanceDate != null
-        && issuer != null && !Strings.isNullOrEmpty(issuer.getId())
-        && credentialSubject != null && !credentialSubject.isEmpty();
+            && HcsVcDocumentJsonProperties.FIRST_CONTEXT_ENTRY.equals(context.get(0))
+            && type != null && !type.isEmpty() && type.contains(HcsVcDocumentJsonProperties.VERIFIABLE_CREDENTIAL_TYPE)
+            && issuanceDate != null
+            && issuer != null && !Strings.isNullOrEmpty(issuer.getId())
+            && credentialSubject != null && !credentialSubject.isEmpty();
   }
 
   public List<String> getContext() {
@@ -146,24 +146,16 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
     return id;
   }
 
+  public void setId(final String id) {
+    this.id = id;
+  }
+
   public List<String> getType() {
     return type;
   }
 
   public Issuer getIssuer() {
     return issuer;
-  }
-
-  public Instant getIssuanceDate() {
-    return issuanceDate;
-  }
-
-  public List<T> getCredentialSubject() {
-    return credentialSubject;
-  }
-
-  public void setId(final String id) {
-    this.id = id;
   }
 
   public void setIssuer(final Issuer issuer) {
@@ -178,8 +170,16 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
     setIssuer(issuerDid.toDid());
   }
 
+  public Instant getIssuanceDate() {
+    return issuanceDate;
+  }
+
   public void setIssuanceDate(final Instant issuanceDate) {
     this.issuanceDate = issuanceDate;
+  }
+
+  public List<T> getCredentialSubject() {
+    return credentialSubject;
   }
 
 }

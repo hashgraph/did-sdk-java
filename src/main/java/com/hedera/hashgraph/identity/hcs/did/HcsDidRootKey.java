@@ -1,7 +1,7 @@
 package com.hedera.hashgraph.identity.hcs.did;
 
 import com.google.gson.annotations.Expose;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
+import com.hedera.hashgraph.sdk.PublicKey;
 import org.bitcoinj.core.Base58;
 
 /**
@@ -27,11 +27,11 @@ public class HcsDidRootKey {
   /**
    * Creates a {@link HcsDidRootKey} object from the given {@link HcsDid} DID and it's root public key.
    *
-   * @param  did        The {@link HcsDid} DID object.
-   * @param  didRootKey The public key from which the DID was derived.
-   * @return            The {@link HcsDidRootKey} object.
+   * @param did        The {@link HcsDid} DID object.
+   * @param didRootKey The public key from which the DID was derived.
+   * @return The {@link HcsDidRootKey} object.
    */
-  public static HcsDidRootKey fromHcsIdentity(final HcsDid did, final Ed25519PublicKey didRootKey) {
+  public static HcsDidRootKey fromHcsIdentity(final HcsDid did, final PublicKey didRootKey) {
     if (did == null) {
       throw new IllegalArgumentException("DID cannot be null");
     }

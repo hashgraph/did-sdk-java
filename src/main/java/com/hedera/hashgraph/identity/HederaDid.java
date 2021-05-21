@@ -8,6 +8,16 @@ import com.hedera.hashgraph.identity.DidSyntax.Method;
 public interface HederaDid {
 
   /**
+   * Parses the given DID string into a {@link HederaDid} object.
+   *
+   * @param didString The DID.
+   * @return {@link HederaDid} object.
+   */
+  static HederaDid fromString(final String didString) {
+    return DidParser.parse(didString);
+  }
+
+  /**
    * Converts the {@link HederaDid} object into a DID string.
    *
    * @return The DID string.
@@ -34,14 +44,4 @@ public interface HederaDid {
    * @return A DID method.
    */
   Method getMethod();
-
-  /**
-   * Parses the given DID string into a {@link HederaDid} object.
-   *
-   * @param  didString The DID.
-   * @return           {@link HederaDid} object.
-   */
-  static HederaDid fromString(final String didString) {
-    return DidParser.parse(didString);
-  }
 }

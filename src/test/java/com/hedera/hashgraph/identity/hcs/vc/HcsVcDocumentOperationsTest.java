@@ -1,20 +1,18 @@
 package com.hedera.hashgraph.identity.hcs.vc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.google.common.collect.Lists;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.hcs.NetworkReadyTestBase;
 import com.hedera.hashgraph.identity.hcs.did.HcsDid;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
-import java.time.Instant;
+import com.hedera.hashgraph.sdk.PrivateKey;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.threeten.bp.Instant;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests operations on verifiable credentials and their status resolution.
@@ -26,7 +24,7 @@ class HcsVcDocumentOperationsTest extends NetworkReadyTestBase {
   private HcsDid owner;
   private HcsVcDocumentBase<DemoAccessCredential> vc;
   private String credentialHash;
-  private Ed25519PrivateKey issuersPrivateKey;
+  private PrivateKey issuersPrivateKey;
 
   @Override
   protected void beforeAll() {
@@ -64,9 +62,9 @@ class HcsVcDocumentOperationsTest extends NetworkReadyTestBase {
 
   private void testVcStatusResolution(HcsVcOperation expectedOperation) {
     MessageEnvelope<HcsVcMessage> envelope = resolveVcStatus(
-        credentialHash,
-        m -> Lists.newArrayList(issuersPrivateKey.publicKey),
-        EXPECT_NO_ERROR);
+            credentialHash,
+            m -> Lists.newArrayList(issuersPrivateKey.getPublicKey()),
+            EXPECT_NO_ERROR);
 
     assertNotNull(envelope);
 

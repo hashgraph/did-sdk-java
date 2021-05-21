@@ -2,13 +2,13 @@ package com.hedera.hashgraph.identity.hcs.vc;
 
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.hcs.MessageListener;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
-import com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse;
-import java.time.Instant;
+import com.hedera.hashgraph.sdk.PublicKey;
+import com.hedera.hashgraph.sdk.TopicId;
+import com.hedera.hashgraph.sdk.TopicMessage;
 import java.util.Collection;
-import java.util.function.BiFunction;
 import java.util.function.Function;
+import java8.util.function.BiFunction;
+import org.threeten.bp.Instant;
 
 /**
  * A listener of confirmed {@link HcsVcMessage} messages from a VC topic.
@@ -20,7 +20,7 @@ public class HcsVcTopicListener extends MessageListener<HcsVcMessage> {
    * A function providing a collection of public keys accepted for a given credential hash.
    * If the function is not supplied, the listener will not validate signatures.
    */
-  private Function<String, Collection<Ed25519PublicKey>> publicKeysProvider;
+  private Function<String, Collection<PublicKey>> publicKeysProvider;
 
   /**
    * Creates a new instance of a VC topic listener for the given consensus topic.
@@ -29,7 +29,7 @@ public class HcsVcTopicListener extends MessageListener<HcsVcMessage> {
    *
    * @param vcTopicId The VC consensus topic ID.
    */
-  public HcsVcTopicListener(final ConsensusTopicId vcTopicId) {
+  public HcsVcTopicListener(final TopicId vcTopicId) {
     this(vcTopicId, null);
   }
 
@@ -40,14 +40,14 @@ public class HcsVcTopicListener extends MessageListener<HcsVcMessage> {
    * @param vcTopicId          The VC consensus topic ID.
    * @param publicKeysProvider Provider of a public keys acceptable for a given VC hash.
    */
-  public HcsVcTopicListener(final ConsensusTopicId vcTopicId,
-      final Function<String, Collection<Ed25519PublicKey>> publicKeysProvider) {
+  public HcsVcTopicListener(final TopicId vcTopicId,
+                            final Function<String, Collection<PublicKey>> publicKeysProvider) {
     super(vcTopicId);
     this.publicKeysProvider = publicKeysProvider;
   }
 
   @Override
-  protected MessageEnvelope<HcsVcMessage> extractMessage(final MirrorConsensusTopicResponse response) {
+  protected MessageEnvelope<HcsVcMessage> extractMessage(final TopicMessage response) {
     MessageEnvelope<HcsVcMessage> result = null;
     try {
       result = MessageEnvelope.fromMirrorResponse(response, HcsVcMessage.class);
@@ -60,10 +60,10 @@ public class HcsVcTopicListener extends MessageListener<HcsVcMessage> {
 
   @Override
   protected boolean isMessageValid(final MessageEnvelope<HcsVcMessage> envelope,
-      final MirrorConsensusTopicResponse response) {
+                                   final TopicMessage response) {
     try {
       BiFunction<HcsVcMessage, Instant, HcsVcMessage> msgDecrypter = decrypter == null ? null
-          : HcsVcMessage.getDecrypter(decrypter);
+              : HcsVcMessage.getDecrypter(decrypter);
 
       HcsVcMessage message = envelope.open(msgDecrypter);
       if (message == null) {
@@ -93,20 +93,20 @@ public class HcsVcTopicListener extends MessageListener<HcsVcMessage> {
   /**
    * Checks if the signature on the envelope is accepted by any public key supplied for the credential hash.
    *
-   * @param  envelope The message envelope.
-   * @return          True if signature is accepted, false otherwise.
+   * @param envelope The message envelope.
+   * @return True if signature is accepted, false otherwise.
    */
   private boolean isSignatureAccepted(final MessageEnvelope<HcsVcMessage> envelope) {
     if (publicKeysProvider == null) {
       return false;
     }
 
-    Collection<Ed25519PublicKey> acceptedKeys = publicKeysProvider.apply(envelope.open().getCredentialHash());
+    Collection<PublicKey> acceptedKeys = publicKeysProvider.apply(envelope.open().getCredentialHash());
     if (acceptedKeys == null || acceptedKeys.isEmpty()) {
       return false;
     }
 
-    for (Ed25519PublicKey publicKey : acceptedKeys) {
+    for (PublicKey publicKey : acceptedKeys) {
       if (envelope.isSignatureValid(e -> publicKey)) {
         return true;
       }

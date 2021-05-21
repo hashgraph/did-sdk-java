@@ -1,26 +1,22 @@
 package com.hedera.hashgraph.identity.hcs.did;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.hedera.hashgraph.identity.DidDocumentBase;
 import com.hedera.hashgraph.identity.DidSyntax;
 import com.hedera.hashgraph.identity.DidSyntax.Method;
 import com.hedera.hashgraph.identity.HederaDid;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey;
-import com.hedera.hashgraph.sdk.file.FileId;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Objects;
-
+import com.hedera.hashgraph.sdk.FileId;
+import com.hedera.hashgraph.sdk.PrivateKey;
+import com.hedera.hashgraph.sdk.PublicKey;
+import com.hedera.hashgraph.sdk.TopicId;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.bitcoinj.core.Base58;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests HcsDid generation and parsing operations.
@@ -36,8 +32,8 @@ class HcsDidTest {
     final String addressBook = "0.0.24352";
 
     // Generate pair of HcsDid root keys
-    Ed25519PrivateKey privKey = HcsDid.generateDidRootKey();
-    Ed25519PublicKey pubKey = privKey.publicKey;
+    PrivateKey privKey = HcsDid.generateDidRootKey();
+    PublicKey pubKey = privKey.getPublicKey();
 
     // Generate HcsDid
     HcsDid did = new HcsDid(network, pubKey, FileId.fromString(addressBook));
@@ -68,12 +64,12 @@ class HcsDidTest {
     final String didTopicId = "1.5.23462345";
 
     // Generate pair of HcsDid root keys
-    Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey(SecureRandom.getInstanceStrong());
+    PrivateKey privateKey = HcsDid.generateDidRootKey();
 
     // Generate HcsDid
     FileId fileId = FileId.fromString(addressBook);
-    ConsensusTopicId topicId = ConsensusTopicId.fromString(didTopicId);
-    HcsDid did = new HcsDid(network, privateKey.publicKey, fileId, topicId);
+    TopicId topicId = TopicId.fromString(didTopicId);
+    HcsDid did = new HcsDid(network, privateKey.getPublicKey(), fileId, topicId);
 
     // Convert HcsDid to HcsDid string
     String didString = did.toString();
@@ -109,7 +105,7 @@ class HcsDidTest {
     assertEquals(document.getId(), parsedDid.toString());
     assertEquals(document.getContext(), DidSyntax.DID_DOCUMENT_CONTEXT);
     assertNotNull(document.getDidRootKey());
-    assertEquals(document.getDidRootKey().getPublicKeyBase58(), Base58.encode(privateKey.publicKey.toBytes()));
+    assertEquals(document.getDidRootKey().getPublicKeyBase58(), Base58.encode(privateKey.getPublicKey().toBytes()));
 
   }
 
@@ -119,25 +115,25 @@ class HcsDidTest {
     final String didTopicId = "1.5.23462345";
 
     final String validDidWithSwitchedParamsOrder = "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak"
-        + ";hedera:testnet:tid=" + didTopicId
-        + ";hedera:testnet:fid=" + addressBook;
+            + ";hedera:testnet:tid=" + didTopicId
+            + ";hedera:testnet:fid=" + addressBook;
 
     final String[] invalidDids = {
-        null,
-        "invalidDid1",
-        "did:invalid",
-        "did:invalidMethod:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid=0.0.24352",
-        "did:hedera:invalidNetwork:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid=0.0.24352",
-        "did:hedera:testnet:invalidAddress;hedera:testnet:fid=0.0.24352;hedera:testnet:tid=1.5.23462345",
-        "did:hedera:testnet;hedera:testnet:fid=0.0.24352;hedera:testnet:tid=1.5.23462345",
-        "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;missing:fid=0.0.24352;"
-            + "hedera:testnet:tid=1.5.2",
-        "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;missing:fid=0.0.1;"
-            + "hedera:testnet:tid=1.5.2;unknown:parameter=1",
-        "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid=0.0.1=1",
-        "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid",
-        "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak:unknownPart;hedera:testnet:fid=0.0.1",
-        "did:notHedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid=0.0.1",
+            null,
+            "invalidDid1",
+            "did:invalid",
+            "did:invalidMethod:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid=0.0.24352",
+            "did:hedera:invalidNetwork:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid=0.0.24352",
+            "did:hedera:testnet:invalidAddress;hedera:testnet:fid=0.0.24352;hedera:testnet:tid=1.5.23462345",
+            "did:hedera:testnet;hedera:testnet:fid=0.0.24352;hedera:testnet:tid=1.5.23462345",
+            "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;missing:fid=0.0.24352;"
+                    + "hedera:testnet:tid=1.5.2",
+            "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;missing:fid=0.0.1;"
+                    + "hedera:testnet:tid=1.5.2;unknown:parameter=1",
+            "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid=0.0.1=1",
+            "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid",
+            "did:hedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak:unknownPart;hedera:testnet:fid=0.0.1",
+            "did:notHedera:testnet:8LjUL78kFVnWV9rFnNCTE5bZdRmjm2obqJwS892jVLak;hedera:testnet:fid=0.0.1",
     };
 
     // Expect to fail parsing all invalid DIDs

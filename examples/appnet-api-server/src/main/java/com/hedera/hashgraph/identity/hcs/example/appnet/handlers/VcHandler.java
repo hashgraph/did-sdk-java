@@ -11,7 +11,6 @@ import com.hedera.hashgraph.identity.utils.JsonUtils;
 import com.hedera.hashgraph.sdk.Client;
 import com.hedera.hashgraph.sdk.Hbar;
 import com.hedera.hashgraph.sdk.TransactionId;
-import com.hedera.hashgraph.sdk.mirror.MirrorClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.handling.Context;
@@ -24,8 +23,8 @@ import ratpack.jackson.Jackson;
  * Hedera DID Method Specification.
  */
 public class VcHandler extends AppnetHandler {
-  private static Logger log = LoggerFactory.getLogger(VcHandler.class);
   private static final String PATH_PARAM_CREDENTIAL_HASH = "credentialHash";
+  private static Logger log = LoggerFactory.getLogger(VcHandler.class);
 
   /**
    * Instantiates the handler.
@@ -89,12 +88,11 @@ public class VcHandler extends AppnetHandler {
    * Submits a built and signed VC status change message into the HCS VC topic.
    * Returns 200 OK when submission was successful, without waiting for the consensus result.
    *
-   * @param ctx          The HTTP context.
-   * @param client       The Hedera node client.
-   * @param mirrorClient The Hedera mirror node client.
+   * @param ctx    The HTTP context.
+   * @param client The Hedera node client.
    */
-  public void submit(final Context ctx, final Client client, final MirrorClient mirrorClient) {
-    ctx.getRequest().getBody().then(data -> submitVcMessage(ctx, data.getText(), client, mirrorClient));
+  public void submit(final Context ctx, final Client client) {
+    ctx.getRequest().getBody().then(data -> submitVcMessage(ctx, data.getText(), client));
   }
 
   /**
@@ -148,21 +146,20 @@ public class VcHandler extends AppnetHandler {
    * Then submits this signed message into the HCS VC topic.
    * Returns 202 ACCEPTED with empty body when submission was successful, without waiting for the consensus result.
    *
-   * @param ctx          The HTTP context.
-   * @param json         The VC topic message as JSON string.
-   * @param client       The Hedera node client.
-   * @param mirrorClient The Hedera mirror node client.
+   * @param ctx    The HTTP context.
+   * @param json   The VC topic message as JSON string.
+   * @param client The Hedera node client.
+   * @param client The Hedera mirror node client.
    */
-  private void submitVcMessage(final Context ctx, final String json, final Client client,
-      final MirrorClient mirrorClient) {
+  private void submitVcMessage(final Context ctx, final String json, final Client client) {
     final Hbar fee = new Hbar(2);
 
     try {
       MessageEnvelope<HcsVcMessage> message = MessageEnvelope.fromJson(json, HcsVcMessage.class);
       TransactionId txId = identityNetwork.createVcTransaction(message, null)
-          .buildAndSignTransaction(tx -> tx.setMaxTransactionFee(fee).build(client))
-          .onError(e -> log.error("Error while sending VC message transaction:", e))
-          .execute(client, mirrorClient);
+              .buildAndSignTransaction(tx -> tx.setMaxTransactionFee(fee))
+              .onError(e -> log.error("Error while sending VC message transaction:", e))
+              .execute(client);
 
       log.info("VC message transaction submitted: " + txId.toString());
       ctx.getResponse().status(Status.ACCEPTED);

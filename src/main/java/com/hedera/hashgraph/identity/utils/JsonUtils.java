@@ -2,7 +2,7 @@ package com.hedera.hashgraph.identity.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.time.Instant;
+import org.threeten.bp.Instant;
 
 /**
  * JSON utilities for Hedera identity.
@@ -23,9 +23,9 @@ public final class JsonUtils {
    */
   public static Gson getGson() {
     return new GsonBuilder()
-        .disableHtmlEscaping()
-        .excludeFieldsWithoutExposeAnnotation()
-        .registerTypeAdapter(Instant.class, Iso8601InstantTypeAdapter.getInstance())
-        .create();
+            .disableHtmlEscaping()
+            .excludeFieldsWithoutExposeAnnotation()
+            .registerTypeAdapter(Instant.class, Iso8601InstantTypeAdapter.getInstance())
+            .create();
   }
 }
