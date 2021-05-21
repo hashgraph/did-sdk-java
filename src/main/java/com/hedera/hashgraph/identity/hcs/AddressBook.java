@@ -2,7 +2,7 @@ package com.hedera.hashgraph.identity.hcs;
 
 import com.google.gson.annotations.Expose;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
-import com.hedera.hashgraph.sdk.file.FileId;
+import com.hedera.hashgraph.sdk.FileId;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -32,20 +32,11 @@ public final class AddressBook {
   }
 
   /**
-   * Converts this address book file into JSON string.
-   *
-   * @return The JSON representation of this address book.
-   */
-  public String toJson() {
-    return JsonUtils.getGson().toJson(this);
-  }
-
-  /**
    * Converts an address book JSON string into address book object.
    *
-   * @param  json              Address book JSON file.
-   * @param  addressBookFileId FileId of this address book in Hedera File Service.
-   * @return                   The {@link AddressBook}.
+   * @param json              Address book JSON file.
+   * @param addressBookFileId FileId of this address book in Hedera File Service.
+   * @return The {@link AddressBook}.
    */
   public static AddressBook fromJson(final String json, final @Nullable FileId addressBookFileId) {
     AddressBook result = JsonUtils.getGson().fromJson(json, AddressBook.class);
@@ -57,17 +48,17 @@ public final class AddressBook {
   /**
    * Creates a new {@link AddressBook} instance. Does not create the file on Hedera File Service!.
    *
-   * @param  appnetName       Name of the appnet.
-   * @param  didTopicId       TopicID of the DID topic.
-   * @param  vcTopicId        Topic ID of the Verifiable Credentials topic.
-   * @param  appnetDidServers List of appnet API servers.
-   * @return                  The {@link AddressBook}.
+   * @param appnetName       Name of the appnet.
+   * @param didTopicId       TopicID of the DID topic.
+   * @param vcTopicId        Topic ID of the Verifiable Credentials topic.
+   * @param appnetDidServers List of appnet API servers.
+   * @return The {@link AddressBook}.
    */
   public static AddressBook create(
-      final String appnetName,
-      final String didTopicId,
-      final String vcTopicId,
-      final @Nullable List<String> appnetDidServers) {
+          final String appnetName,
+          final String didTopicId,
+          final String vcTopicId,
+          final @Nullable List<String> appnetDidServers) {
     AddressBook result = new AddressBook();
     result.appnetDidServers = appnetDidServers;
     result.didTopicId = didTopicId;
@@ -75,6 +66,15 @@ public final class AddressBook {
     result.appnetName = appnetName;
 
     return result;
+  }
+
+  /**
+   * Converts this address book file into JSON string.
+   *
+   * @return The JSON representation of this address book.
+   */
+  public String toJson() {
+    return JsonUtils.getGson().toJson(this);
   }
 
   public String getAppnetName() {

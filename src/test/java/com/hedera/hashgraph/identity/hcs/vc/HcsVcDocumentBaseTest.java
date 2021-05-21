@@ -1,19 +1,15 @@
 package com.hedera.hashgraph.identity.hcs.vc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.google.common.base.Strings;
 import com.hedera.hashgraph.identity.hcs.NetworkReadyTestBase;
 import com.hedera.hashgraph.identity.hcs.did.HcsDid;
-import java.time.Instant;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.threeten.bp.Instant;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests creation, serialization and deserialization of a VC document base.

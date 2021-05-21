@@ -203,7 +203,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/Message.htm
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey</code></td>
+<td class="colFirst"><code>com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html#extractDidRootKey--">extractDidRootKey</a></span>()</code>
 <div class="block">Extracts #did-root-key from the DID document.</div>
 </td>
@@ -261,7 +261,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/Message.htm
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html#isValid-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">isValid</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;didTopicId)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html#isValid-com.hedera.hashgraph.sdk.consensus.TopicId-">isValid</a></span>(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;didTopicId)</code>
 <div class="block">Validates this DID message by checking its completeness, signature and DID document.</div>
 </td>
 </tr>
@@ -461,14 +461,14 @@ protected&nbsp;java.time.Instant updated</pre>
 </dl>
 </li>
 </ul>
-<a name="isValid-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
+<a name="isValid-com.hedera.hashgraph.sdk.consensus.TopicId-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>isValid</h4>
 <pre>public&nbsp;boolean&nbsp;isValid(@Nullable
-                       com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;didTopicId)</pre>
+                       com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;didTopicId)</pre>
 <div class="block">Validates this DID message by checking its completeness, signature and DID document.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -484,7 +484,7 @@ protected&nbsp;java.time.Instant updated</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>extractDidRootKey</h4>
-<pre>public&nbsp;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&nbsp;extractDidRootKey()</pre>
+<pre>public&nbsp;com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&nbsp;extractDidRootKey()</pre>
 <div class="block">Extracts #did-root-key from the DID document.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>

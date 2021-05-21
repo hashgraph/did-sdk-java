@@ -4,7 +4,7 @@ import com.hedera.hashgraph.identity.DidMethodOperation;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.hcs.MessageListener;
 import com.hedera.hashgraph.identity.hcs.MessageResolver;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
+import com.hedera.hashgraph.sdk.TopicId;
 import java.util.Set;
 
 /**
@@ -17,15 +17,15 @@ public class HcsDidResolver extends MessageResolver<HcsDidMessage> {
    *
    * @param topicId The HCS DID topic ID.
    */
-  public HcsDidResolver(final ConsensusTopicId topicId) {
+  public HcsDidResolver(final TopicId topicId) {
     super(topicId);
   }
 
   /**
    * Adds a DID to resolve.
    *
-   * @param  did The DID string.
-   * @return     This resolver instance.
+   * @param did The DID string.
+   * @return This resolver instance.
    */
   public HcsDidResolver addDid(final String did) {
     if (did != null) {
@@ -37,8 +37,8 @@ public class HcsDidResolver extends MessageResolver<HcsDidMessage> {
   /**
    * Adds multiple DIDs to resolve.
    *
-   * @param  dids The set of DID strings.
-   * @return      This resolver instance.
+   * @param dids The set of DID strings.
+   * @return This resolver instance.
    */
   public HcsDidResolver addDids(final Set<String> dids) {
     if (dids != null) {
@@ -59,9 +59,9 @@ public class HcsDidResolver extends MessageResolver<HcsDidMessage> {
     // Also skip messages that are older than the once collected or if we already have a DELETE message
     MessageEnvelope<HcsDidMessage> existing = results.get(message.getDid());
     if (existing != null
-        && (envelope.getConsensusTimestamp().isBefore(existing.getConsensusTimestamp())
+            && (envelope.getConsensusTimestamp().isBefore(existing.getConsensusTimestamp())
             || (DidMethodOperation.DELETE.equals(existing.open().getOperation())
-                && !DidMethodOperation.DELETE.equals(message.getOperation())))) {
+            && !DidMethodOperation.DELETE.equals(message.getOperation())))) {
       return;
     }
 

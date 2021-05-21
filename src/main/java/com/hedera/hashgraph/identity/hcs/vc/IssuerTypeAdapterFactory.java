@@ -38,7 +38,7 @@ public final class IssuerTypeAdapterFactory implements TypeAdapterFactory {
 
     @Override
     public void write(final JsonWriter writer, final Issuer value)
-        throws IOException {
+            throws IOException {
       if (value != null && value.getName() == null) {
         elementAdapter.write(writer, value.getId());
       } else {

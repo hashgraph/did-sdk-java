@@ -149,14 +149,14 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html#HcsDidTransaction-com.hedera.hashgraph.identity.DidMethodOperation-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">HcsDidTransaction</a></span>(<a href="../../../../../../com/hedera/hashgraph/identity/DidMethodOperation.html" title="enum in com.hedera.hashgraph.identity">DidMethodOperation</a>&nbsp;operation,
-                 com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html#HcsDidTransaction-com.hedera.hashgraph.identity.DidMethodOperation-com.hedera.hashgraph.sdk.consensus.TopicId-">HcsDidTransaction</a></span>(<a href="../../../../../../com/hedera/hashgraph/identity/DidMethodOperation.html" title="enum in com.hedera.hashgraph.identity">DidMethodOperation</a>&nbsp;operation,
+                 com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId)</code>
 <div class="block">Instantiates a new transaction object.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html#HcsDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">HcsDidTransaction</a></span>(<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;&nbsp;message,
-                 com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html#HcsDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.consensus.TopicId-">HcsDidTransaction</a></span>(<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;&nbsp;message,
+                 com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId)</code>
 <div class="block">Instantiates a new transaction object from a message that was already prepared.</div>
 </td>
 </tr>
@@ -189,7 +189,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html#provideTopicListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">provideTopicListener</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicIdToListen)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidTransaction.html#provideTopicListener-com.hedera.hashgraph.sdk.consensus.TopicId-">provideTopicListener</a></span>(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicIdToListen)</code>
 <div class="block">Provides a <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs"><code>MessageListener</code></a> instance specific to the submitted message type.</div>
 </td>
 </tr>
@@ -211,7 +211,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;com.hedera.hashgraph.identity.hcs.<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">MessageTransaction</a></h3>
-<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#buildAndSignTransaction-java.util.function.Function-">buildAndSignTransaction</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#execute-com.hedera.hashgraph.sdk.Client-com.hedera.hashgraph.sdk.mirror.MirrorClient-">execute</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#handleError-java.lang.Throwable-">handleError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#onDecrypt-java.util.function.BiFunction-">onDecrypt</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#onEncrypt-java.util.function.UnaryOperator-">onEncrypt</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#onError-java.util.function.Consumer-">onError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#onMessageConfirmed-java.util.function.Consumer-">onMessageConfirmed</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#signMessage-java.util.function.UnaryOperator-">signMessage</a></code></li>
+<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#buildAndSignTransaction-java.util.function.Function-">buildAndSignTransaction</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#execute-com.hedera.hashgraph.sdk.Client-com.hedera.hashgraph.sdk.mirror.client-">execute</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#handleError-java.lang.Throwable-">handleError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#onDecrypt-java.util.function.BiFunction-">onDecrypt</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#onEncrypt-java.util.function.UnaryOperator-">onEncrypt</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#onError-java.util.function.Consumer-">onError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#onMessageConfirmed-java.util.function.Consumer-">onMessageConfirmed</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#signMessage-java.util.function.UnaryOperator-">signMessage</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -234,14 +234,14 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="HcsDidTransaction-com.hedera.hashgraph.identity.DidMethodOperation-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
+<a name="HcsDidTransaction-com.hedera.hashgraph.identity.DidMethodOperation-com.hedera.hashgraph.sdk.consensus.TopicId-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>HcsDidTransaction</h4>
 <pre>public&nbsp;HcsDidTransaction(<a href="../../../../../../com/hedera/hashgraph/identity/DidMethodOperation.html" title="enum in com.hedera.hashgraph.identity">DidMethodOperation</a>&nbsp;operation,
-                         com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</pre>
+                         com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId)</pre>
 <div class="block">Instantiates a new transaction object.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -250,14 +250,14 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 </dl>
 </li>
 </ul>
-<a name="HcsDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
+<a name="HcsDidTransaction-com.hedera.hashgraph.identity.hcs.MessageEnvelope-com.hedera.hashgraph.sdk.consensus.TopicId-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>HcsDidTransaction</h4>
 <pre>public&nbsp;HcsDidTransaction(<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;&nbsp;message,
-                         com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</pre>
+                         com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId)</pre>
 <div class="block">Instantiates a new transaction object from a message that was already prepared.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -324,18 +324,18 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTran
 </dl>
 </li>
 </ul>
-<a name="provideTopicListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
+<a name="provideTopicListener-com.hedera.hashgraph.sdk.consensus.TopicId-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>provideTopicListener</h4>
-<pre>protected&nbsp;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;&nbsp;provideTopicListener(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicIdToListen)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#provideTopicListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">MessageTransaction</a></code></span></div>
+<pre>protected&nbsp;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;&nbsp;provideTopicListener(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicIdToListen)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#provideTopicListener-com.hedera.hashgraph.sdk.consensus.TopicId-">MessageTransaction</a></code></span></div>
 <div class="block">Provides a <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs"><code>MessageListener</code></a> instance specific to the submitted message type.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#provideTopicListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">provideTopicListener</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">MessageTransaction</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;</code></dd>
+<dd><code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html#provideTopicListener-com.hedera.hashgraph.sdk.consensus.TopicId-">provideTopicListener</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageTransaction.html" title="class in com.hedera.hashgraph.identity.hcs">MessageTransaction</a>&lt;<a href="../../../../../../com/hedera/hashgraph/identity/hcs/did/HcsDidMessage.html" title="class in com.hedera.hashgraph.identity.hcs.did">HcsDidMessage</a>&gt;</code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>topicIdToListen</code> - ID of the HCS topic.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>

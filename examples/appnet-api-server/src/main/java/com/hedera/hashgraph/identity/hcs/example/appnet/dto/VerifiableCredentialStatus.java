@@ -3,7 +3,7 @@ package com.hedera.hashgraph.identity.hcs.example.appnet.dto;
 import com.google.gson.annotations.Expose;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcMessage;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcOperation;
-import java.time.Instant;
+import org.threeten.bp.Instant;
 
 /**
  * A status of verifiable credential in VC registry.
@@ -26,12 +26,12 @@ public class VerifiableCredentialStatus {
   /**
    * Creates a new instance of this DTO from the given VC message and its consensus timestamp.
    *
-   * @param  message            VC message received from the mirror node.
-   * @param  consensusTimestamp Consensus timestamp of the message.
-   * @return                    The DTO instance.
+   * @param message            VC message received from the mirror node.
+   * @param consensusTimestamp Consensus timestamp of the message.
+   * @return The DTO instance.
    */
   public static VerifiableCredentialStatus fromHcsVcMessage(final HcsVcMessage message,
-      final Instant consensusTimestamp) {
+                                                            final Instant consensusTimestamp) {
     VerifiableCredentialStatus result = new VerifiableCredentialStatus();
 
     result.setOperation(message.getOperation());
@@ -62,12 +62,12 @@ public class VerifiableCredentialStatus {
     return operation;
   }
 
-  public String getCredentialHash() {
-    return credentialHash;
-  }
-
   public void setOperation(final HcsVcOperation operation) {
     this.operation = operation;
+  }
+
+  public String getCredentialHash() {
+    return credentialHash;
   }
 
   public void setCredentialHash(final String credentialHash) {

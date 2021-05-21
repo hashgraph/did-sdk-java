@@ -42,6 +42,41 @@ public class DidDocumentBase {
   }
 
   /**
+   * Converts a DID document in JSON format into a {@link DidDocumentBase} object.
+   * Please note this conversion respects only the fields of the base DID document. All other fields are ignored.
+   *
+   * @param json The DID document as JSON string.f
+   * @return The {@link DidDocumentBase}.
+   */
+  public static DidDocumentBase fromJson(final String json) {
+    Gson gson = JsonUtils.getGson();
+
+    DidDocumentBase result = null;
+
+    try {
+      JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+      result = gson.fromJson(root, DidDocumentBase.class);
+
+      if (root.has(DidDocumentJsonProperties.PUBLIC_KEY)) {
+        Iterator<JsonElement> itr = root.getAsJsonArray(DidDocumentJsonProperties.PUBLIC_KEY).iterator();
+        while (itr.hasNext()) {
+          JsonObject publicKeyObj = itr.next().getAsJsonObject();
+          if (publicKeyObj.has(DidDocumentJsonProperties.ID)
+                  && publicKeyObj.get(DidDocumentJsonProperties.ID).getAsString()
+                  .equals(result.getId() + HcsDidRootKey.DID_ROOT_KEY_NAME)) {
+            result.setDidRootKey(gson.fromJson(publicKeyObj, HcsDidRootKey.class));
+            break;
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Given JSON string is not a valid DID document", e);
+    }
+
+    return result;
+  }
+
+  /**
    * Converts this DID document into JSON string.
    *
    * @return The JSON representation of this document.
@@ -89,41 +124,6 @@ public class DidDocumentBase {
     }
 
     publicKeys.add(JsonUtils.getGson().toJsonTree(didRootKey));
-  }
-
-  /**
-   * Converts a DID document in JSON format into a {@link DidDocumentBase} object.
-   * Please note this conversion respects only the fields of the base DID document. All other fields are ignored.
-   *
-   * @param  json The DID document as JSON string.f
-   * @return      The {@link DidDocumentBase}.
-   */
-  public static DidDocumentBase fromJson(final String json) {
-    Gson gson = JsonUtils.getGson();
-
-    DidDocumentBase result = null;
-
-    try {
-      JsonObject root = JsonParser.parseString(json).getAsJsonObject();
-      result = gson.fromJson(root, DidDocumentBase.class);
-
-      if (root.has(DidDocumentJsonProperties.PUBLIC_KEY)) {
-        Iterator<JsonElement> itr = root.getAsJsonArray(DidDocumentJsonProperties.PUBLIC_KEY).iterator();
-        while (itr.hasNext()) {
-          JsonObject publicKeyObj = itr.next().getAsJsonObject();
-          if (publicKeyObj.has(DidDocumentJsonProperties.ID)
-              && publicKeyObj.get(DidDocumentJsonProperties.ID).getAsString()
-                  .equals(result.getId() + HcsDidRootKey.DID_ROOT_KEY_NAME)) {
-            result.setDidRootKey(gson.fromJson(publicKeyObj, HcsDidRootKey.class));
-            break;
-          }
-        }
-      }
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Given JSON string is not a valid DID document", e);
-    }
-
-    return result;
   }
 
   public String getContext() {

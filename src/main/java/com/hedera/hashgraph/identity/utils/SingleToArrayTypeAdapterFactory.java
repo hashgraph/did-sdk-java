@@ -36,7 +36,7 @@ public final class SingleToArrayTypeAdapterFactory<E> implements TypeAdapterFact
     private final TypeAdapter<T> elementAdapter;
 
     SingleToArrayTypeAdapter(final TypeAdapter<List<T>> delegateAdapter,
-        final TypeAdapter<T> elementAdapter) {
+                             final TypeAdapter<T> elementAdapter) {
       this.delegateAdapter = delegateAdapter;
       this.elementAdapter = elementAdapter;
     }
@@ -51,7 +51,7 @@ public final class SingleToArrayTypeAdapterFactory<E> implements TypeAdapterFact
 
     @Override
     public void write(final JsonWriter writer, final List<T> value)
-        throws IOException {
+            throws IOException {
       if (value.size() == 1) {
         elementAdapter.write(writer, value.get(0));
       } else {

@@ -80,11 +80,11 @@ class HcsDidMethodOperationsTest extends NetworkReadyTestBase {
     JsonArray publicKeys = null;
     publicKeys = rootObject.getAsJsonArray(DidDocumentJsonProperties.PUBLIC_KEY);
     publicKeys.add(JsonParser.parseString("{"
-        + "\"id\": \"did:example:123456789abcdefghi#keys-2\","
-        + "\"type\": \"Ed25519VerificationKey2018\","
-        + "\"controller\": \"did:example:pqrstuvwxyz0987654321\","
-        + "\"publicKeyBase58\": \"H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV\""
-        + "}"));
+            + "\"id\": \"did:example:123456789abcdefghi#keys-2\","
+            + "\"type\": \"Ed25519VerificationKey2018\","
+            + "\"controller\": \"did:example:pqrstuvwxyz0987654321\","
+            + "\"publicKeyBase58\": \"H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV\""
+            + "}"));
 
     String newDoc = JsonUtils.getGson().toJson(jsonElement);
 

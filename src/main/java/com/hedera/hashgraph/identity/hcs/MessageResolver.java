@@ -1,9 +1,8 @@
 package com.hedera.hashgraph.identity.hcs;
 
 import com.hedera.hashgraph.identity.utils.Validator;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
-import com.hedera.hashgraph.sdk.mirror.MirrorClient;
-import java.time.Instant;
+import com.hedera.hashgraph.sdk.Client;
+import com.hedera.hashgraph.sdk.TopicId;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,8 +11,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java8.util.function.BiFunction;
+import org.threeten.bp.Instant;
 
 public abstract class MessageResolver<T extends Message> {
 
@@ -22,23 +22,35 @@ public abstract class MessageResolver<T extends Message> {
    */
   public static final long DEFAULT_TIMEOUT = 30_000;
 
-  protected final ConsensusTopicId topicId;
+  protected final TopicId topicId;
   protected final Map<String, MessageEnvelope<T>> results;
-
+  private final ScheduledExecutorService executorService;
+  private final AtomicLong lastMessageArrivalTime;
   private Consumer<Map<String, MessageEnvelope<T>>> resultsHandler;
   private Consumer<Throwable> errorHandler;
   private BiFunction<byte[], Instant, byte[]> decrypter;
   private Set<String> existingSignatures;
-  private final ScheduledExecutorService executorService;
-  private final AtomicLong lastMessageArrivalTime;
   private MessageListener<T> listener;
   private long noMoreMessagesTimeout;
 
   /**
+   * Instantiates a message resolver.
+   *
+   * @param topicId Consensus topic ID.
+   */
+  public MessageResolver(final TopicId topicId) {
+    this.topicId = topicId;
+    this.results = new HashMap<>();
+    this.executorService = Executors.newScheduledThreadPool(2);
+    this.noMoreMessagesTimeout = DEFAULT_TIMEOUT;
+    this.lastMessageArrivalTime = new AtomicLong(System.currentTimeMillis());
+  }
+
+  /**
    * Checks if the message matches preliminary search criteria.
    *
-   * @param  message The message read from the topic.
-   * @return         True if the message matches search criteria, false otherwise.
+   * @param message The message read from the topic.
+   * @return True if the message matches search criteria, false otherwise.
    */
   protected abstract boolean matchesSearchCriteria(T message);
 
@@ -57,35 +69,22 @@ public abstract class MessageResolver<T extends Message> {
   protected abstract MessageListener<T> supplyMessageListener();
 
   /**
-   * Instantiates a message resolver.
-   *
-   * @param topicId Consensus topic ID.
-   */
-  public MessageResolver(final ConsensusTopicId topicId) {
-    this.topicId = topicId;
-    this.results = new HashMap<>();
-    this.executorService = Executors.newScheduledThreadPool(2);
-    this.noMoreMessagesTimeout = DEFAULT_TIMEOUT;
-    this.lastMessageArrivalTime = new AtomicLong(System.currentTimeMillis());
-  }
-
-  /**
    * Resolves queries defined in implementing classes against a mirror node.
    *
-   * @param mirrorClient The mirror node client.
+   * @param client The mirror node client.
    */
-  public void execute(final MirrorClient mirrorClient) {
+  public void execute(final Client client) {
     new Validator().checkValidationErrors("Resolver not executed: ", v -> validate(v));
     existingSignatures = new HashSet<>();
 
     listener = supplyMessageListener();
 
     listener.setStartTime(Instant.MIN)
-        .setEndTime(Instant.now())
-        .setIgnoreErrors(false)
-        .onError(errorHandler)
-        .onDecrypt(decrypter)
-        .subscribe(mirrorClient, msg -> handleMessage(msg));
+            .setEndTime(Instant.now())
+            .setIgnoreErrors(false)
+            .onError(errorHandler)
+            .onDecrypt(decrypter)
+            .subscribe(client, msg -> handleMessage(msg));
 
     lastMessageArrivalTime.set(System.currentTimeMillis());
     waitOrFinish();
@@ -144,8 +143,8 @@ public abstract class MessageResolver<T extends Message> {
    * Defines a handler for resolution results.
    * This will be called when the resolution process is finished.
    *
-   * @param  handler The results handler.
-   * @return         This resolver instance.
+   * @param handler The results handler.
+   * @return This resolver instance.
    */
   public MessageResolver<T> whenFinished(final Consumer<Map<String, MessageEnvelope<T>>> handler) {
     this.resultsHandler = handler;
@@ -155,8 +154,8 @@ public abstract class MessageResolver<T extends Message> {
   /**
    * Defines a handler for errors when they happen during resolution.
    *
-   * @param  handler The error handler.
-   * @return         This resolver instance.
+   * @param handler The error handler.
+   * @return This resolver instance.
    */
   public MessageResolver<T> onError(final Consumer<Throwable> handler) {
     this.errorHandler = handler;
@@ -167,8 +166,8 @@ public abstract class MessageResolver<T extends Message> {
    * Defines a maximum time in milliseconds to wait for new messages from the topic.
    * Default is 30 seconds.
    *
-   * @param  timeout The timeout in milliseconds to wait for new messages from the topic.
-   * @return         This resolver instance.
+   * @param timeout The timeout in milliseconds to wait for new messages from the topic.
+   * @return This resolver instance.
    */
   public MessageResolver<T> setTimeout(final long timeout) {
     this.noMoreMessagesTimeout = timeout;
@@ -180,8 +179,8 @@ public abstract class MessageResolver<T extends Message> {
    * Decryption function must accept a byte array of encrypted message and an Instant that is its consensus timestamp,
    * If decrypter is not specified, encrypted messages will be ignored.
    *
-   * @param  decrypter The decrypter to use.
-   * @return           This resolver instance.
+   * @param decrypter The decrypter to use.
+   * @return This resolver instance.
    */
   public MessageResolver<T> onDecrypt(final BiFunction<byte[], Instant, byte[]> decrypter) {
     this.decrypter = decrypter;

@@ -2,10 +2,10 @@ package com.hedera.hashgraph.identity.hcs.did;
 
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.hcs.MessageListener;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
-import com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse;
-import java.time.Instant;
-import java.util.function.BiFunction;
+import com.hedera.hashgraph.sdk.TopicId;
+import com.hedera.hashgraph.sdk.TopicMessage;
+import java8.util.function.BiFunction;
+import org.threeten.bp.Instant;
 
 /**
  * A listener of confirmed {@link HcsDidMessage} messages from a DID topic.
@@ -19,12 +19,12 @@ public class HcsDidTopicListener extends MessageListener<HcsDidMessage> {
    *
    * @param didTopicId The DID consensus topic ID.
    */
-  public HcsDidTopicListener(final ConsensusTopicId didTopicId) {
+  public HcsDidTopicListener(final TopicId didTopicId) {
     super(didTopicId);
   }
 
   @Override
-  protected MessageEnvelope<HcsDidMessage> extractMessage(final MirrorConsensusTopicResponse response) {
+  protected MessageEnvelope<HcsDidMessage> extractMessage(final TopicMessage response) {
     MessageEnvelope<HcsDidMessage> result = null;
     try {
       result = MessageEnvelope.fromMirrorResponse(response, HcsDidMessage.class);
@@ -37,10 +37,10 @@ public class HcsDidTopicListener extends MessageListener<HcsDidMessage> {
 
   @Override
   protected boolean isMessageValid(final MessageEnvelope<HcsDidMessage> envelope,
-      final MirrorConsensusTopicResponse response) {
+                                   final TopicMessage response) {
     try {
       BiFunction<HcsDidMessage, Instant, HcsDidMessage> msgDecrypter = decrypter == null ? null
-          : HcsDidMessage.getDecrypter(decrypter);
+              : HcsDidMessage.getDecrypter(decrypter);
 
       HcsDidMessage message = envelope.open(msgDecrypter);
       if (message == null) {

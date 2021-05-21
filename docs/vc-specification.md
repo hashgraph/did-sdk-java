@@ -107,7 +107,7 @@ Here is an example Java client, please refer to the official Hedera documentatio
 ```java
 new MirrorConsensusTopicQuery()
     .setTopicId(vcTopicId)
-    .subscribe(mirrorClient, resp -> {
+    .subscribe(client, resp -> {
           String vcMessage = new String(resp.message, StandardCharsets.UTF_8);
           System.out.println(resp.consensusTimestamp + " received VC message: " + vcMessage);
       },

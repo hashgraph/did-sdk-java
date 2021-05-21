@@ -14,15 +14,13 @@ import java.util.UUID;
  * A simple, manually constructed example of a driving license verifiable credential document.
  */
 public class DrivingLicenseDocument extends HcsVcDocumentBase<DrivingLicense> {
+  public static final String CREDENTIAL_SCHEMA_TYPE = "JsonSchemaValidator2018";
   private static final String DOCUMENT_TYPE = "DrivingLicense";
   private static final String EXAMPLE_ID_PREFIX = "https://example.appnet.com/driving-license/";
   private static final String JSON_PROPERTY_CREDENTIAL_SUBJECT = "credentialSubject";
   private static final String JSON_PROPERTY_PROOF = "proof";
-  private static final String[] JSON_PROPERTIES_ORDER = { "@context", "id", "type", "credentialSchema",
-      "credentialSubject", "issuer", "issuanceDate", "proof" };
-
-  public static final String CREDENTIAL_SCHEMA_TYPE = "JsonSchemaValidator2018";
-
+  private static final String[] JSON_PROPERTIES_ORDER = {"@context", "id", "type", "credentialSchema",
+      "credentialSubject", "issuer", "issuanceDate", "proof"};
   @Expose
   private CredentialSchema credentialSchema;
 
@@ -45,9 +43,9 @@ public class DrivingLicenseDocument extends HcsVcDocumentBase<DrivingLicense> {
    * In a real-world application it is recommended to use a JSON-LD compatible library to handle normalization.
    * However at this point the only available one in Java support JSON-LD version 1.0, but 1.1 is required by W3C
    * Verifiable Credentials.
-   * 
-   * @param  withoutProof Will skip 'proof' attribute if True.
-   * @return              A normalized JSON string representation of this document.
+   *
+   * @param withoutProof Will skip 'proof' attribute if True.
+   * @return A normalized JSON string representation of this document.
    */
   public String toNormalizedJson(final boolean withoutProof) {
     Gson gson = JsonUtils.getGson();

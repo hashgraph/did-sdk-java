@@ -20,9 +20,9 @@ public class AesEncryptionUtil {
   /**
    * Encrypts the given message with AES using a defined secret phrase.
    *
-   * @param  messageToEncrypt Message to encrypt.
-   * @param  secret           The encryption secret.
-   * @return                  The encrypted message.
+   * @param messageToEncrypt Message to encrypt.
+   * @param secret           The encryption secret.
+   * @return The encrypted message.
    */
   public static byte[] encrypt(byte[] messageToEncrypt, String secret) {
     try {
@@ -39,9 +39,9 @@ public class AesEncryptionUtil {
   /**
    * Decrypts the given message encrypted with AES and defined secret phrase.
    *
-   * @param  messageToDecrypt Message to decrypt.
-   * @param  secret           The encryption secret.
-   * @return                  The decrypted message.
+   * @param messageToDecrypt Message to decrypt.
+   * @param secret           The encryption secret.
+   * @return The decrypted message.
    */
   public static byte[] decrypt(byte[] messageToDecrypt, String secret) {
     try {

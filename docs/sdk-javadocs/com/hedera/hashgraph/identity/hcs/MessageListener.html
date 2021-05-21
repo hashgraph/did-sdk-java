@@ -162,7 +162,7 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#subscriptionHandle">subscriptionHandle</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected com.hedera.hashgraph.sdk.consensus.ConsensusTopicId</code></td>
+<td class="colFirst"><code>protected com.hedera.hashgraph.sdk.consensus.TopicId</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#topicId">topicId</a></span></code>&nbsp;</td>
 </tr>
 </table>
@@ -180,7 +180,7 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#MessageListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">MessageListener</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#MessageListener-com.hedera.hashgraph.sdk.consensus.TopicId-">MessageListener</a></span>(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId)</code>
 <div class="block">Creates a new instance of a topic listener for the given consensus topic.</div>
 </td>
 </tr>
@@ -274,7 +274,7 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#subscribe-com.hedera.hashgraph.sdk.mirror.MirrorClient-java.util.function.Consumer-">subscribe</a></span>(com.hedera.hashgraph.sdk.mirror.MirrorClient&nbsp;mirrorClient,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#subscribe-com.hedera.hashgraph.sdk.mirror.client-java.util.function.Consumer-">subscribe</a></span>(com.hedera.hashgraph.sdk.mirror.client&nbsp;client,
          java.util.function.Consumer&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;&gt;&nbsp;receiver)</code>
 <div class="block">Subscribes to mirror node topic messages stream.</div>
 </td>
@@ -313,7 +313,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>topicId</h4>
-<pre>protected final&nbsp;com.hedera.hashgraph.sdk.consensus.ConsensusTopicId topicId</pre>
+<pre>protected final&nbsp;com.hedera.hashgraph.sdk.consensus.TopicId topicId</pre>
 </li>
 </ul>
 <a name="query">
@@ -387,13 +387,13 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="MessageListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
+<a name="MessageListener-com.hedera.hashgraph.sdk.consensus.TopicId-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>MessageListener</h4>
-<pre>public&nbsp;MessageListener(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;topicId)</pre>
+<pre>public&nbsp;MessageListener(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;topicId)</pre>
 <div class="block">Creates a new instance of a topic listener for the given consensus topic.
  By default, invalid messages are ignored and errors are not.</div>
 <dl>
@@ -461,18 +461,18 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="subscribe-com.hedera.hashgraph.sdk.mirror.MirrorClient-java.util.function.Consumer-">
+<a name="subscribe-com.hedera.hashgraph.sdk.mirror.client-java.util.function.Consumer-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>subscribe</h4>
-<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;&nbsp;subscribe(com.hedera.hashgraph.sdk.mirror.MirrorClient&nbsp;mirrorClient,
+<pre>public&nbsp;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;&nbsp;subscribe(com.hedera.hashgraph.sdk.mirror.client&nbsp;client,
                                     java.util.function.Consumer&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageEnvelope.html" title="class in com.hedera.hashgraph.identity.hcs">MessageEnvelope</a>&lt;<a href="../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="type parameter in MessageListener">T</a>&gt;&gt;&nbsp;receiver)</pre>
 <div class="block">Subscribes to mirror node topic messages stream.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>mirrorClient</code> - Mirror client instance.</dd>
+<dd><code>client</code> - Mirror client instance.</dd>
 <dd><code>receiver</code> - Receiver of parsed messages.</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>This listener instance.</dd>

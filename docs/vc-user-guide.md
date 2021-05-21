@@ -98,7 +98,7 @@ Here is example issuance code:
 
 ```java
 // Issuer's #did-root-key
-Ed25519PrivateKey privateKey = ...;
+PrivateKey privateKey = ...;
 HcsIdentityNetwork identityNetwork = ...;
 HcsVcDocumentBase<ExampleCredential> credentialDocument = ...;
 
@@ -116,7 +116,7 @@ TransactionId txId = identityNetwork.createVcTransaction(operation, credentialDo
     // Handle errors
     .onError(err -> err.printStackTrace())
     // Execute transaction
-    .execute(client, mirrorClient);
+    .execute(client, client);
 ```
 
 ## Credential Status Verification
@@ -143,7 +143,7 @@ identityNetwork.getVcStatusResolver()
             System.out.println(credentialHash + " status is: " + lastValidMessage.open().getOperation());
           }
         })
-    .execute(mirrorClient);
+    .execute(client);
 ```
 
 After the last message is received from the topic, the resolver will wait for a given period of time (by default 30 seconds) to wait for more messages. If at this time no more messages arrive, the resolution is considered completed. The waiting time can be modified with `setTimeout` method.
@@ -187,7 +187,7 @@ MessageListener<HcsVcMessage> vcListener = identityNetwork.getVcTopicListener()
       }
     })
     // Start listening and decide how to handle valid incoming messages
-    .subscribe(mirrorClient, envelope -> {
+    .subscribe(client, envelope -> {
       // Store message in appnet storage
       ...
     });

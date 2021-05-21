@@ -12,7 +12,6 @@ import com.hedera.hashgraph.identity.utils.JsonUtils;
 import com.hedera.hashgraph.sdk.Client;
 import com.hedera.hashgraph.sdk.Hbar;
 import com.hedera.hashgraph.sdk.TransactionId;
-import com.hedera.hashgraph.sdk.mirror.MirrorClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.handling.Context;
@@ -76,12 +75,11 @@ public class DidHandler extends AppnetHandler {
    * Submits a built and signed CREATE, UPDATE or DELETE message into the HCS DID topic.
    * Returns 200 OK when submission was successful, without waiting for the consensus result.
    *
-   * @param ctx          The HTTP context.
-   * @param client       The Hedera node client.
-   * @param mirrorClient The Hedera mirror node client.
+   * @param ctx    The HTTP context.
+   * @param client The Hedera node client.
    */
-  public void submit(final Context ctx, final Client client, final MirrorClient mirrorClient) {
-    ctx.getRequest().getBody().then(data -> submitDidMessage(ctx, data.getText(), client, mirrorClient));
+  public void submit(final Context ctx, final Client client) {
+    ctx.getRequest().getBody().then(data -> submitDidMessage(ctx, data.getText(), client));
   }
 
   /**
@@ -150,21 +148,19 @@ public class DidHandler extends AppnetHandler {
    * Then submits this signed CREATE, UPDATE or DELETE message into the HCS DID topic.
    * Returns 202 ACCEPTED with empty body when submission was successful, without waiting for the consensus result.
    *
-   * @param ctx          The HTTP context.
-   * @param json         The DID topic message as JSON string.
-   * @param client       The Hedera node client.
-   * @param mirrorClient The Hedera mirror node client.
+   * @param ctx    The HTTP context.
+   * @param json   The DID topic message as JSON string.
+   * @param client The Hedera node client.
    */
-  private void submitDidMessage(final Context ctx, final String json, final Client client,
-      final MirrorClient mirrorClient) {
+  private void submitDidMessage(final Context ctx, final String json, final Client client) {
     final Hbar fee = new Hbar(2);
 
     try {
       MessageEnvelope<HcsDidMessage> message = MessageEnvelope.fromJson(json, HcsDidMessage.class);
       TransactionId txId = identityNetwork.createDidTransaction(message)
-          .buildAndSignTransaction(tx -> tx.setMaxTransactionFee(fee).build(client))
-          .onError(e -> log.error("Error while sending DID message transaction:", e))
-          .execute(client, mirrorClient);
+              .buildAndSignTransaction(tx -> tx.setMaxTransactionFee(fee))
+              .onError(e -> log.error("Error while sending DID message transaction:", e))
+              .execute(client);
 
       log.info("DID message transaction submitted: " + txId.toString());
       ctx.getResponse().status(Status.ACCEPTED);

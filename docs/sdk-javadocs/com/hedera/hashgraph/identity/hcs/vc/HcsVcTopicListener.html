@@ -149,13 +149,13 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageList
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTopicListener.html#HcsVcTopicListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">HcsVcTopicListener</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;vcTopicId)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTopicListener.html#HcsVcTopicListener-com.hedera.hashgraph.sdk.consensus.TopicId-">HcsVcTopicListener</a></span>(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;vcTopicId)</code>
 <div class="block">Creates a new instance of a VC topic listener for the given consensus topic.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTopicListener.html#HcsVcTopicListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-java.util.function.Function-">HcsVcTopicListener</a></span>(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;vcTopicId,
-                  java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../../../com/hedera/hashgraph/identity/hcs/vc/HcsVcTopicListener.html#HcsVcTopicListener-com.hedera.hashgraph.sdk.consensus.TopicId-java.util.function.Function-">HcsVcTopicListener</a></span>(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;vcTopicId,
+                  java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&gt;&gt;&nbsp;publicKeysProvider)</code>
 <div class="block">Creates a new instance of a VC topic listener for the given consensus topic.</div>
 </td>
 </tr>
@@ -193,7 +193,7 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageList
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;com.hedera.hashgraph.identity.hcs.<a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html" title="class in com.hedera.hashgraph.identity.hcs">MessageListener</a></h3>
-<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#addFilter-java.util.function.Predicate-">addFilter</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#handleError-java.lang.Throwable-">handleError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#handleResponse-com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse-java.util.function.Consumer-">handleResponse</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#onDecrypt-java.util.function.BiFunction-">onDecrypt</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#onError-java.util.function.Consumer-">onError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#onInvalidMessageReceived-java.util.function.BiConsumer-">onInvalidMessageReceived</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#reportInvalidMessage-com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse-java.lang.String-">reportInvalidMessage</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#setEndTime-java.time.Instant-">setEndTime</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#setIgnoreErrors-boolean-">setIgnoreErrors</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#setLimit-long-">setLimit</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#setStartTime-java.time.Instant-">setStartTime</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#subscribe-com.hedera.hashgraph.sdk.mirror.MirrorClient-java.util.function.Consumer-">subscribe</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#unsubscribe--">unsubscribe</a></code></li>
+<code><a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#addFilter-java.util.function.Predicate-">addFilter</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#handleError-java.lang.Throwable-">handleError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#handleResponse-com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse-java.util.function.Consumer-">handleResponse</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#onDecrypt-java.util.function.BiFunction-">onDecrypt</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#onError-java.util.function.Consumer-">onError</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#onInvalidMessageReceived-java.util.function.BiConsumer-">onInvalidMessageReceived</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#reportInvalidMessage-com.hedera.hashgraph.sdk.mirror.MirrorConsensusTopicResponse-java.lang.String-">reportInvalidMessage</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#setEndTime-java.time.Instant-">setEndTime</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#setIgnoreErrors-boolean-">setIgnoreErrors</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#setLimit-long-">setLimit</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#setStartTime-java.time.Instant-">setStartTime</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#subscribe-com.hedera.hashgraph.sdk.mirror.client-java.util.function.Consumer-">subscribe</a>, <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageListener.html#unsubscribe--">unsubscribe</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -216,13 +216,13 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageList
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="HcsVcTopicListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-">
+<a name="HcsVcTopicListener-com.hedera.hashgraph.sdk.consensus.TopicId-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>HcsVcTopicListener</h4>
-<pre>public&nbsp;HcsVcTopicListener(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;vcTopicId)</pre>
+<pre>public&nbsp;HcsVcTopicListener(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;vcTopicId)</pre>
 <div class="block">Creates a new instance of a VC topic listener for the given consensus topic.
  By default, invalid messages are ignored and errors are not.
  Listener without a public key provider will not validate message signatures.</div>
@@ -232,14 +232,14 @@ extends <a href="../../../../../../com/hedera/hashgraph/identity/hcs/MessageList
 </dl>
 </li>
 </ul>
-<a name="HcsVcTopicListener-com.hedera.hashgraph.sdk.consensus.ConsensusTopicId-java.util.function.Function-">
+<a name="HcsVcTopicListener-com.hedera.hashgraph.sdk.consensus.TopicId-java.util.function.Function-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>HcsVcTopicListener</h4>
-<pre>public&nbsp;HcsVcTopicListener(com.hedera.hashgraph.sdk.consensus.ConsensusTopicId&nbsp;vcTopicId,
-                          java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PublicKey&gt;&gt;&nbsp;publicKeysProvider)</pre>
+<pre>public&nbsp;HcsVcTopicListener(com.hedera.hashgraph.sdk.consensus.TopicId&nbsp;vcTopicId,
+                          java.util.function.Function&lt;java.lang.String,java.util.Collection&lt;com.hedera.hashgraph.sdk.crypto.ed25519.PublicKey&gt;&gt;&nbsp;publicKeysProvider)</pre>
 <div class="block">Creates a new instance of a VC topic listener for the given consensus topic.
  By default, invalid messages are ignored and errors are not.</div>
 <dl>

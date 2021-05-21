@@ -1,70 +1,80 @@
 package com.hedera.hashgraph.identity.hcs;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-import com.hedera.hashgraph.identity.utils.Validator;
 import com.hedera.hashgraph.sdk.Client;
-import com.hedera.hashgraph.sdk.HederaNetworkException;
-import com.hedera.hashgraph.sdk.HederaStatusException;
-import com.hedera.hashgraph.sdk.Transaction;
-import com.hedera.hashgraph.sdk.TransactionId;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicCreateTransaction;
-import com.hedera.hashgraph.sdk.consensus.ConsensusTopicId;
-import com.hedera.hashgraph.sdk.file.FileCreateTransaction;
-import com.hedera.hashgraph.sdk.file.FileId;
+import com.hedera.hashgraph.sdk.FileCreateTransaction;
+import com.hedera.hashgraph.sdk.FileId;
+import com.hedera.hashgraph.sdk.Hbar;
+import com.hedera.hashgraph.sdk.PrecheckStatusException;
+import com.hedera.hashgraph.sdk.PublicKey;
+import com.hedera.hashgraph.sdk.ReceiptStatusException;
+import com.hedera.hashgraph.sdk.TopicCreateTransaction;
+import com.hedera.hashgraph.sdk.TopicId;
+import com.hedera.hashgraph.sdk.TransactionReceipt;
+import com.hedera.hashgraph.sdk.TransactionResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.concurrent.TimeoutException;
 
 /**
  * The builder used to create new appnet identity networks based on Hedera HCS DID method specification.
  */
 public class HcsIdentityNetworkBuilder {
   private String appnetName;
-  private ConsensusTopicId didTopicId;
-  private ConsensusTopicId vcTopicId;
+  private TopicId didTopicId;
+  private TopicId vcTopicId;
   private String network;
-  private Function<ConsensusTopicCreateTransaction, Transaction> didTopicTxFunction;
-  private Function<ConsensusTopicCreateTransaction, Transaction> vcTopicTxFunction;
-  private Function<FileCreateTransaction, Transaction> addressBookTxFunction;
   private List<String> didServers;
+  private PublicKey publicKey;
+  private Hbar maxTransactionFee = Hbar.from(2);
+  private String didTopicMemo = "";
+  private String vcTopicMemo = "";
 
   /**
    * Creates a new identity network for the given appnet.
    * This will initialize an address book file on Hedera File Service.
    * Then DID and VC topics on Hedera network will be created unless already existing topics are provided.
    *
-   * @param  client                 Hedera client
-   * @return                        The new identity network.
-   * @throws HederaStatusException  In case querying Hedera File Service fails.
-   * @throws HederaNetworkException In case of querying Hedera File Service fails due to transport calls.
+   * @param client Hedera client
+   * @return The new identity network.
+   * @throws ReceiptStatusException  in the event the receipt contains an error
+   * @throws PrecheckStatusException in the event the transaction isn't validated by the network
+   * @throws TimeoutException        in the event the client fails to communicate with the network in a timely fashion
    */
-  public HcsIdentityNetwork execute(final Client client) throws HederaNetworkException, HederaStatusException {
-    new Validator().checkValidationErrors("HederaNetwork not created: ", v -> validate(v));
+  public HcsIdentityNetwork execute(final Client client)
+          throws ReceiptStatusException, PrecheckStatusException, TimeoutException {
 
-    if (didTopicTxFunction != null) {
-      TransactionId didTxId = didTopicTxFunction.apply(new ConsensusTopicCreateTransaction()).execute(client);
-      didTopicId = didTxId.getReceipt(client).getConsensusTopicId();
-      didTopicTxFunction = null;
+    TopicCreateTransaction didTopicCreateTransaction = new TopicCreateTransaction()
+            .setMaxTransactionFee(maxTransactionFee)
+            .setTopicMemo(didTopicMemo);
+    if (publicKey != null) {
+      didTopicCreateTransaction.setAdminKey(publicKey);
     }
 
-    if (vcTopicTxFunction != null) {
-      TransactionId vcTxId = vcTopicTxFunction.apply(new ConsensusTopicCreateTransaction()).execute(client);
-      vcTopicId = vcTxId.getReceipt(client).getConsensusTopicId();
-      vcTopicTxFunction = null;
+    TransactionResponse didTxId = didTopicCreateTransaction
+            .execute(client);
+    didTopicId = didTxId.getReceipt(client).topicId;
+
+    TopicCreateTransaction vcTopicCreateTransaction = new TopicCreateTransaction()
+            .setMaxTransactionFee(maxTransactionFee)
+            .setTopicMemo(vcTopicMemo);
+    if (publicKey != null) {
+      vcTopicCreateTransaction.setAdminKey(publicKey);
     }
+
+    TransactionResponse vcTxId = vcTopicCreateTransaction.execute(client);
+    vcTopicId = vcTxId.getReceipt(client).topicId;
 
     // Create address book file.
     AddressBook addressBook = AddressBook
-        .create(appnetName, didTopicId.toString(), vcTopicId.toString(), didServers);
+            .create(appnetName, didTopicId.toString(), vcTopicId.toString(), didServers);
 
     FileCreateTransaction fileCreateTx = new FileCreateTransaction()
-        .setContents(addressBook.toJson().getBytes(Charsets.UTF_8));
+            .setContents(addressBook.toJson().getBytes(Charsets.UTF_8));
 
-    Transaction tx = addressBookTxFunction.apply(fileCreateTx);
-    FileId fileId = tx.execute(client)
-        .getReceipt(client)
-        .getFileId();
+    TransactionResponse response = fileCreateTx.execute(client);
+    TransactionReceipt receipt = response.getReceipt(client);
+    FileId fileId = receipt.fileId;
 
     addressBook.setFileId(fileId);
 
@@ -72,50 +82,10 @@ public class HcsIdentityNetworkBuilder {
   }
 
   /**
-   * Creates and configures a new {@link ConsensusTopicCreateTransaction} for DID document messages topic in HCS.
-   * The transaction is not executed here, only upon calling execute method of the builder.
-   *
-   * @param  builder The transaction builder that shall set all transaction properties, build and sign it.
-   * @return         This identity network builder instance.
-   */
-  public HcsIdentityNetworkBuilder buildAndSignDidTopicCreateTransaction(
-      final Function<ConsensusTopicCreateTransaction, Transaction> builder) {
-    didTopicTxFunction = builder;
-    return this;
-  }
-
-  /**
-   * Creates and configures a new {@link ConsensusTopicCreateTransaction} for Verifiable Credentials topic in HCS.
-   * The transaction is not executed here, only upon calling execute method of the builder.
-   *
-   * @param  builder The transaction builder that shall set all transaction properties, build and sign it.
-   * @return         This identity network builder instance.
-   */
-  public HcsIdentityNetworkBuilder buildAndSignVcTopicCreateTransaction(
-      final Function<ConsensusTopicCreateTransaction, Transaction> builder) {
-    vcTopicTxFunction = builder;
-    return this;
-  }
-
-  /**
-   * Creates and configures a new {@link FileCreateTransaction} for appnet's address book file.
-   * The transaction is not executed here, only upon calling execute method of the builder.
-   * File content is already set.
-   *
-   * @param  builder The transaction builder that shall configure, build and sign given {@link FileCreateTransaction}.
-   * @return         This identity network builder instance.
-   */
-  public HcsIdentityNetworkBuilder buildAndSignAddressBookCreateTransaction(
-      final Function<FileCreateTransaction, Transaction> builder) {
-    addressBookTxFunction = builder;
-    return this;
-  }
-
-  /**
    * Adds an appnet server URL that hosts DID REST API as specified by Hedera HCS DID method.
    *
-   * @param  serverUrl The URL to the appnet's server DID REST service.
-   * @return           This identity network builder instance.
+   * @param serverUrl The URL to the appnet's server DID REST service.
+   * @return This identity network builder instance.
    */
   public HcsIdentityNetworkBuilder addAppnetDidServer(final String serverUrl) {
     if (didServers == null) {
@@ -130,34 +100,10 @@ public class HcsIdentityNetworkBuilder {
   }
 
   /**
-   * Runs validation logic.
-   *
-   * @param validator The errors validator.
-   */
-  protected void validate(final Validator validator) {
-    validator.require(didTopicTxFunction != null || didTopicId != null,
-        "Provide an existing DID TopicId or build and sign TopicCreateTransaction.");
-    validator.require(vcTopicTxFunction != null || vcTopicId != null,
-        "Provide an existing Verifiable Credentials TopicId or  build and sign TopicCreateTransaction.");
-
-    validator.require(!(didTopicTxFunction != null && didTopicId != null),
-        "Provide an existing DID TopicId or build and sign  TopicCreateTransaction, but not both.");
-    validator.require(!(vcTopicTxFunction != null && vcTopicId != null),
-        "Provide an existing Verifiable Credentials TopicId or build and sign TopicCreateTransaction, but not both.");
-
-    validator.require(addressBookTxFunction != null && !Strings.isNullOrEmpty(appnetName),
-        "Build and sign FileCreateTransaction for address book file.");
-
-    validator.require(network != null, "HederaNetwork is not defined.");
-
-    validator.require(didServers != null && !didServers.isEmpty(), "No Appnet DID servers are specified.");
-  }
-
-  /**
    * Defines the name of the appnet for identity network address book.
    *
-   * @param  appnetName The name of the appnet.
-   * @return            This identity network builder instance.
+   * @param appnetName The name of the appnet.
+   * @return This identity network builder instance.
    */
   public HcsIdentityNetworkBuilder setAppnetName(final String appnetName) {
     this.appnetName = appnetName;
@@ -165,12 +111,34 @@ public class HcsIdentityNetworkBuilder {
   }
 
   /**
+   * Defines the memo for the DiD Topic.
+   *
+   * @param didTopicMemo The memo for the DiD Topic
+   * @return This identity network builder instance.
+   */
+  public HcsIdentityNetworkBuilder setDidTopicMemo(final String didTopicMemo) {
+    this.didTopicMemo = didTopicMemo;
+    return this;
+  }
+
+  /**
+   * Defines the memo for the VC Topic.
+   *
+   * @param vcTopicMemo The memo for the VC Topic
+   * @return This identity network builder instance.
+   */
+  public HcsIdentityNetworkBuilder setVCTopicMemo(final String vcTopicMemo) {
+    this.vcTopicMemo = vcTopicMemo;
+    return this;
+  }
+
+  /**
    * Sets existing HCS Topic ID to be used for DID Document messages.
    *
-   * @param  didTopicId The DID {@link ConsensusTopicId} to set.
-   * @return            This identity network builder instance.
+   * @param didTopicId The DID {@link TopicId} to set.
+   * @return This identity network builder instance.
    */
-  public HcsIdentityNetworkBuilder setDidTopicId(final ConsensusTopicId didTopicId) {
+  public HcsIdentityNetworkBuilder setDidTopicId(final TopicId didTopicId) {
     this.didTopicId = didTopicId;
     return this;
   }
@@ -178,19 +146,41 @@ public class HcsIdentityNetworkBuilder {
   /**
    * Sets existing HCS Topic ID to be used for Verifiable Credentials messages.
    *
-   * @param  vcTopicId The Verifiable Credentials {@link ConsensusTopicId} to set.
-   * @return           This identity network builder instance.
+   * @param vcTopicId The Verifiable Credentials {@link TopicId} to set.
+   * @return This identity network builder instance.
    */
-  public HcsIdentityNetworkBuilder setVCTopicId(final ConsensusTopicId vcTopicId) {
+  public HcsIdentityNetworkBuilder setVCTopicId(final TopicId vcTopicId) {
     this.vcTopicId = vcTopicId;
+    return this;
+  }
+
+  /**
+   * Sets the max fee for transactions.
+   *
+   * @param maxTransactionFee The max transaction fee in hBar
+   * @return This identity network builder instance.
+   */
+  public HcsIdentityNetworkBuilder setMaxTransactionFee(final Hbar maxTransactionFee) {
+    this.maxTransactionFee = maxTransactionFee;
+    return this;
+  }
+
+  /**
+   * Sets the key for topic submission.
+   *
+   * @param publicKey The publicKey to use.
+   * @return This identity network builder instance.
+   */
+  public HcsIdentityNetworkBuilder setPublicKey(final PublicKey publicKey) {
+    this.publicKey = publicKey;
     return this;
   }
 
   /**
    * Defines the Hedera Network on which the identities and credentials are registered.
    *
-   * @param  network The network to set.
-   * @return         This identity network builder instance.
+   * @param network The network to set.
+   * @return This identity network builder instance.
    */
   public HcsIdentityNetworkBuilder setNetwork(final String network) {
     this.network = network;

@@ -5,10 +5,10 @@ import com.google.gson.annotations.Expose;
 import com.hedera.hashgraph.identity.hcs.Message;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.Base64;
-import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
+import java8.util.function.BiFunction;
+import org.threeten.bp.Instant;
 
 /**
  * The Verifiable Credential message.
@@ -21,10 +21,22 @@ public class HcsVcMessage extends Message {
   private final String credentialHash;
 
   /**
+   * Creates a new message instance.
+   *
+   * @param operation      Operation type.
+   * @param credentialHash Credential hash.
+   */
+  protected HcsVcMessage(final HcsVcOperation operation, final String credentialHash) {
+    super();
+    this.operation = operation;
+    this.credentialHash = credentialHash;
+  }
+
+  /**
    * Provides an encryption operator that converts an {@link HcsVcMessage} into encrypted one.
    *
-   * @param  encryptionFunction The encryption function to use for encryption of single attributes.
-   * @return                    The encryption operator instance.
+   * @param encryptionFunction The encryption function to use for encryption of single attributes.
+   * @return The encryption operator instance.
    */
   public static UnaryOperator<HcsVcMessage> getEncrypter(final UnaryOperator<byte[]> encryptionFunction) {
     if (encryptionFunction == null) {
@@ -44,11 +56,11 @@ public class HcsVcMessage extends Message {
   /**
    * Provides a decryption function that converts {@link HcsVcMessage} in encrypted for into a plain form.
    *
-   * @param  decryptionFunction The decryption function to use for decryption of single attributes.
-   * @return                    The decryption function for the {@link HcsVcMessage}
+   * @param decryptionFunction The decryption function to use for decryption of single attributes.
+   * @return The decryption function for the {@link HcsVcMessage}
    */
   public static BiFunction<HcsVcMessage, Instant, HcsVcMessage> getDecrypter(
-      final BiFunction<byte[], Instant, byte[]> decryptionFunction) {
+          final BiFunction<byte[], Instant, byte[]> decryptionFunction) {
     if (decryptionFunction == null) {
       throw new IllegalArgumentException("Decryption function is missing or null.");
     }
@@ -68,26 +80,14 @@ public class HcsVcMessage extends Message {
   }
 
   /**
-   * Creates a new message instance.
-   *
-   * @param operation      Operation type.
-   * @param credentialHash Credential hash.
-   */
-  protected HcsVcMessage(final HcsVcOperation operation, final String credentialHash) {
-    super();
-    this.operation = operation;
-    this.credentialHash = credentialHash;
-  }
-
-  /**
    * Creates a new VC message for submission to HCS topic.
    *
-   * @param  credentialHash VC hash.
-   * @param  operation      The operation on a VC document.
-   * @return                The HCS message wrapped in an envelope for the given VC and operation.
+   * @param credentialHash VC hash.
+   * @param operation      The operation on a VC document.
+   * @return The HCS message wrapped in an envelope for the given VC and operation.
    */
   public static MessageEnvelope<HcsVcMessage> fromCredentialHash(final String credentialHash,
-      final HcsVcOperation operation) {
+                                                                 final HcsVcOperation operation) {
     HcsVcMessage message = new HcsVcMessage(operation, credentialHash);
     return new MessageEnvelope<>(message);
   }

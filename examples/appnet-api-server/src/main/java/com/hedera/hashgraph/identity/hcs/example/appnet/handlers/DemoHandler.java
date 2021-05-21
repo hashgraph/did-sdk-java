@@ -17,11 +17,11 @@ import com.hedera.hashgraph.identity.hcs.example.appnet.vc.Ed25519CredentialProo
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentBase;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcMessage;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
+import com.hedera.hashgraph.sdk.PrivateKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.threeten.bp.Instant;
 import ratpack.handling.Context;
 import ratpack.http.Status;
 import ratpack.jackson.Jackson;
@@ -33,8 +33,8 @@ import ratpack.jackson.Jackson;
  * so that private keys would not be handled and exchanged over REST API.
  */
 public class DemoHandler extends AppnetHandler {
+  public static final String HEADER_PRIVATE_KEY = "privateKey";
   private static Logger log = LoggerFactory.getLogger(DemoHandler.class);
-  private static final String HEADER_PRIVATE_KEY = "privateKey";
 
   /**
    * Instantiates the handler.
@@ -53,8 +53,9 @@ public class DemoHandler extends AppnetHandler {
    * @param ctx The HTTP context.
    */
   public void generateDid(final Context ctx) {
-    Ed25519PrivateKey privateKey = HcsDid.generateDidRootKey();
-    HcsDid did = new HcsDid(identityNetwork.getNetwork(), privateKey.publicKey, identityNetwork.getAddressBook().getFileId());
+    PrivateKey privateKey = HcsDid.generateDidRootKey();
+    HcsDid did = new HcsDid(identityNetwork.getNetwork(), privateKey.getPublicKey(),
+            identityNetwork.getAddressBook().getFileId());
     DidDocumentBase doc = did.generateDidDocument();
 
     ctx.header(HEADER_PRIVATE_KEY, privateKey.toString());
@@ -80,7 +81,7 @@ public class DemoHandler extends AppnetHandler {
    */
   private <T extends Message> void signMessage(final Context ctx, final Class<T> messageClass) {
     try {
-      Ed25519PrivateKey privateKey = getPrivateKeyFromHeader(ctx);
+      PrivateKey privateKey = getPrivateKeyFromHeader(ctx);
 
       ctx.getRequest().getBody().then(data -> signAndReturnMessage(ctx, data.getText(), privateKey, messageClass));
     } catch (Exception e) {
@@ -100,8 +101,8 @@ public class DemoHandler extends AppnetHandler {
    * @param messageClass The class type of the message.
    */
   private <T extends Message> void signAndReturnMessage(final Context ctx, final String json,
-      final Ed25519PrivateKey privateKey,
-      final Class<T> messageClass) {
+                                                        final PrivateKey privateKey,
+                                                        final Class<T> messageClass) {
     try {
       MessageEnvelope<T> envelope = MessageEnvelope.fromJson(json, messageClass);
       ctx.render(new String(envelope.sign(m -> privateKey.sign(m)), StandardCharsets.UTF_8));
@@ -148,20 +149,20 @@ public class DemoHandler extends AppnetHandler {
         vc.setIssuer(req.getIssuer());
         vc.setIssuanceDate(Instant.now());
         vc.addCredentialSubject(
-            new DrivingLicense(req.getOwner(), req.getFirstName(), req.getLastName(),
-                req.getDrivingLicenseCategories()));
+                new DrivingLicense(req.getOwner(), req.getFirstName(), req.getLastName(),
+                        req.getDrivingLicenseCategories()));
 
         CredentialSchema schema = new CredentialSchema("http://localhost:5050/driving-license-schema.json",
-            DrivingLicenseDocument.CREDENTIAL_SCHEMA_TYPE);
+                DrivingLicenseDocument.CREDENTIAL_SCHEMA_TYPE);
 
         vc.setCredentialSchema(schema);
 
-        Ed25519PrivateKey privateKey = getPrivateKeyFromHeader(ctx);
+        PrivateKey privateKey = getPrivateKeyFromHeader(ctx);
         Ed25519CredentialProof proof = new Ed25519CredentialProof(req.getIssuer());
         proof.sign(privateKey, vc.toNormalizedJson(true));
         vc.setProof(proof);
 
-        storage.registerCredentialIssuance(vc.toCredentialHash(), privateKey.publicKey);
+        storage.registerCredentialIssuance(vc.toCredentialHash(), privateKey.getPublicKey());
         ctx.render(vc.toNormalizedJson(false));
       } catch (Exception e) {
         ctx.getResponse().status(Status.INTERNAL_SERVER_ERROR);
@@ -174,18 +175,18 @@ public class DemoHandler extends AppnetHandler {
   /**
    * Extracts the Ed25519 private key from a request header parameter.
    *
-   * @param  ctx                      The HTTP context.
-   * @return                          The extracted private key.
+   * @param ctx The HTTP context.
+   * @return The extracted private key.
    * @throws IllegalArgumentException In case private key is missing or an invalid string was provided.
    */
-  private Ed25519PrivateKey getPrivateKeyFromHeader(final Context ctx) {
+  private PrivateKey getPrivateKeyFromHeader(final Context ctx) {
     String privateKeyString = ctx.getRequest().getHeaders().get(HEADER_PRIVATE_KEY);
     if (Strings.isNullOrEmpty(privateKeyString)) {
       throw new IllegalArgumentException("Private key is missing in the request header.");
     }
 
     try {
-      return Ed25519PrivateKey.fromString(privateKeyString);
+      return PrivateKey.fromString(privateKeyString);
     } catch (Exception ex) {
       throw new IllegalArgumentException("Provided private key is invalid.", ex);
     }

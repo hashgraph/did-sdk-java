@@ -19,7 +19,7 @@ An identity appnet should have the following artifacts created on the Hedera mai
 These could be set up manually by appnet administrators or can be created using `HcsIdentityNetworkBuilder` as follows:
 
 ```java
-Ed25519PublicKey myPublicKey = ...;
+PublicKey myPublicKey = ...;
 Client client = Client.forTestnet();
 
 HcsIdentityNetwork identityNetwork = new HcsIdentityNetworkBuilder()

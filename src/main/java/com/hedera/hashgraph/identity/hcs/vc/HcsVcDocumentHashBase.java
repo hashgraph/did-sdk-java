@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import java.time.Instant;
 import java.util.List;
+import org.threeten.bp.Instant;
 
 /**
  * The part of the VC document that is used for hash calculation.

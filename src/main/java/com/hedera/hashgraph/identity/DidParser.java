@@ -17,8 +17,8 @@ public final class DidParser {
   /**
    * Parses the given DID string into it's corresponding Hedera DID object.
    *
-   * @param  didString DID string.
-   * @return           {@link HederaDid} instance.
+   * @param didString DID string.
+   * @return {@link HederaDid} instance.
    */
   public static HederaDid parse(final String didString) {
     final int methodIndex = DidSyntax.DID_PREFIX.length() + 1;

@@ -13,7 +13,7 @@ import java.util.List;
  * A simple, manual example of a credential subject in verifiable credential - a driving license.
  */
 public class DrivingLicense extends CredentialSubject {
-  private static final String[] JSON_PROPERTIES_ORDER = { "id", "firstName", "lastName", "drivingLicenseCategories" };
+  private static final String[] JSON_PROPERTIES_ORDER = {"id", "firstName", "lastName", "drivingLicenseCategories"};
 
   @Expose
   private final String firstName;
@@ -33,7 +33,7 @@ public class DrivingLicense extends CredentialSubject {
    * @param drivingLicenseCategories A list of categories granted to the owner.
    */
   public DrivingLicense(final String did, final String firstName, final String lastName,
-      final List<String> drivingLicenseCategories) {
+                        final List<String> drivingLicenseCategories) {
     this.id = did;
     this.firstName = firstName;
     this.lastName = lastName;

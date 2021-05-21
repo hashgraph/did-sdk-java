@@ -1,27 +1,24 @@
 package com.hedera.hashgraph.identity.hcs.vc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.google.common.collect.Lists;
 import com.hedera.hashgraph.identity.hcs.AesEncryptionUtil;
 import com.hedera.hashgraph.identity.hcs.MessageEnvelope;
 import com.hedera.hashgraph.identity.hcs.NetworkReadyTestBase;
 import com.hedera.hashgraph.identity.hcs.did.HcsDid;
-import com.hedera.hashgraph.sdk.crypto.ed25519.Ed25519PrivateKey;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import com.hedera.hashgraph.sdk.PrivateKey;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.threeten.bp.Instant;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests operations on verifiable credentials and their status resolution.
@@ -36,7 +33,7 @@ class HcsVcEncryptionTest extends NetworkReadyTestBase {
   private HcsDid owner;
   private HcsVcDocumentBase<DemoAccessCredential> vc;
   private String credentialHash;
-  private Ed25519PrivateKey issuersPrivateKey;
+  private PrivateKey issuersPrivateKey;
 
   @Override
   protected void beforeAll() {
@@ -65,14 +62,14 @@ class HcsVcEncryptionTest extends NetworkReadyTestBase {
     AtomicReference<MessageEnvelope<HcsVcMessage>> messageRef = new AtomicReference<>(null);
 
     // Build and execute transaction with encrypted message
-    didNetwork.createVcTransaction(HcsVcOperation.ISSUE, credentialHash, issuersPrivateKey.publicKey)
-        .signMessage(doc -> issuersPrivateKey.sign(doc))
-        .buildAndSignTransaction(tx -> tx.setMaxTransactionFee(FEE).build(client))
-        .onMessageConfirmed(msg -> messageRef.set(msg))
-        .onError(EXPECT_NO_ERROR)
-        .onEncrypt(m -> AesEncryptionUtil.encrypt(m, SECRET))
-        .onDecrypt((m, i) -> AesEncryptionUtil.decrypt(m, SECRET))
-        .execute(client, mirrorClient);
+    didNetwork.createVcTransaction(HcsVcOperation.ISSUE, credentialHash, issuersPrivateKey.getPublicKey())
+            .signMessage(doc -> issuersPrivateKey.sign(doc))
+            .buildAndSignTransaction(tx -> tx.setMaxTransactionFee(FEE))
+            .onMessageConfirmed(msg -> messageRef.set(msg))
+            .onError(EXPECT_NO_ERROR)
+            .onEncrypt(m -> AesEncryptionUtil.encrypt(m, SECRET))
+            .onDecrypt((m, i) -> AesEncryptionUtil.decrypt(m, SECRET))
+            .execute(client);
 
     // Wait until consensus is reached and mirror node received the DID document, but with max. time limit.
     Awaitility.await().atMost(MIRROR_NODE_TIMEOUT).until(() -> messageRef.get() != null);
@@ -95,13 +92,13 @@ class HcsVcEncryptionTest extends NetworkReadyTestBase {
     AtomicReference<Map<String, MessageEnvelope<HcsVcMessage>>> mapRef = new AtomicReference<>(null);
 
     // Resolve encrypted message
-    didNetwork.getVcStatusResolver(m -> Lists.newArrayList(issuersPrivateKey.publicKey))
-        .addCredentialHash(credentialHash)
-        .setTimeout(NO_MORE_MESSAGES_TIMEOUT)
-        .onError(EXPECT_NO_ERROR)
-        .onDecrypt((m, i) -> AesEncryptionUtil.decrypt(m, SECRET))
-        .whenFinished(m -> mapRef.set(m))
-        .execute(mirrorClient);
+    didNetwork.getVcStatusResolver(m -> Lists.newArrayList(issuersPrivateKey.getPublicKey()))
+            .addCredentialHash(credentialHash)
+            .setTimeout(NO_MORE_MESSAGES_TIMEOUT)
+            .onError(EXPECT_NO_ERROR)
+            .onDecrypt((m, i) -> AesEncryptionUtil.decrypt(m, SECRET))
+            .whenFinished(m -> mapRef.set(m))
+            .execute(client);
 
     // Wait until mirror node resolves the DID.
     Awaitility.await().atMost(MIRROR_NODE_TIMEOUT).until(() -> mapRef.get() != null);
@@ -124,13 +121,13 @@ class HcsVcEncryptionTest extends NetworkReadyTestBase {
     AtomicReference<Map<String, MessageEnvelope<HcsVcMessage>>> mapRef = new AtomicReference<>(null);
 
     // Try to resolve encrypted message with a wrong secret
-    didNetwork.getVcStatusResolver(m -> Lists.newArrayList(issuersPrivateKey.publicKey))
-        .addCredentialHash(credentialHash)
-        .setTimeout(NO_MORE_MESSAGES_TIMEOUT)
-        .onError(e -> assertNotNull(e))
-        .onDecrypt((m, i) -> AesEncryptionUtil.decrypt(m, INVALID_SECRET))
-        .whenFinished(m -> mapRef.set(m))
-        .execute(mirrorClient);
+    didNetwork.getVcStatusResolver(m -> Lists.newArrayList(issuersPrivateKey.getPublicKey()))
+            .addCredentialHash(credentialHash)
+            .setTimeout(NO_MORE_MESSAGES_TIMEOUT)
+            .onError(e -> assertNotNull(e))
+            .onDecrypt((m, i) -> AesEncryptionUtil.decrypt(m, INVALID_SECRET))
+            .whenFinished(m -> mapRef.set(m))
+            .execute(client);
 
     // Wait until mirror node resolves the DID.
     Awaitility.await().atMost(MIRROR_NODE_TIMEOUT).until(() -> mapRef.get() != null);
@@ -145,20 +142,20 @@ class HcsVcEncryptionTest extends NetworkReadyTestBase {
     MessageEnvelope<HcsVcMessage> msg = HcsVcMessage.fromCredentialHash(credentialHash, HcsVcOperation.ISSUE);
 
     MessageEnvelope<HcsVcMessage> encryptedMsg = msg
-        .encrypt(HcsVcMessage.getEncrypter(m -> AesEncryptionUtil.encrypt(m, SECRET)));
+            .encrypt(HcsVcMessage.getEncrypter(m -> AesEncryptionUtil.encrypt(m, SECRET)));
 
     assertNotNull(encryptedMsg);
 
     MessageEnvelope<HcsVcMessage> encryptedSignedMsg = MessageEnvelope
-        .fromJson(new String(encryptedMsg.sign(m -> issuersPrivateKey.sign(m)), StandardCharsets.UTF_8),
-            HcsVcMessage.class);
+            .fromJson(new String(encryptedMsg.sign(m -> issuersPrivateKey.sign(m)), StandardCharsets.UTF_8),
+                    HcsVcMessage.class);
 
     assertNotNull(encryptedSignedMsg);
     // Throw error if decrypter is not provided
     assertThrows(IllegalArgumentException.class, () -> encryptedSignedMsg.open());
 
     HcsVcMessage decryptedMsg = encryptedSignedMsg
-        .open(HcsVcMessage.getDecrypter((m, i) -> AesEncryptionUtil.decrypt(m, SECRET)));
+            .open(HcsVcMessage.getDecrypter((m, i) -> AesEncryptionUtil.decrypt(m, SECRET)));
 
     assertNotNull(decryptedMsg);
     assertEquals(credentialHash, decryptedMsg.getCredentialHash());
