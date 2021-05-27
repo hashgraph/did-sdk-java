@@ -23,26 +23,14 @@ PublicKey myPublicKey = ...;
 Client client = Client.forTestnet();
 
 HcsIdentityNetwork identityNetwork = new HcsIdentityNetworkBuilder()
-    .setNetwork(HederaNetwork.TESTNET)
-    .setAppnetName("MyIdentityAppnet")
-    .addAppnetDidServer("https://appnet-did-server-url:port/path-to-did-api")
-    .buildAndSignAddressBookCreateTransaction(tx -> tx
-        .addKey(myPublicKey)
-        .setMaxTransactionFee(new Hbar(2))
-        .build(client))
-    .buildAndSignDidTopicCreateTransaction(tx -> tx
-        .setAdminKey(myPublicKey)
-        .setMaxTransactionFee(new Hbar(2))
-        .setSubmitKey(myPublicKey)
-        .setTopicMemo("MyIdentityAppnet DID topic")
-        .build(client))
-    .buildAndSignVcTopicCreateTransaction(tx -> tx
-        .setAdminKey(myPublicKey)
-        .setMaxTransactionFee(new Hbar(2))
-        .setSubmitKey(myPublicKey)
-        .setTopicMemo("MyIdentityAppnet VC topic")
-        .build(client))
-    .execute(client);
+  .setNetwork("testnet")
+  .setAppnetName("MyIdentityAppnet")
+  .addAppnetDidServer("https://appnet-did-server-url:port/path-to-did-api")
+  .setPublicKey(publicKey)
+  .setMaxTransactionFee(new Hbar(2))
+  .setDidTopicMemo("MyIdentityAppnet DID topic")
+  .setVCTopicMemo("MyIdentityAppnet VC topic")
+  .execute(client);
 ```
 
 `FileCreateTransaction` for address book file creation and `ConsensusTopicCreateTransaction` for DID and VC topic creation can be configured in a standard way as specified in Hedera Java SDK.
