@@ -1,0 +1,5 @@
+com.hedera.hashgraph.identity
+com.hedera.hashgraph.identity.hcs
+com.hedera.hashgraph.identity.hcs.did
+com.hedera.hashgraph.identity.hcs.vc
+com.hedera.hashgraph.identity.utils
