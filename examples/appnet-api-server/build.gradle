@@ -10,7 +10,7 @@ buildscript {
 plugins {
     id "java"
     id "application"
-    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "com.github.johnrengelman.shadow"
 }
 
 apply plugin: "io.ratpack.ratpack-java"
@@ -48,7 +48,7 @@ jar {
 shadowJar {
     // by default, this plugin generates a new `-all` jar
     // the empty string makes it override the non-all jar
-    classifier = ""
+    archiveClassifier.set('')
 }
 
 quality {
