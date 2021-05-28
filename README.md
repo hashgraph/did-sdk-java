@@ -157,3 +157,23 @@ Licensed under [Apache License, Version 2.0](LICENSE).
 [did-core]: https://www.w3.org/TR/did-core/
 [vc-data-model]: https://www.w3.org/TR/vc-data-model/
 [sdk-javadocs]: https://hashgraph.github.io/did-sdk-java/sdk-javadocs/
+
+## Publishing to maven
+
+from the command line (gradle version 6.7.1)
+
+_Note: a `gradle.properties` file must exist and contain the following information_
+
+```
+sonatypeUsername=
+sonatypePassword=
+
+signing.keyId=
+signing.password=
+signing.secretKeyRingFile=
+```
+
+```shell
+gradle publishToSonatype closeAndReleaseSonatypeStagingRepository
+```
+

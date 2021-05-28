@@ -97,7 +97,6 @@ Here is example DID document creation code:
 
 ```java
 Client client = ...;
-client client = ...;
 HcsIdentityNetwork identityNetwork = ...;
 
 PrivateKey didRootKey = ...;
@@ -119,7 +118,7 @@ identityNetwork.createDidTransaction(DidMethodOperation.CREATE)
       System.out.println(msg.getDidDocument());
     })
     // Execute transaction
-    .execute(client, client);
+    .execute(client);
 ```
 
 Appnet implementations can optionally add a callback listener and receive an event when the HCS message carrying the DID operation reached consensus and was subsequently propagated to the mirror network.
