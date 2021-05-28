@@ -1,6 +1,7 @@
 package com.hedera.hashgraph.identity.hcs;
 
 import com.google.common.base.Charsets;
+import com.hedera.hashgraph.identity.utils.Validator;
 import com.hedera.hashgraph.sdk.Client;
 import com.hedera.hashgraph.sdk.FileCreateTransaction;
 import com.hedera.hashgraph.sdk.FileId;
@@ -23,6 +24,7 @@ public class HcsIdentityNetworkBuilder {
   private String appnetName;
   private TopicId didTopicId;
   private TopicId vcTopicId;
+  private FileId fileId;
   private String network;
   private List<String> didServers;
   private PublicKey publicKey;
@@ -44,39 +46,47 @@ public class HcsIdentityNetworkBuilder {
   public HcsIdentityNetwork execute(final Client client)
           throws ReceiptStatusException, PrecheckStatusException, TimeoutException {
 
-    TopicCreateTransaction didTopicCreateTransaction = new TopicCreateTransaction()
-            .setMaxTransactionFee(maxTransactionFee)
-            .setTopicMemo(didTopicMemo);
-    if (publicKey != null) {
-      didTopicCreateTransaction.setAdminKey(publicKey);
+    if (this.didTopicId == null) {
+      TopicCreateTransaction didTopicCreateTransaction = new TopicCreateTransaction()
+              .setMaxTransactionFee(maxTransactionFee)
+              .setTopicMemo(didTopicMemo);
+      if (publicKey != null) {
+        didTopicCreateTransaction.setAdminKey(publicKey);
+      }
+
+      TransactionResponse didTxId = didTopicCreateTransaction
+              .execute(client);
+      didTopicId = didTxId.getReceipt(client).topicId;
     }
 
-    TransactionResponse didTxId = didTopicCreateTransaction
-            .execute(client);
-    didTopicId = didTxId.getReceipt(client).topicId;
+    if (this.vcTopicId == null) {
+      TopicCreateTransaction vcTopicCreateTransaction = new TopicCreateTransaction()
+              .setMaxTransactionFee(maxTransactionFee)
+              .setTopicMemo(vcTopicMemo);
+      if (publicKey != null) {
+        vcTopicCreateTransaction.setAdminKey(publicKey);
+      }
 
-    TopicCreateTransaction vcTopicCreateTransaction = new TopicCreateTransaction()
-            .setMaxTransactionFee(maxTransactionFee)
-            .setTopicMemo(vcTopicMemo);
-    if (publicKey != null) {
-      vcTopicCreateTransaction.setAdminKey(publicKey);
+      TransactionResponse vcTxId = vcTopicCreateTransaction.execute(client);
+      vcTopicId = vcTxId.getReceipt(client).topicId;
     }
 
-    TransactionResponse vcTxId = vcTopicCreateTransaction.execute(client);
-    vcTopicId = vcTxId.getReceipt(client).topicId;
-
-    // Create address book file.
     AddressBook addressBook = AddressBook
             .create(appnetName, didTopicId.toString(), vcTopicId.toString(), didServers);
 
-    FileCreateTransaction fileCreateTx = new FileCreateTransaction()
-            .setContents(addressBook.toJson().getBytes(Charsets.UTF_8));
+    if (this.fileId == null) {
 
-    TransactionResponse response = fileCreateTx.execute(client);
-    TransactionReceipt receipt = response.getReceipt(client);
-    FileId fileId = receipt.fileId;
+      FileCreateTransaction fileCreateTx = new FileCreateTransaction()
+              .setContents(addressBook.toJson().getBytes(Charsets.UTF_8));
 
-    addressBook.setFileId(fileId);
+      TransactionResponse response = fileCreateTx.execute(client);
+      TransactionReceipt receipt = response.getReceipt(client);
+      fileId = receipt.fileId;
+
+      addressBook.setFileId(fileId);
+    } else {
+      addressBook.setFileId(fileId);
+    }
 
     return HcsIdentityNetwork.fromAddressBook(network, addressBook);
   }
@@ -151,6 +161,17 @@ public class HcsIdentityNetworkBuilder {
    */
   public HcsIdentityNetworkBuilder setVCTopicId(final TopicId vcTopicId) {
     this.vcTopicId = vcTopicId;
+    return this;
+  }
+
+  /**
+   * Sets existing File ID to be used for the address book
+   *
+   * @param fileId The File Id {@link FileId} to set.
+   * @return This identity network builder instance.
+   */
+  public HcsIdentityNetworkBuilder setAddressBookFileId(final FileId fileId) {
+    this.fileId = fileId;
     return this;
   }
 
