@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "e9c7ba87-977d-432e-9f69-1d3398a9df99",
-		"name": "Hedera - test requests",
+		"name": "DiD SDK - test requests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -273,7 +273,6 @@
 	],
 	"variable": [
 		{
-			"id": "386132ce-685c-4287-b0d2-0ae8b91d99ed",
 			"key": "baseUrl",
 			"value": "http://localhost:5050",
 			"type": "string"
