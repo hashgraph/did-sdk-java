@@ -46,22 +46,20 @@ The SDK does not impose any particular way of how the DID or verifiable credenti
 
 ### Dependency Declaration
 
-> TODO: To be updated after release to MVN Repository.
-
 #### Maven
 
 ```xml
 <dependency>
   <groupId>com.hedera.hashgraph</groupId>
-  <artifactId>identity</artifactId>
-  <version>1.0.0</version>
+  <artifactId>did-sdk-java</artifactId>
+  <version>0.0.1</version>
 </dependency>
 ```
 
 #### Gradle
 
 ```gradle
-implementation group: 'com.hedera.hashgraph', name: 'identity', version: '1.0.0'
+implementation 'com.hedera.hashgraph:did-sdk-java:0.0.1'
 ```
 
 ### Documentation
