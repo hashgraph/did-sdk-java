@@ -1,7 +1,6 @@
 package com.hedera.hashgraph.identity.hcs;
 
 import com.google.common.base.Charsets;
-import com.hedera.hashgraph.identity.utils.Validator;
 import com.hedera.hashgraph.sdk.Client;
 import com.hedera.hashgraph.sdk.FileCreateTransaction;
 import com.hedera.hashgraph.sdk.FileId;
@@ -22,9 +21,6 @@ import java.util.concurrent.TimeoutException;
  */
 public class HcsIdentityNetworkBuilder {
   private String appnetName;
-  private TopicId didTopicId;
-  private TopicId vcTopicId;
-  private FileId fileId;
   private String network;
   private List<String> didServers;
   private PublicKey publicKey;
@@ -46,47 +42,38 @@ public class HcsIdentityNetworkBuilder {
   public HcsIdentityNetwork execute(final Client client)
           throws ReceiptStatusException, PrecheckStatusException, TimeoutException {
 
-    if (this.didTopicId == null) {
-      TopicCreateTransaction didTopicCreateTransaction = new TopicCreateTransaction()
-              .setMaxTransactionFee(maxTransactionFee)
-              .setTopicMemo(didTopicMemo);
-      if (publicKey != null) {
-        didTopicCreateTransaction.setAdminKey(publicKey);
-      }
-
-      TransactionResponse didTxId = didTopicCreateTransaction
-              .execute(client);
-      didTopicId = didTxId.getReceipt(client).topicId;
+    TopicCreateTransaction didTopicCreateTransaction = new TopicCreateTransaction()
+            .setMaxTransactionFee(maxTransactionFee)
+            .setTopicMemo(didTopicMemo);
+    if (publicKey != null) {
+      didTopicCreateTransaction.setAdminKey(publicKey);
     }
 
-    if (this.vcTopicId == null) {
-      TopicCreateTransaction vcTopicCreateTransaction = new TopicCreateTransaction()
-              .setMaxTransactionFee(maxTransactionFee)
-              .setTopicMemo(vcTopicMemo);
-      if (publicKey != null) {
-        vcTopicCreateTransaction.setAdminKey(publicKey);
-      }
+    TransactionResponse didTxId = didTopicCreateTransaction
+            .execute(client);
+    TopicId didTopicId = didTxId.getReceipt(client).topicId;
 
-      TransactionResponse vcTxId = vcTopicCreateTransaction.execute(client);
-      vcTopicId = vcTxId.getReceipt(client).topicId;
+    TopicCreateTransaction vcTopicCreateTransaction = new TopicCreateTransaction()
+            .setMaxTransactionFee(maxTransactionFee)
+            .setTopicMemo(vcTopicMemo);
+    if (publicKey != null) {
+      vcTopicCreateTransaction.setAdminKey(publicKey);
     }
+
+    TransactionResponse vcTxId = vcTopicCreateTransaction.execute(client);
+    TopicId vcTopicId = vcTxId.getReceipt(client).topicId;
 
     AddressBook addressBook = AddressBook
             .create(appnetName, didTopicId.toString(), vcTopicId.toString(), didServers);
 
-    if (this.fileId == null) {
+    FileCreateTransaction fileCreateTx = new FileCreateTransaction()
+            .setContents(addressBook.toJson().getBytes(Charsets.UTF_8));
 
-      FileCreateTransaction fileCreateTx = new FileCreateTransaction()
-              .setContents(addressBook.toJson().getBytes(Charsets.UTF_8));
+    TransactionResponse response = fileCreateTx.execute(client);
+    TransactionReceipt receipt = response.getReceipt(client);
+    FileId fileId = receipt.fileId;
 
-      TransactionResponse response = fileCreateTx.execute(client);
-      TransactionReceipt receipt = response.getReceipt(client);
-      fileId = receipt.fileId;
-
-      addressBook.setFileId(fileId);
-    } else {
-      addressBook.setFileId(fileId);
-    }
+    addressBook.setFileId(fileId);
 
     return HcsIdentityNetwork.fromAddressBook(network, addressBook);
   }
@@ -139,39 +126,6 @@ public class HcsIdentityNetworkBuilder {
    */
   public HcsIdentityNetworkBuilder setVCTopicMemo(final String vcTopicMemo) {
     this.vcTopicMemo = vcTopicMemo;
-    return this;
-  }
-
-  /**
-   * Sets existing HCS Topic ID to be used for DID Document messages.
-   *
-   * @param didTopicId The DID {@link TopicId} to set.
-   * @return This identity network builder instance.
-   */
-  public HcsIdentityNetworkBuilder setDidTopicId(final TopicId didTopicId) {
-    this.didTopicId = didTopicId;
-    return this;
-  }
-
-  /**
-   * Sets existing HCS Topic ID to be used for Verifiable Credentials messages.
-   *
-   * @param vcTopicId The Verifiable Credentials {@link TopicId} to set.
-   * @return This identity network builder instance.
-   */
-  public HcsIdentityNetworkBuilder setVCTopicId(final TopicId vcTopicId) {
-    this.vcTopicId = vcTopicId;
-    return this;
-  }
-
-  /**
-   * Sets existing File ID to be used for the address book
-   *
-   * @param fileId The File Id {@link FileId} to set.
-   * @return This identity network builder instance.
-   */
-  public HcsIdentityNetworkBuilder setAddressBookFileId(final FileId fileId) {
-    this.fileId = fileId;
     return this;
   }
 
