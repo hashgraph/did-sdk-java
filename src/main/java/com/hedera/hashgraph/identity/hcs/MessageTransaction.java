@@ -3,7 +3,9 @@ package com.hedera.hashgraph.identity.hcs;
 import com.google.common.base.Strings;
 import com.hedera.hashgraph.identity.utils.Validator;
 import com.hedera.hashgraph.sdk.Client;
+import com.hedera.hashgraph.sdk.Hbar;
 import com.hedera.hashgraph.sdk.PrecheckStatusException;
+import com.hedera.hashgraph.sdk.PrivateKey;
 import com.hedera.hashgraph.sdk.TopicId;
 import com.hedera.hashgraph.sdk.TopicMessageSubmitTransaction;
 import com.hedera.hashgraph.sdk.Transaction;
@@ -29,7 +31,9 @@ public abstract class MessageTransaction<T extends Message> {
   private Consumer<Throwable> errorHandler;
   private boolean executed;
   private UnaryOperator<byte[]> signer;
+  private PrivateKey privateKey;
   private MessageListener<T> listener;
+  private Hbar maxTransactionFee;
 
   /**
    * Creates a new instance of a message transaction.
@@ -110,6 +114,17 @@ public abstract class MessageTransaction<T extends Message> {
   }
 
   /**
+   * Sets the maximum transaction fee.
+   *
+   * @param maxTransactionFee The maximum fee the client is willing to pay for the transaction.
+   * @return This transaction instance.
+   */
+  public MessageTransaction<T> setMaxTransactionFee(final Hbar maxTransactionFee) {
+    this.maxTransactionFee = maxTransactionFee;
+    return this;
+  }
+
+  /**
    * Handles event from a mirror node when a message was consensus was reached and message received.
    *
    * @param receiver The receiver handling incoming message.
@@ -155,6 +170,17 @@ public abstract class MessageTransaction<T extends Message> {
   }
 
   /**
+   * Defines a function that sets the private key for message signing.
+   *
+   * @param privateKey The private key to sign the message with.
+   * @return This transaction instance.
+   */
+  public MessageTransaction<T> setSigningKey(final PrivateKey privateKey) {
+    this.privateKey = privateKey;
+    return this;
+  }
+
+  /**
    * Sets {@link TopicMessageSubmitTransaction} parameters, builds and signs it without executing it.
    * Topic ID and transaction message content are already set in the incoming transaction.
    *
@@ -181,18 +207,24 @@ public abstract class MessageTransaction<T extends Message> {
       envelope.encrypt(provideMessageEncrypter(encrypter));
     }
 
-    byte[] messageContent = envelope.getSignature() == null ? envelope.sign(signer)
-            : envelope.toJson().getBytes(StandardCharsets.UTF_8);
+    byte[] messageContent;
+
+    if (envelope.getSignature() == null) {
+      messageContent = (this.privateKey != null) ? envelope.sign(privateKey) : envelope.sign(signer);
+    } else {
+      messageContent = envelope.toJson().getBytes(StandardCharsets.UTF_8);
+    }
 
     if (receiver != null) {
       listener = provideTopicListener(topicId);
+      byte[] finalMessageContent = messageContent;
       listener.setStartTime(Instant.now().minusSeconds(1))
               .setIgnoreErrors(false)
-              .addFilter(r -> Arrays.equals(messageContent, r.contents))
+              .addFilter(r -> Arrays.equals(finalMessageContent, r.contents))
               .onError(err -> handleError(err))
               .onInvalidMessageReceived((response, reason) -> {
                 // Consider only the message submitted.
-                if (!Arrays.equals(messageContent, response.contents)) {
+                if (!Arrays.equals(finalMessageContent, response.contents)) {
                   return;
                 }
 
@@ -211,11 +243,20 @@ public abstract class MessageTransaction<T extends Message> {
             .setTopicId(topicId)
             .setMessage(messageContent);
 
+    if (this.maxTransactionFee != null) {
+      tx.setMaxTransactionFee(this.maxTransactionFee);
+    }
+
     TransactionId transactionId = null;
     try {
-      TransactionResponse response = (TransactionResponse) buildTransactionFunction
-              .apply(tx)
-              .execute(client);
+      TransactionResponse response;
+      if (buildTransactionFunction != null) {
+        response = (TransactionResponse) buildTransactionFunction
+                .apply(tx)
+                .execute(client);
+      } else {
+        response = tx.execute(client);
+      }
       transactionId = response.transactionId;
       executed = true;
     } catch (PrecheckStatusException | TimeoutException e) {
@@ -235,10 +276,14 @@ public abstract class MessageTransaction<T extends Message> {
    */
   protected void validate(final Validator validator) {
     validator.require(!executed, "This transaction has already been executed.");
-    // signing function is only needed if signed message was not provided.
-    validator.require(signer != null || (message != null && !Strings.isNullOrEmpty(message.getSignature())),
+    // signing function or signing key is only needed if signed message was not provided.
+    validator.require(signer != null
+                    || privateKey != null
+                    || (message != null && !Strings.isNullOrEmpty(message.getSignature())),
             "Signing function is missing.");
-    validator.require(buildTransactionFunction != null, "Transaction builder is missing.");
+    if (this.maxTransactionFee == null) {
+      validator.require(buildTransactionFunction != null, "Transaction builder is missing.");
+    }
     validator.require((encrypter != null && decrypter != null) || (encrypter == null && decrypter == null),
             "Either both encrypter and decrypter must be specified or none.");
   }
