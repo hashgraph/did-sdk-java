@@ -120,6 +120,34 @@ identityNetwork.createDidTransaction(DidMethodOperation.CREATE)
   .execute(client);
 ```
 
+alternatively, without lambda expressions
+
+```java
+  Client client = ...;
+  HcsIdentityNetwork identityNetwork = ...;
+
+  PrivateKey didRootKey = ...;
+  HcsDid hcsDid = ...;
+
+  String didDocument = hcsDid.generateDidDocument().toJson();
+
+  // Build and execute transaction
+  identityNetwork.createDidTransaction(DidMethodOperation.CREATE)
+    // Provide DID document as JSON string
+    .setDidDocument(didDocument)
+    // Set the DID root key as the signing key (private key)
+    .setSigningKey(didRootKey)
+    // Set the maximum transaction fee
+    .setMaxTransactionFee(new Hbar(2))
+    // Define callback function when consensus was reached and DID document came back from mirror node
+    .onMessageConfirmed(msg -> {
+      System.out.println("DID document published!");
+    })
+    // Execute transaction
+    .execute(client);
+
+```
+
 Appnet implementations can optionally add a callback listener and receive an event when the HCS message carrying the DID operation reached consensus and was subsequently propagated to the mirror network.
 They can also have their own mirror node listener and catch incoming messages from the relevant DID topic.
 
