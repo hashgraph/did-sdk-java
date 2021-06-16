@@ -16,6 +16,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -266,7 +267,7 @@ public class AppnetStorage extends AppnetStorageProperties {
     didCount += 1;
     if (didCount == didStoreInterval) {
       didCount = 0;
-      try (OutputStream fos = Files.newOutputStream(Paths.get(DIDSFILEPATH))) {
+      try (OutputStream fos = Files.newOutputStream(Paths.get(DIDSFILEPATH), StandardOpenOption.CREATE)) {
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(didStorage);
         oos.writeObject(consensusTimeStamp);
@@ -287,7 +288,7 @@ public class AppnetStorage extends AppnetStorageProperties {
     vcCount += 1;
     if (vcCount == vcStoreInterval) {
       vcCount = 0;
-      try (OutputStream fos = Files.newOutputStream(Paths.get(VCSFILEPATH))) {
+      try (OutputStream fos = Files.newOutputStream(Paths.get(VCSFILEPATH), StandardOpenOption.CREATE)) {
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(vcStorage);
         oos.writeObject(consensusTimeStamp);
@@ -303,7 +304,7 @@ public class AppnetStorage extends AppnetStorageProperties {
    * Persists signatures to a file.
    */
   private void persistSignatures() {
-    try (OutputStream fos = Files.newOutputStream(Paths.get(SIGNATURES_FILE_PATH))) {
+    try (OutputStream fos = Files.newOutputStream(Paths.get(SIGNATURES_FILE_PATH), StandardOpenOption.CREATE)) {
       ObjectOutputStream oos = new ObjectOutputStream(fos);
       oos.writeObject(signatures);
       oos.close();
@@ -317,7 +318,7 @@ public class AppnetStorage extends AppnetStorageProperties {
    * Persists crediential issuers to a file.
    */
   private void persistCredentialIssuers() {
-    try (OutputStream fos = Files.newOutputStream(Paths.get(CREDENTIAL_ISSUERS_FILE_PATH))) {
+    try (OutputStream fos = Files.newOutputStream(Paths.get(CREDENTIAL_ISSUERS_FILE_PATH), StandardOpenOption.CREATE)) {
       ObjectOutputStream oos = new ObjectOutputStream(fos);
 
       Map<String, String> persistedCredentialIssuers = new HashMap<>();
