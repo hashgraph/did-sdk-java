@@ -98,3 +98,5 @@ examples/persistedCredentialIssuers.ser
 examples/persistedDiDs.ser
 examples/persistedSignatures.ser
 examples/persistedVCs.ser
+gradle.properties
+data/

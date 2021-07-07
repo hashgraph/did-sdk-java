@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "26968fdd-1c1e-4c3f-802e-b7cc82319712",
-		"name": "Hedera - e2e flow",
+		"_postman_id": "50ec4f9e-7d2f-43af-adab-f16d94ab3275",
+		"name": "DiD SDK - e2e flow",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -11,7 +11,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "b83ec81d-8a71-4157-a391-3fbcc71cde01",
 						"exec": [
 							"pm.collectionVariables.set(\"issuerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
 							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);",
@@ -48,7 +47,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "74b2ca3c-313f-492c-9eb0-5663fb9925a0",
 						"exec": [
 							"pm.collectionVariables.set(\"didMessage\", responseBody);"
 						],
@@ -61,12 +59,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{{issuerDidDocument}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{issuerDidDocument}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/did",
@@ -86,7 +79,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "00985ee1-e078-4068-b41a-1cabb7fa2383",
 						"exec": [
 							"pm.collectionVariables.set(\"didMessage\", responseBody);"
 						],
@@ -105,12 +97,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{{didMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{didMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/demo/sign-did-message",
@@ -132,12 +119,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{{didMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{didMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/did-submit",
@@ -157,7 +139,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "43031c91-1612-4083-9b66-05838b2d0729",
 						"exec": [
 							""
 						],
@@ -173,12 +154,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/did",
@@ -198,7 +174,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "0b962001-deed-4346-b357-65c484b5df88",
 						"exec": [
 							"pm.collectionVariables.set(\"ownerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
 							"pm.collectionVariables.set(\"ownerDidDocument\", responseBody);",
@@ -235,7 +210,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "cae9b1c4-3468-4bdb-b2f1-d8cf6a584a83",
 						"exec": [
 							"pm.collectionVariables.set(\"drivingLicense\", responseBody);",
 							""
@@ -255,12 +229,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"issuer\": \"{{issuerDid}}\",\n\t\"owner\": \"{{ownerDid}}\",\n\t\"firstName\": \"John\",\n\t\"lastName\": \"Doe\",\n\t\"drivingLicenseCategories\": [\"A\", \"B1\", \"T\"]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{\n\t\"issuer\": \"{{issuerDid}}\",\n\t\"owner\": \"{{ownerDid}}\",\n\t\"firstName\": \"John\",\n\t\"lastName\": \"Doe\",\n\t\"drivingLicenseCategories\": [\"A\", \"B1\", \"T\"]\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/demo/generate-driving-license",
@@ -281,7 +250,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "3f2a87ef-fd2d-4e17-9c5b-23377b7fdf6c",
 						"exec": [
 							"pm.collectionVariables.set(\"credentialHash\", responseBody);",
 							""
@@ -290,20 +258,12 @@
 					}
 				}
 			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{{drivingLicense}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{drivingLicense}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/demo/get-credential-hash",
@@ -324,7 +284,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "b010bd61-2b69-4c4f-85b2-b5d036d37525",
 						"exec": [
 							"pm.collectionVariables.set(\"vcMessage\", responseBody);",
 							""
@@ -338,12 +297,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": ""
 				},
 				"url": {
 					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
@@ -364,7 +318,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "2bf27c00-6bf3-4772-a9aa-6f5268dcd3f6",
 						"exec": [
 							"pm.collectionVariables.set(\"vcMessage\", responseBody);"
 						],
@@ -383,12 +336,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{{vcMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{vcMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/demo/sign-vc-message",
@@ -410,12 +358,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{{vcMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{vcMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/vc-submit",
@@ -435,7 +378,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "7035f5db-4b61-4be1-9e59-7beb36dbd387",
 						"exec": [
 							""
 						],
@@ -465,7 +407,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "561c4785-c75d-4c53-a64e-24276659ee74",
 						"exec": [
 							"pm.collectionVariables.set(\"vcMessage\", responseBody);",
 							""
@@ -479,12 +420,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": ""
 				},
 				"url": {
 					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
@@ -505,7 +441,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "560a0129-dd21-480a-8ab0-7129eb0470f3",
 						"exec": [
 							"pm.collectionVariables.set(\"vcMessage\", responseBody);"
 						],
@@ -524,12 +459,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{{vcMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{vcMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/demo/sign-vc-message",
@@ -551,12 +481,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{{vcMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{vcMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/vc-submit",
@@ -576,7 +501,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "3f11c655-12e9-401d-9fb7-026cb65b83e2",
 						"exec": [
 							""
 						],
@@ -606,7 +530,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "50d9a9d2-ff9c-45f5-bf5e-f7325837286d",
 						"exec": [
 							"var jsonData = JSON.parse(pm.collectionVariables.get(\"issuerDidDocument\"));",
 							"pm.collectionVariables.set(\"issuerDidPublicKeyPart\", JSON.stringify(jsonData.publicKey));",
@@ -618,7 +541,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "80516346-b073-444e-8ca9-327a4463e236",
 						"exec": [
 							"pm.collectionVariables.set(\"didMessage\", responseBody);"
 						],
@@ -631,12 +553,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": {{issuerDidAuthenticationPart}},\r\n    \"service\": [{\r\n    \t\"id\": \"#test-service\",\r\n    \t\"type\": \"VerifiableCredentialService\",\r\n    \t\"serviceEndpoint\": \"https://example.appnet.com/vc/\"\r\n    }]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": {{issuerDidAuthenticationPart}},\r\n    \"service\": [{\r\n    \t\"id\": \"#test-service\",\r\n    \t\"type\": \"VerifiableCredentialService\",\r\n    \t\"serviceEndpoint\": \"https://example.appnet.com/vc/\"\r\n    }]\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/did",
@@ -656,7 +573,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "cea2d85c-0df8-4dba-b27f-8ed37a0141c7",
 						"exec": [
 							"pm.collectionVariables.set(\"didMessage\", responseBody);"
 						],
@@ -675,12 +591,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{{didMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{didMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/demo/sign-did-message",
@@ -702,12 +613,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{{didMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{didMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/did-submit",
@@ -727,7 +633,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "da96536a-f47a-4874-aaf4-7509ad89150b",
 						"exec": [
 							""
 						],
@@ -737,7 +642,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "ff8fba13-3984-4a50-b98a-3626760d6b39",
 						"exec": [
 							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);"
 						],
@@ -753,12 +657,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/did",
@@ -778,7 +677,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "b253c671-54b6-4392-a9fa-706e8c86ffa7",
 						"exec": [
 							"var jsonData = JSON.parse(pm.collectionVariables.get(\"issuerDidDocument\"));",
 							"pm.collectionVariables.set(\"issuerDidPublicKeyPart\", JSON.stringify(jsonData.publicKey));"
@@ -789,7 +687,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "769da631-ecc4-4356-8147-cc9da2126cc5",
 						"exec": [
 							"pm.collectionVariables.set(\"didMessage\", responseBody);"
 						],
@@ -802,12 +699,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": []\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": []\r\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/did",
@@ -827,7 +719,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "2355684a-e10a-43d4-a7f6-23bd73515788",
 						"exec": [
 							"pm.collectionVariables.set(\"didMessage\", responseBody);"
 						],
@@ -846,12 +737,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{{didMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{didMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/demo/sign-did-message",
@@ -873,12 +759,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{{didMessage}}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{{didMessage}}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/did-submit",
@@ -893,12 +774,11 @@
 			"response": []
 		},
 		{
-			"name": "24. DID  - RESOLVE Issuer's DID after delete should fail",
+			"name": "24. DID  - RESOLVE Issuer's DID after delete should fail (allow a few seconds for message propagation)",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "ba9b4cdf-2a20-4ecc-8d25-c45db3b52221",
 						"exec": [
 							""
 						],
@@ -908,7 +788,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "899d08fa-0db9-4ea7-9d9b-735647588eeb",
 						"exec": [
 							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);"
 						],
@@ -924,12 +803,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}"
 				},
 				"url": {
 					"raw": "{{baseUrl}}/did",
@@ -948,7 +822,6 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "f027e46a-4910-40a0-9ef4-67ede9d76c44",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -958,7 +831,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "f4d97ee4-67ba-4984-af6a-6c9638a95b29",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -968,89 +840,60 @@
 	],
 	"variable": [
 		{
-			"id": "8a2f3be2-48b7-4b8d-a893-e0c376844252",
 			"key": "baseUrl",
-			"value": "http://localhost:5050",
-			"type": "string"
+			"value": "http://localhost:5050"
 		},
 		{
-			"id": "032eafe0-a3ca-4a1f-9f92-26be816e6035",
 			"key": "issuerPrivateKey",
-			"value": "",
-			"type": "string"
+			"value": "302e020100300506032b6570042204200b07de39fa8c7b8b47bf07d716bfde937b28f22de34743be27242eb187580d2a"
 		},
 		{
-			"id": "3a32686a-6eb5-45a3-a070-87ab0cc9f22d",
 			"key": "issuerDid",
-			"value": "",
-			"type": "string"
+			"value": "did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087"
 		},
 		{
-			"id": "6703ed04-b801-4826-b212-bde04170d3e3",
 			"key": "issuerDidDocument",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
-			"id": "941ad4b6-9826-47db-bf33-998bbbccb030",
 			"key": "didMessage",
-			"value": "",
-			"type": "string"
+			"value": "{\"mode\":\"plain\",\"message\":{\"operation\":\"delete\",\"did\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087\",\"didDocumentBase64\":\"ew0KICAgICJAY29udGV4dCI6ICJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIiwNCiAgICAiaWQiOiAiZGlkOmhlZGVyYTp0ZXN0bmV0OjhIR3pRN1NHNEVWSG8zQWFqRUhmaksxeDhjQ3hReGd2N2Q1QjJxVzRjWWJ6O2hlZGVyYTp0ZXN0bmV0OmZpZD0wLjAuMTkwODciLA0KICAgICJwdWJsaWNLZXkiOiBbeyJpZCI6ImRpZDpoZWRlcmE6dGVzdG5ldDo4SEd6UTdTRzRFVkhvM0FhakVIZmpLMXg4Y0N4UXhndjdkNUIycVc0Y1liejtoZWRlcmE6dGVzdG5ldDpmaWQ9MC4wLjE5MDg3I2RpZC1yb290LWtleSIsInR5cGUiOiJFZDI1NTE5VmVyaWZpY2F0aW9uS2V5MjAxOCIsImNvbnRyb2xsZXIiOiJkaWQ6aGVkZXJhOnRlc3RuZXQ6OEhHelE3U0c0RVZIbzNBYWpFSGZqSzF4OGNDeFF4Z3Y3ZDVCMnFXNGNZYno7aGVkZXJhOnRlc3RuZXQ6ZmlkPTAuMC4xOTA4NyIsInB1YmxpY0tleUJhc2U1OCI6IkVBbmRSdG1tSkFGYkRpRVNSd2FuNU1jV3hVUnR1VllTUkRmTGtNSzduRlJMIn1dLA0KICAgICJhdXRoZW50aWNhdGlvbiI6IFtdDQp9\",\"timestamp\":\"2020-09-02T14:11:27.633751Z\"},\"signature\":\"3iUoftSjL8Lght9tIhEWzvJ6sbdV46qieFb322zkcltzhQnJ4gKsiJX9wdN4NrRR3dpJl1EuUo0QHsy+LmxcCg==\"}"
 		},
 		{
-			"id": "fc1b332b-cfae-4970-bd4b-1fc0f66c7f9a",
 			"key": "ownerDid",
-			"value": "",
-			"type": "string"
+			"value": "did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087"
 		},
 		{
-			"id": "c7fc08a5-8f02-4541-af1d-5d514ce9ae38",
 			"key": "ownerDidDocument",
-			"value": "",
-			"type": "string"
+			"value": "{\"@context\":\"https://www.w3.org/ns/did/v1\",\"id\":\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087\",\"publicKey\":[{\"id\":\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087#did-root-key\",\"type\":\"Ed25519VerificationKey2018\",\"controller\":\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087\",\"publicKeyBase58\":\"C3NwvC1NGMJcbSxWziugANwWtUo71WhKyShcqnRB8JDH\"}],\"authentication\":[\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087#did-root-key\"]}"
 		},
 		{
-			"id": "60c4ea33-cc85-4c4e-af10-f1f0358351d3",
 			"key": "ownerPrivateKey",
-			"value": "",
-			"type": "string"
+			"value": "302e020100300506032b657004220420b9b7745538b06ff0ea7208d1c08403b6215a4ecc2a529241807b16dbf30b4046"
 		},
 		{
-			"id": "16ed72d4-2558-4a7d-a988-1ae628369f4f",
 			"key": "drivingLicense",
-			"value": "",
-			"type": "string"
+			"value": "{\"@context\":[\"https://www.w3.org/2018/credentials/v1\"],\"id\":\"https://example.appnet.com/driving-license/129e7efa-8b22-4150-b6ff-4399d72d2a36\",\"type\":[\"VerifiableCredential\",\"DrivingLicense\"],\"credentialSchema\":{\"id\":\"http://localhost:5050/driving-license-schema.json\",\"type\":\"JsonSchemaValidator2018\"},\"credentialSubject\":[{\"id\":\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087\",\"firstName\":\"John\",\"lastName\":\"Doe\",\"drivingLicenseCategories\":[\"A\",\"B1\",\"T\"]}],\"issuer\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087\",\"issuanceDate\":\"2020-09-02T14:07:11.570489Z\",\"proof\":{\"type\":\"Ed25519Signature2018\",\"creator\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087\",\"created\":\"2020-09-02T14:07:11.571589Z\",\"proofPurpose\":\"assertionMethod\",\"verificationMethod\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087#did-root-key\",\"jws\":\"eyJjcml0IjpbImI2NCJdLCJiNjQiOmZhbHNlLCJhbGciOiJFZERTQSJ9..ZUDbXbKpMdj3pb2YW69tmFKhMwb4Idjc1XOPb7bdZJ3olujff3Wpgrrc4rVN2oCdVYz2tC2hZ_bxFNaSknQiCQ\"}}"
 		},
 		{
-			"id": "c620b737-8203-4f5c-82f1-bccdf09bf90b",
 			"key": "drivingLicenseHash",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
-			"id": "7fa4fe7a-75b8-4c3a-90be-608d731fe85c",
 			"key": "credentialHash",
-			"value": "",
-			"type": "string"
+			"value": "GJpzpyaGQT5XKohkKEEdbac21XVYppQqRMScX4ubJHTD"
 		},
 		{
-			"id": "77411300-b8d5-4bff-9c3d-1ad38fce3317",
 			"key": "vcMessage",
-			"value": "",
-			"type": "string"
+			"value": "{\"mode\":\"plain\",\"message\":{\"operation\":\"revoke\",\"credentialHash\":\"GJpzpyaGQT5XKohkKEEdbac21XVYppQqRMScX4ubJHTD\",\"timestamp\":\"2020-09-02T14:10:01.597758Z\"},\"signature\":\"cCvrPTid6CP9APIPu/5kwjM1YPuhk8NKwKL5z29Ng4QPmVi/DsVoZ4Re017a2pMe1wRp1UUL3+Gn5Oq2XsATAw==\"}"
 		},
 		{
-			"id": "888e3925-97f0-47bb-983d-5d6d3bf6f343",
 			"key": "issuerDidAuthenticationPart",
-			"value": "",
-			"type": "string"
+			"value": "[\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087#did-root-key\"]"
 		},
 		{
-			"id": "1afbc4ed-9967-476a-88dc-f21e6dd8510e",
 			"key": "issuerDidPublicKeyPart",
-			"value": "",
-			"type": "string"
+			"value": "[{\"id\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087#did-root-key\",\"type\":\"Ed25519VerificationKey2018\",\"controller\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087\",\"publicKeyBase58\":\"EAndRtmmJAFbDiESRwan5McWxURtuVYSRDfLkMK7nFRL\"}]"
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

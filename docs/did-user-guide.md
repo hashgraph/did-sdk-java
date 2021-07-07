@@ -97,7 +97,6 @@ Here is example DID document creation code:
 
 ```java
 Client client = ...;
-client client = ...;
 HcsIdentityNetwork identityNetwork = ...;
 
 PrivateKey didRootKey = ...;
@@ -107,19 +106,46 @@ String didDocument = hcsDid.generateDidDocument().toJson();
 
 // Build and execute transaction
 identityNetwork.createDidTransaction(DidMethodOperation.CREATE)
+  // Provide DID document as JSON string
+  .setDidDocument(didDocument)
+  // Sign it with DID root key
+  .signMessage(doc -> didRootKey.sign(doc))
+  // Configure ConsensusMessageSubmitTransaction, build it and sign if required by DID topic
+  .buildAndSignTransaction(tx -> tx.setMaxTransactionFee(new Hbar(2)))
+  // Define callback function when consensus was reached and DID document came back from mirror node
+  .onMessageConfirmed(msg -> {
+  System.out.println("DID document published!");
+  })
+  // Execute transaction
+  .execute(client);
+```
+
+alternatively, without lambda expressions
+
+```java
+  Client client = ...;
+  HcsIdentityNetwork identityNetwork = ...;
+
+  PrivateKey didRootKey = ...;
+  HcsDid hcsDid = ...;
+
+  String didDocument = hcsDid.generateDidDocument().toJson();
+
+  // Build and execute transaction
+  identityNetwork.createDidTransaction(DidMethodOperation.CREATE)
     // Provide DID document as JSON string
     .setDidDocument(didDocument)
-    // Sign it with DID root key
-    .signDidDocument(doc -> didRootKey.sign(doc))
-    // Configure ConsensusMessageSubmitTransaction, build it and sign if required by DID topic
-    .buildAndSignTransaction(tx -> tx.setMaxTransactionFee(new Hbar(2)).build(client))
+    // Set the DID root key as the signing key (private key)
+    .setSigningKey(didRootKey)
+    // Set the maximum transaction fee
+    .setMaxTransactionFee(new Hbar(2))
     // Define callback function when consensus was reached and DID document came back from mirror node
-    .onDidDocumentReceived(msg -> {
+    .onMessageConfirmed(msg -> {
       System.out.println("DID document published!");
-      System.out.println(msg.getDidDocument());
     })
     // Execute transaction
-    .execute(client, client);
+    .execute(client);
+
 ```
 
 Appnet implementations can optionally add a callback listener and receive an event when the HCS message carrying the DID operation reached consensus and was subsequently propagated to the mirror network.

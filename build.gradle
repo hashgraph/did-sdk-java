@@ -4,10 +4,16 @@ plugins {
     id 'jacoco'
     id 'com.github.dawnwords.jacoco.badge' version '0.2.0'
     id 'com.adarshr.test-logger' version '2.0.0'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'java'
+    id 'maven-publish'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
+    id 'signing'
 }
 
 group = 'com.hedera.hashgraph'
-version = '1.0.0'
+version = '0.0.1'
+description = 'Hedera™ DiD SDK'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -16,6 +22,12 @@ repositories {
     jcenter()
     mavenLocal()
     mavenCentral()
+}
+
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
 }
 
 dependencies {
@@ -29,7 +41,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 
-
     implementation 'io.grpc:grpc-okhttp:1.35.0'
 
     testImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.2'
@@ -37,7 +48,12 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.6.2'
 
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2'
+
 }
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven-publish'
+apply plugin: 'java'
 
 jar {
     manifest {
@@ -106,3 +122,60 @@ javadoc {
     destinationDir = file("${projectDir}/docs/sdk-javadocs")
 }
 
+shadowJar {
+    archiveClassifier.set('')
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = 'did-sdk-java'
+                description = 'Hedera™ DiD SDK'
+                url = 'https://github.com/hashgraph/did-sdk-java'
+
+                organization {
+                    name = 'Hedera Hashgraph'
+                    url = 'https://www.hedera.com'
+                }
+                issueManagement {
+                    system = 'GitHub'
+                    url = 'https://github.com/hashgraph/did-sdk-java/issues'
+                }
+                licenses {
+                    license {
+                        name = 'Apache License, Version 2.0'
+                        url = 'https://github.com/hashgraph/did-sdk-java/blob/master/LICENSE'
+                        distribution = 'repo'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/hashgraph/did-sdk-java'
+                    connection = 'scm:git:https://github.com/hashgraph/did-sdk-java.git'
+                    developerConnection = 'scm:git:ssh://github.com/hashgraph/did-sdk-java.git'
+                }
+                developers {
+                    developer {
+                        name = 'Hedera Hashgraph'
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}

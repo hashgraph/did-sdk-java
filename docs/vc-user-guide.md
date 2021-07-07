@@ -116,7 +116,7 @@ TransactionId txId = identityNetwork.createVcTransaction(operation, credentialDo
     // Handle errors
     .onError(err -> err.printStackTrace())
     // Execute transaction
-    .execute(client, client);
+    .execute(client);
 ```
 
 ## Credential Status Verification

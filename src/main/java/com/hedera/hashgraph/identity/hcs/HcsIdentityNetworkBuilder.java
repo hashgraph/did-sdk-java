@@ -21,8 +21,6 @@ import java.util.concurrent.TimeoutException;
  */
 public class HcsIdentityNetworkBuilder {
   private String appnetName;
-  private TopicId didTopicId;
-  private TopicId vcTopicId;
   private String network;
   private List<String> didServers;
   private PublicKey publicKey;
@@ -53,7 +51,7 @@ public class HcsIdentityNetworkBuilder {
 
     TransactionResponse didTxId = didTopicCreateTransaction
             .execute(client);
-    didTopicId = didTxId.getReceipt(client).topicId;
+    TopicId didTopicId = didTxId.getReceipt(client).topicId;
 
     TopicCreateTransaction vcTopicCreateTransaction = new TopicCreateTransaction()
             .setMaxTransactionFee(maxTransactionFee)
@@ -63,9 +61,8 @@ public class HcsIdentityNetworkBuilder {
     }
 
     TransactionResponse vcTxId = vcTopicCreateTransaction.execute(client);
-    vcTopicId = vcTxId.getReceipt(client).topicId;
+    TopicId vcTopicId = vcTxId.getReceipt(client).topicId;
 
-    // Create address book file.
     AddressBook addressBook = AddressBook
             .create(appnetName, didTopicId.toString(), vcTopicId.toString(), didServers);
 
@@ -129,28 +126,6 @@ public class HcsIdentityNetworkBuilder {
    */
   public HcsIdentityNetworkBuilder setVCTopicMemo(final String vcTopicMemo) {
     this.vcTopicMemo = vcTopicMemo;
-    return this;
-  }
-
-  /**
-   * Sets existing HCS Topic ID to be used for DID Document messages.
-   *
-   * @param didTopicId The DID {@link TopicId} to set.
-   * @return This identity network builder instance.
-   */
-  public HcsIdentityNetworkBuilder setDidTopicId(final TopicId didTopicId) {
-    this.didTopicId = didTopicId;
-    return this;
-  }
-
-  /**
-   * Sets existing HCS Topic ID to be used for Verifiable Credentials messages.
-   *
-   * @param vcTopicId The Verifiable Credentials {@link TopicId} to set.
-   * @return This identity network builder instance.
-   */
-  public HcsIdentityNetworkBuilder setVCTopicId(final TopicId vcTopicId) {
-    this.vcTopicId = vcTopicId;
     return this;
   }
 

@@ -10,7 +10,7 @@ buildscript {
 plugins {
     id "java"
     id "application"
-    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "com.github.johnrengelman.shadow"
 }
 
 apply plugin: "io.ratpack.ratpack-java"
@@ -25,9 +25,7 @@ repositories {
 
 dependencies {
   implementation rootProject
-  // https://mvnrepository.com/artifact/com.hedera.hashgraph/sdk-jdk7
   implementation group: 'com.hedera.hashgraph', name: 'sdk-jdk7', version: '2.0.5'
-  // https://mvnrepository.com/artifact/com.google.gson/gson
   implementation 'com.google.code.gson:gson:2.8.6'
   implementation group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.15.6'
   implementation group: 'io.github.cdimascio', name: 'java-dotenv', version: '5.1.4'
@@ -48,7 +46,7 @@ jar {
 shadowJar {
     // by default, this plugin generates a new `-all` jar
     // the empty string makes it override the non-all jar
-    classifier = ""
+    archiveClassifier.set('')
 }
 
 quality {

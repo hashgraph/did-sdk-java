@@ -8,6 +8,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
+import com.hedera.hashgraph.sdk.PrivateKey;
 import com.hedera.hashgraph.sdk.PublicKey;
 import com.hedera.hashgraph.sdk.TopicMessage;
 import java.io.Serializable;
@@ -128,6 +129,28 @@ public class MessageEnvelope<T extends Message> implements Serializable {
 
     byte[] msgBytes = message.toJson().getBytes(StandardCharsets.UTF_8);
     byte[] signatureBytes = signer.apply(msgBytes);
+    signature = new String(Base64.getEncoder().encode(signatureBytes), StandardCharsets.UTF_8);
+
+    return toJson().getBytes(StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Signs this message envelope with the given signing function.
+   *
+   * @param privateKey The private key to sign with.
+   * @return This envelope signed and serialized to JSON, ready for submission to HCS topic.
+   */
+  public byte[] sign(final PrivateKey privateKey) {
+    if (privateKey == null) {
+      throw new IllegalArgumentException("Signing private key is not provided.");
+    }
+
+    if (!Strings.isNullOrEmpty(signature)) {
+      throw new IllegalStateException("Message is already signed.");
+    }
+
+    byte[] msgBytes = message.toJson().getBytes(StandardCharsets.UTF_8);
+    byte[] signatureBytes = privateKey.sign(msgBytes);
     signature = new String(Base64.getEncoder().encode(signatureBytes), StandardCharsets.UTF_8);
 
     return toJson().getBytes(StandardCharsets.UTF_8);

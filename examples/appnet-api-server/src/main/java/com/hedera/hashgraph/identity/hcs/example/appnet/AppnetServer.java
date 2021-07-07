@@ -193,6 +193,7 @@ public class AppnetServer {
                     // REST API endpoints for DID
                     .path("did", ctx ->
                             ctx.byMethod(m -> m
+                                    .get(() -> didHandler.resolve(ctx))
                                     .post(() -> didHandler.create(ctx))
                                     .put(() -> didHandler.update(ctx))
                                     .delete(() -> didHandler.delete(ctx)))
@@ -274,20 +275,22 @@ public class AppnetServer {
 
     // Grab the mirror node address MIRROR_NODE_ADDRESS from environment variable
     String mirrorNodeAddress = "hcs." + network + ".mirrornode.hedera.com:5600";
-    if ("kabuto".equals(mirrorProvider)) {
-      switch (network) {
-        case "mainnet":
-          client = Client.forMainnet();
+    switch (network) {
+      case "mainnet":
+        client = Client.forMainnet();
+        if ("kabuto".equals(mirrorProvider)) {
           mirrorNodeAddress = "api.kabuto.sh:50211";
-          break;
-        case "testnet":
-          client = Client.forTestnet();
+        }
+        break;
+      case "testnet":
+        client = Client.forTestnet();
+        if ("kabuto".equals(mirrorProvider)) {
           mirrorNodeAddress = "api.testnet.kabuto.sh:50211";
-          break;
-        default:
-          log.error("invalid previewnet network for Kabuto, please edit .env file");
-          throw new RuntimeException("invalid previewnet network for Kabuto, please edit .env file");
-      }
+        }
+        break;
+      default:
+        log.error("invalid previewnet network for Kabuto, please edit .env file");
+        throw new RuntimeException("invalid previewnet network for Kabuto, please edit .env file");
     }
 
     // Grab the OPERATOR_ID and OPERATOR_KEY from environment variable
