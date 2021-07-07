@@ -12,7 +12,7 @@ plugins {
 }
 
 group = 'com.hedera.hashgraph'
-version = '0.0.1'
+version = '1.0.0'
 description = 'Hedera™ DiD SDK'
 
 sourceCompatibility = 1.8
