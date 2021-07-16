@@ -1,3 +1,4 @@
+
 package com.hedera.hashgraph.identity.hcs.example.appnet.vc;
 
 import com.google.common.hash.Hashing;
@@ -128,6 +129,44 @@ public class Ed25519CredentialProof extends LinkedDataProof {
    * @param documentToSign The canonicalized JSON string of a verifiable credential document.
    */
   public void sign(final PrivateKey signingKey, final String documentToSign) {
+    byte[] inputForSigning = getInputForSigning(documentToSign);
+
+    JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.EdDSA).customParam("b64", Boolean.FALSE)
+            .criticalParams(Collections.singleton("b64")).build();
+    byte[] jwsSigningInput = getJwsSigningInput(jwsHeader, inputForSigning);
+
+    Base64URL signature = Base64URL.encode(signingKey.sign(jwsSigningInput));
+    setJws(jwsHeader.toBase64URL().toString() + '.' + '.' + signature.toString());
+
+//    boolean verified = verify(signingKey.getPublicKey(), documentToSign, this.getJws());
+//    System.out.println(verified);
+  }
+
+  /**
+   * Verifies a linked data proof of type
+   * Implementation is a simplified version for this example based on
+   * https://github.com/WebOfTrustInfo/ld-signatures-java/.
+   *
+   * @param signingKey     Public key of the signing subject.
+   * @param documentToSign The canonicalized JSON string of a verifiable credential document.
+   * @param jws jws string from proof to verify against
+   */
+  public boolean verify(final PublicKey signingKey, final String documentToSign, final String jws) {
+    byte[] inputForSigning = getInputForSigning(documentToSign);
+
+    JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.EdDSA).customParam("b64", Boolean.FALSE)
+            .criticalParams(Collections.singleton("b64")).build();
+    byte[] jwsSigningInput = getJwsSigningInput(jwsHeader, inputForSigning);
+
+    String[] jwsParts = jws.split("\\.", 3);
+    if(jwsParts.length > 2) {
+      return signingKey.verify(jwsSigningInput, Base64URL.from(jwsParts[2]).decode());
+    }
+
+    return false;
+  }
+
+  private byte[] getInputForSigning(String documentToSign) {
     byte[] inputForSigning = new byte[64];
     String normalizedProof = JsonUtils.getGson().toJson(toNormalizedJsonElement(true));
 
@@ -138,12 +177,6 @@ public class Ed25519CredentialProof extends LinkedDataProof {
 
     System.arraycopy(normalizedProofHash, 0, inputForSigning, 0, 32);
     System.arraycopy(normalizedDocHash, 0, inputForSigning, 32, 32);
-
-    JWSHeader jwsHeader = new JWSHeader.Builder(JWSAlgorithm.EdDSA).customParam("b64", Boolean.FALSE)
-            .criticalParams(Collections.singleton("b64")).build();
-    byte[] jwsSigningInput = getJwsSigningInput(jwsHeader, inputForSigning);
-
-    Base64URL signature = Base64URL.encode(signingKey.sign(jwsSigningInput));
-    setJws(jwsHeader.toBase64URL().toString() + '.' + '.' + signature.toString());
+    return inputForSigning;
   }
 }
