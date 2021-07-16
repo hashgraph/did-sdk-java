@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
 import com.hedera.hashgraph.sdk.PrivateKey;
+import com.hedera.hashgraph.sdk.PublicKey;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.util.Base64URL;
