@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java8.util.function.BiFunction;
+import org.jetbrains.annotations.Nullable;
 import org.threeten.bp.Instant;
 
 public abstract class MessageTransaction<T extends Message> {
@@ -247,6 +248,11 @@ public abstract class MessageTransaction<T extends Message> {
       tx.setMaxTransactionFee(this.maxTransactionFee);
     }
 
+    return getTransactionId(client, tx);
+  }
+
+  @Nullable
+  private TransactionId getTransactionId(final Client client, final TopicMessageSubmitTransaction tx) {
     TransactionId transactionId = null;
     try {
       TransactionResponse response;
