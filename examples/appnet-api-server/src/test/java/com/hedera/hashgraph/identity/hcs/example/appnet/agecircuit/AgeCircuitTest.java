@@ -22,6 +22,7 @@ import com.hedera.hashgraph.zeroknowledge.merkletree.factory.MerkleTreeFactoryIm
 import com.hedera.hashgraph.zeroknowledge.utils.ByteUtils;
 import com.hedera.hashgraph.zeroknowledge.vp.proof.PresentationProof;
 import com.hedera.hashgraph.zeroknowledge.vp.proof.ZkSignature;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.horizen.common.librustsidechains.InitializationException;
 import io.horizen.common.schnorrnative.SchnorrKeyPair;
 import io.horizen.common.schnorrnative.SchnorrPublicKey;
@@ -29,16 +30,14 @@ import io.horizen.common.schnorrnative.SchnorrSecretKey;
 import io.horizenlabs.agecircuit.AgeCircuitProof;
 import io.horizenlabs.agecircuit.AgeCircuitProofException;
 import io.horizenlabs.provingsystemnative.ProvingSystem;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -55,15 +54,20 @@ class AgeCircuitTest {
     private final AgeCircuitVerifierDataMapper ageCircuitVerifierDataMapper = new AgeCircuitVerifierDataMapper();
     private final ZkSnarkAgeVerifierProvider verifierProvider = new ZkSnarkAgeVerifierProvider(verifierInteractor, ageCircuitVerifierDataMapper);
 
-    @Test
-    public void testCreateProofFullFlow_CorrectGenerationAndVerify(@TempDir Path tempDir) throws VerifiablePresentationGenerationException, ZeroKnowledgeVerifyProviderException, ZkSignatureException, InitializationException, AgeCircuitProofException {
-        // Arrange
-        // Keys paths
-        Path provingKeyFolder = tempDir.resolve("proving.key");
-        Path verificationKeyFolder = tempDir.resolve("verification.key");
-        String provingKeyPath = provingKeyFolder.toString();
-        String verificationKeyPath = verificationKeyFolder.toString();
+    private static String provingKeyPath;
+    private static String verificationKeyPath;
 
+    @BeforeAll
+    public static void init() {
+        Dotenv dotenv = Dotenv.configure().load();
+
+        provingKeyPath = dotenv.get("PROVING_KEY_PATH");
+        verificationKeyPath = dotenv.get("VERIFICATION_KEY_PATH");
+    }
+
+    @Test
+    public void testCreateProofFullFlow_CorrectGenerationAndVerify() throws VerifiablePresentationGenerationException, ZeroKnowledgeVerifyProviderException, ZkSignatureException, InitializationException, AgeCircuitProofException {
+        // Arrange
         // Creation of keys
         SchnorrKeyPair holderKeyPair = SchnorrKeyPair.generate();
         SchnorrPublicKey holderPublicKey = holderKeyPair.getPublicKey();
@@ -149,14 +153,8 @@ class AgeCircuitTest {
     }
 
     @Test
-    public void testCreateProofFullFlow_CorrectGenerationButVerifyChallengeIsDifferent(@TempDir Path tempDir) throws VerifiablePresentationGenerationException, ZeroKnowledgeVerifyProviderException, ZkSignatureException, InitializationException, AgeCircuitProofException {
+    public void testCreateProofFullFlow_CorrectGenerationButVerifyChallengeIsDifferent() throws VerifiablePresentationGenerationException, ZeroKnowledgeVerifyProviderException, ZkSignatureException, InitializationException, AgeCircuitProofException {
         // Arrange
-        // Keys paths
-        Path provingKeyFolder = tempDir.resolve("proving.key");
-        Path verificationKeyFolder = tempDir.resolve("verification.key");
-        String provingKeyPath = provingKeyFolder.toString();
-        String verificationKeyPath = verificationKeyFolder.toString();
-
         // Creation of keys
         SchnorrKeyPair holderKeyPair = SchnorrKeyPair.generate();
         SchnorrPublicKey holderPublicKey = holderKeyPair.getPublicKey();
@@ -242,14 +240,8 @@ class AgeCircuitTest {
     }
 
     @Test
-    public void testCreateProofFullFlow_CorrectGenerationButVerifyAgeThresholdIsDifferent(@TempDir Path tempDir) throws VerifiablePresentationGenerationException, ZeroKnowledgeVerifyProviderException, ZkSignatureException, InitializationException, AgeCircuitProofException {
+    public void testCreateProofFullFlow_CorrectGenerationButVerifyAgeThresholdIsDifferent() throws VerifiablePresentationGenerationException, ZeroKnowledgeVerifyProviderException, ZkSignatureException, InitializationException, AgeCircuitProofException {
         // Arrange
-        // Keys paths
-        Path provingKeyFolder = tempDir.resolve("proving.key");
-        Path verificationKeyFolder = tempDir.resolve("verification.key");
-        String provingKeyPath = provingKeyFolder.toString();
-        String verificationKeyPath = verificationKeyFolder.toString();
-
         // Creation of keys
         SchnorrKeyPair holderKeyPair = SchnorrKeyPair.generate();
         SchnorrPublicKey holderPublicKey = holderKeyPair.getPublicKey();
