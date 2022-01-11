@@ -18,7 +18,7 @@ public final class HcsVcDocumentJsonProperties {
   public static final String CREDENTIAL_STATUS = "credentialStatus";
   public static final String PROOF = "proof";
 
-  /**
+    /**
    * This class is not to be instantiated.
    */
   private HcsVcDocumentJsonProperties() {
