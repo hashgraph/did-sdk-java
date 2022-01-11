@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.bitcoinj.core.Base58;
+import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
 /**
  * Hedera Decentralized Identifier for Hedera DID Method specification based on HCS.
@@ -25,13 +26,19 @@ public class HcsDid implements HederaDid {
   public static final Method DID_METHOD = Method.HEDERA_HCS;
   private static final int DID_PARAMETER_VALUE_PARTS = 2;
 
-  private TopicId didTopicId;
-  private FileId addressBookFileId;
-  private String network;
-  private String idString;
-  private String did;
+  private final TopicId didTopicId;
+  private final FileId addressBookFileId;
+  private final String network;
+  private final String idString;
+  private final String did;
   private PublicKey didRootKey;
   private PrivateKey privateDidRootKey;
+  /**
+   * This couple of attributes is used to register a new public key in the did document.
+   * Having this zero knowledge public key allow the did owner to create verifiable presentations.
+   */
+  private String idStringZk;
+  private String didRootZkKey;
 
   /**
    * Creates a DID instance.
@@ -110,7 +117,7 @@ public class HcsDid implements HederaDid {
     Iterator<String> mainParts = Splitter.on(DidSyntax.DID_PARAMETER_SEPARATOR).split(didString).iterator();
 
     TopicId topicId = null;
-    FileId addressBookFileId = null;
+    FileId addressBookFileId;
 
     try {
       Iterator<String> didParts = Splitter.on(DidSyntax.DID_METHOD_SEPARATOR).split(mainParts.next()).iterator();
@@ -200,6 +207,10 @@ public class HcsDid implements HederaDid {
     return Base58.encode(Hashing.sha256().hashBytes(didRootKey.toBytes()).asBytes());
   }
 
+  public static String publicKeyToIdString(final String didRootKeyBytes) {
+    return Base58.encode(Hashing.sha256().hashBytes(ByteUtils.fromHexString(didRootKeyBytes)).asBytes());
+  }
+
   @Override
   public String toDid() {
     return toString();
@@ -211,6 +222,16 @@ public class HcsDid implements HederaDid {
     if (didRootKey != null) {
       HcsDidRootKey rootKey = HcsDidRootKey.fromHcsIdentity(this, didRootKey);
       result.setDidRootKey(rootKey);
+    }
+
+    return result;
+  }
+
+  public DidDocumentBase generateDidDocumentZk() {
+    DidDocumentBase result = generateDidDocument();
+    if (didRootZkKey != null) {
+      HcsDidRootZkKey rootZkKey = HcsDidRootZkKey.fromHcsIdentity(this, didRootZkKey);
+      result.setDidRootZkKey(rootZkKey);
     }
 
     return result;
@@ -261,6 +282,10 @@ public class HcsDid implements HederaDid {
     return idString;
   }
 
+  public String getIdStringZk() {
+    return idStringZk;
+  }
+
   /**
    * Constructs DID string from the instance of DID object.
    *
@@ -288,7 +313,7 @@ public class HcsDid implements HederaDid {
               .append(DidSyntax.DID_METHOD_SEPARATOR)
               .append(MethodSpecificParameter.DID_TOPIC_ID)
               .append(DidSyntax.DID_PARAMETER_VALUE_SEPARATOR)
-              .append(didTopicId.toString());
+              .append(didTopicId);
     }
 
     return sb.toString();
@@ -302,5 +327,14 @@ public class HcsDid implements HederaDid {
    */
   public Optional<PrivateKey> getPrivateDidRootKey() {
     return Optional.ofNullable(privateDidRootKey);
+  }
+
+  public String getDidRootZkKey() {
+    return didRootZkKey;
+  }
+
+  public void setZkDidKeys(final String didRootZkKey) {
+    this.didRootZkKey = didRootZkKey;
+    this.idStringZk = HcsDid.publicKeyToIdString(didRootZkKey);
   }
 }

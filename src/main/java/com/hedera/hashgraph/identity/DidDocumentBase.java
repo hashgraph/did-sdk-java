@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.hedera.hashgraph.identity.hcs.did.HcsDidRootKey;
+import com.hedera.hashgraph.identity.hcs.did.HcsDidRootZkKey;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
 import java.util.Iterator;
 
@@ -20,16 +21,19 @@ import java.util.Iterator;
  */
 public class DidDocumentBase {
 
-  @Expose(serialize = true, deserialize = false)
+  @Expose(deserialize = false)
   @SerializedName(DidDocumentJsonProperties.CONTEXT)
   protected String context;
 
-  @Expose(serialize = true, deserialize = true)
+  @Expose
   @SerializedName(DidDocumentJsonProperties.ID)
   protected String id;
 
   @Expose(serialize = false, deserialize = false)
   protected HcsDidRootKey didRootKey;
+
+  @Expose(serialize = false, deserialize = false)
+  protected HcsDidRootZkKey didRootZkKey;
 
   /**
    * Creates a new DID Document for the specified DID string.
@@ -51,20 +55,25 @@ public class DidDocumentBase {
   public static DidDocumentBase fromJson(final String json) {
     Gson gson = JsonUtils.getGson();
 
-    DidDocumentBase result = null;
+    DidDocumentBase result;
 
     try {
       JsonObject root = JsonParser.parseString(json).getAsJsonObject();
       result = gson.fromJson(root, DidDocumentBase.class);
 
       if (root.has(DidDocumentJsonProperties.PUBLIC_KEY)) {
-        Iterator<JsonElement> itr = root.getAsJsonArray(DidDocumentJsonProperties.PUBLIC_KEY).iterator();
-        while (itr.hasNext()) {
-          JsonObject publicKeyObj = itr.next().getAsJsonObject();
+        for (JsonElement jsonElement : root.getAsJsonArray(DidDocumentJsonProperties.PUBLIC_KEY)) {
+          JsonObject publicKeyObj = jsonElement.getAsJsonObject();
           if (publicKeyObj.has(DidDocumentJsonProperties.ID)
                   && publicKeyObj.get(DidDocumentJsonProperties.ID).getAsString()
                   .equals(result.getId() + HcsDidRootKey.DID_ROOT_KEY_NAME)) {
             result.setDidRootKey(gson.fromJson(publicKeyObj, HcsDidRootKey.class));
+          }
+
+          if (publicKeyObj.has(DidDocumentJsonProperties.ID)
+                  && publicKeyObj.get(DidDocumentJsonProperties.ID).getAsString()
+                  .equals(result.getId() + HcsDidRootZkKey.DID_ROOT_KEY_NAME)) {
+            result.setDidRootZkKey(gson.fromJson(publicKeyObj, HcsDidRootZkKey.class));
             break;
           }
         }
@@ -115,7 +124,7 @@ public class DidDocumentBase {
    * @param rootObject The root object of DID Document as JsonObject.
    */
   protected void addDidRootKeyToPublicKeys(final JsonObject rootObject) {
-    JsonArray publicKeys = null;
+    JsonArray publicKeys;
     if (rootObject.has(DidDocumentJsonProperties.PUBLIC_KEY)) {
       publicKeys = rootObject.getAsJsonArray(DidDocumentJsonProperties.PUBLIC_KEY);
     } else {
@@ -124,6 +133,10 @@ public class DidDocumentBase {
     }
 
     publicKeys.add(JsonUtils.getGson().toJsonTree(didRootKey));
+
+    if (didRootZkKey != null) {
+      publicKeys.add(JsonUtils.getGson().toJsonTree(didRootZkKey));
+    }
   }
 
   public String getContext() {
@@ -142,4 +155,11 @@ public class DidDocumentBase {
     this.didRootKey = didRootKey;
   }
 
+  public HcsDidRootZkKey getDidRootZkKey() {
+    return didRootZkKey;
+  }
+
+  public void setDidRootZkKey(final HcsDidRootZkKey didRootZkKey) {
+    this.didRootZkKey = didRootZkKey;
+  }
 }
