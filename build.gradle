@@ -88,9 +88,9 @@ testlogger {
 }
 
 quality {
-	checkstyleVersion = '8.29'
-	spotbugsVersion = '4.0.1'
-	checkstyle = true
+    checkstyleVersion = '8.29'
+    spotbugsVersion = '4.0.1'
+    checkstyle = true
     spotbugs = true
     pmd = true
 }
@@ -104,8 +104,8 @@ jacocoTestReport {
     description = "Generate Jacoco coverage reports"
     reports {
         xml.enabled true
-    	html.enabled true
-    	csv.enabled false
+        html.enabled true
+        csv.enabled false
     }
 }
 

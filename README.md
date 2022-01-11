@@ -76,7 +76,7 @@ implementation 'com.hedera.hashgraph:did-sdk-java:0.0.1'
 
 ### Examples
 
-The `/examples/appnet-api-server` folder contains an example implementation of an appnet that utilizes DID and VC SDK and exposes a REST API interface according to the Hedera DID Method Specification. 
+The `/examples/appnet-api-server` folder contains an example implementation of an appnet that utilizes DID and VC SDK and exposes a REST API interface according to the Hedera DID Method Specification.
 
 The appnet runs on localhost port 5050 be default. It does not expose any user interface, instead there is a collection of POSTMAN requests available [here](/examples/appnet-api-server/postman-example-requests/e2e-flow.postman_collection) that demonstrate a full end-to-end flow of DID documents generation, publishing, update and deletion, as well as verifiable credential generation, issuance and revocation.
 
