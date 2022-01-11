@@ -28,7 +28,7 @@ class HcsVcDocumentBaseTest extends NetworkReadyTestBase {
 
   @Test
   void testVcDocumentConstruction() {
-    HcsVcDocumentBase<DemoAccessCredential> vc = new HcsVcDocumentBase<DemoAccessCredential>();
+    HcsVcDocumentBase<DemoAccessCredential> vc = new HcsVcDocument<>();
 
     // Should fail as no issuer is set.
     assertFalse(vc.isComplete());
@@ -74,7 +74,7 @@ class HcsVcDocumentBaseTest extends NetworkReadyTestBase {
 
   @Test
   void testVcJsonConversion() {
-    HcsVcDocumentBase<DemoAccessCredential> vc = new HcsVcDocumentBase<DemoAccessCredential>();
+    HcsVcDocumentBase<DemoAccessCredential> vc = new HcsVcDocument<>();
     vc.setId("example:test:vc:id");
     vc.setIssuer(new Issuer(issuer.toDid(), "My Company Ltd."));
     vc.setIssuanceDate(Instant.now());
@@ -87,7 +87,7 @@ class HcsVcDocumentBaseTest extends NetworkReadyTestBase {
     assertFalse(Strings.isNullOrEmpty(json));
 
     // Convert back to VC document and compare
-    HcsVcDocumentBase<DemoAccessCredential> vcFromJson = HcsVcDocumentBase.fromJson(json, DemoAccessCredential.class);
+    HcsVcDocumentBase<DemoAccessCredential> vcFromJson = HcsVcDocumentBase.fromJson(json, HcsVcDocument.class, DemoAccessCredential.class);
     // Test simple properties
     assertNotNull(vcFromJson);
     assertEquals(vc.getType(), vcFromJson.getType());
