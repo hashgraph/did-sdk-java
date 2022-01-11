@@ -56,5 +56,34 @@ Providing a large number may improve performance due to fewer file operations, h
 
 Persisted data resides in the `persistedCredentialIssuers.ser`, `persistedDiDs.ser`, `persistedSignatures.ser` and `persistedVCs.ser` of the application's folder. They are binary files and not human readable.
 
+## Zero knowledge flow example
+Roles:
+- the authority: some entity allowed issuing verifiable credential document;
+- the prover: a user who asks the authority for a verifiable credential document; can create a verifiable presentation
+  to prove some statement;
+- the verifier: whoever wants to verify some statement claimed by a prover through a verifiable presentation.
+
+Example flow with API endpoints in `e2e-flow-with-zero-knowledge.postman_collection`:
+
+_Notes_: to generate and verify a snark proof, the circuit needs a couple of keys: a proving and a verification key.
+These keys will be generated once per circuit and everytime an entity needs to generate or verify a proof is going to use
+them. To run the demo, run just once the main in `/examples/appnet-api-server/src/main/java/com/hedera/hashgraph/identity/hcs/example/appnet/ZeroKnowledgeKeyGenerator.java`.
+
+1. An authority creates a public/secret key pair (in this case the Tweedle curve is used to generate such keys) -> `0.zk DEMO - Generate AUTHORITY schnorr key pair`;
+2. It then creates a did document containing also the public key previously generated -> `1.zk DEMO - Generate DID for Issuer`;
+3. It posts a message containing the _credential hash_ of the did document on Hedera -> `api calls from 2 through 4`;
+4. A prover, in this case a user, wants the authority to release them a document certifying their age;
+5. The user creates a public/secret key pair -> `0.zk DEMO - Generate HOLDER schnorr key pair`;
+6. The user then creates their own did and post it to Hedera -> `6.zk DEMO - Generate DID with ZK for Owner`;
+7. The authority then issues a verifiable credential document to the user, where their personal data are reported in plain text -> `7.zk DEMO - Generate ZK Driving License document`;
+8. A verifier, in this example a merchant, is offering some service, but only to people older than 18 years old;
+9. The user is interested in such service and has a verifiable credential document stating their age;
+10. The merchant sends a challenge to the user (this is just a simplification for this example);
+11. The user then generates a presentation out of the vc document, where a snark proof is stating the above-age claim -> `25.zk VP - Get driver above age presentation`;
+12. The merchant is sent the presentation, where no user's personal data is included, and can verify the proof telling whether the user is telling the truth or not -> `27.zk VP - Verify presentation`.
+
+## Dependencies
+At the moment the example is using `hedera-cryptolib-0.1.0.jar`, a private repo containing the above-age circuit.
+
 [did-method-spec]: https://github.com/hashgraph/did-method
 [postman]: https://www.postman.com/

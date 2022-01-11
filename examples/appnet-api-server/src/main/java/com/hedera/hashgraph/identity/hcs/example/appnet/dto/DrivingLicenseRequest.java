@@ -22,6 +22,9 @@ public class DrivingLicenseRequest {
   @Expose
   private List<String> drivingLicenseCategories;
 
+  @Expose
+  private BirthDate birthDate;
+
   public String getIssuer() {
     return issuer;
   }
@@ -60,5 +63,13 @@ public class DrivingLicenseRequest {
 
   public void setDrivingLicenseCategories(final List<String> drivingLicenseCategories) {
     this.drivingLicenseCategories = drivingLicenseCategories;
+  }
+
+  public BirthDate getBirthDate() {
+    return birthDate;
+  }
+
+  public void setBirthDate(BirthDate birthDate) {
+    this.birthDate = birthDate;
   }
 }

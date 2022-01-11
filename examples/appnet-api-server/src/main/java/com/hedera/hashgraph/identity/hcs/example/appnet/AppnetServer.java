@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
+
+import io.horizenlabs.agecircuit.AgeCircuitProof;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ratpack.server.RatpackServer;
@@ -40,7 +42,7 @@ import ratpack.server.RatpackServer;
  */
 public class AppnetServer {
   private static final int SERVER_PORT = 5050;
-  private static Logger log = LoggerFactory.getLogger(AppnetServer.class);
+  private static final Logger log = LoggerFactory.getLogger(AppnetServer.class);
   private Client client;
 
   private HcsIdentityNetwork identityNetwork;
@@ -69,12 +71,7 @@ public class AppnetServer {
    * Starts up the API server and initializes dependent services.
    */
   private void startUp() {
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      @Override
-      public void run() {
-        shutDown();
-      }
-    });
+    Runtime.getRuntime().addShutdownHook(new Thread(this::shutDown));
 
     try {
       initHederaIdentityNetwork();
@@ -213,10 +210,17 @@ public class AppnetServer {
                     // REST API endpoints for demo functions that in a normal environment
                     // would be run on the client side.
                     .post("demo/generate-did", ctx -> demoHandler.generateDid(ctx))
+                    .post("demo/generate-did-zk", ctx -> demoHandler.generateDidWithZeroKnowledge(ctx))
                     .post("demo/sign-did-message", ctx -> demoHandler.signDidMessage(ctx))
                     .post("demo/generate-driving-license", ctx -> demoHandler.generateDrivingLicense(ctx))
+                    .post("demo/generate-zk-driving-license", ctx -> demoHandler.generateZeroKnowledgeDrivingLicense(ctx))
                     .post("demo/sign-vc-message", ctx -> demoHandler.signVcMessage(ctx))
                     .post("demo/get-credential-hash", ctx -> demoHandler.determineCredentialHash(ctx))
+                    .post("demo/get-zk-credential-hash", ctx -> demoHandler.determineZkCredentialHash(ctx))
+                    .post("demo/generate-driver-above-age-presentation", ctx -> demoHandler.generateDrivingAboveAgePresentation(ctx))
+                    .post("demo/get-presentation-credential-hash", ctx -> demoHandler.determinePresentationCredentialHash(ctx))
+                    .post("demo/verify-presentation", ctx -> demoHandler.verifyPresentation(ctx))
+                    .post("demo/get-schnorr-key-pair", ctx -> demoHandler.getSchnorrKeyPair(ctx))
 
                     // Schema files
                     .files(f -> f.dir("schemas").files("driving-license-schema.json"))
