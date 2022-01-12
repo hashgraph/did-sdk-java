@@ -61,4 +61,4 @@ HcsVpDocument vpDoc = vpMarshaller.fromStringToDocument(vpDocAsJsonString);
 ## Dependencies
 At the moment, the module is using a local dependency `sc-common-cryptolib-0.1.0.jar`, based on the 
 public repo [sc_cryptolib_common](https://github.com/HorizenOfficial/sc_cryptolib_common). 
-Just run the [script](https://github.com/HorizenOfficial/sc_cryptolib_common/blob/master/build/build_jar_tweedle.sh) to obtain the compiled jar; at the moment the jar is located in `did-sdk-java/zero-knowledge/src/main/resources/jars/x86/sc-common-cryptolib-0.1.0.jar`. 
+Just run the [script](https://github.com/HorizenOfficial/sc_cryptolib_common/blob/master/build/build_jar_tweedle.sh) to obtain the compiled jar; at the moment the jar is located in `did-sdk-java/zero-knowledge/src/main/resources/jars/x86/sc-common-cryptolib-0.1.0.jar` and it's working only on x86 architecture. 

@@ -56,6 +56,8 @@ Providing a large number may improve performance due to fewer file operations, h
 
 Persisted data resides in the `persistedCredentialIssuers.ser`, `persistedDiDs.ser`, `persistedSignatures.ser` and `persistedVCs.ser` of the application's folder. They are binary files and not human readable.
 
+If you want to use the zero knowledge feature, you need to set also the `PROVING_KEY_PATH` and `VERIFICATION_KEY_PATH`; those are two absolute paths where the circuit's proving and verification keys will be stored. 
+
 ## Zero knowledge flow example
 Roles:
 - the authority: some entity allowed issuing verifiable credential document;
@@ -83,7 +85,7 @@ them. To run the demo, run just once the main in `/examples/appnet-api-server/sr
 12. The merchant is sent the presentation, where no user's personal data is included, and can verify the proof telling whether the user is telling the truth or not -> `27.zk VP - Verify presentation`.
 
 ## Dependencies
-The example is using `hedera-cryptolib-0.1.0.jar`, a jar compiled from a private repo: at the moment the jar is located in `did-sdk-java/examples/appnet-api-server/src/main/resources/jars/x86/hedera-cryptolib-0.3.0.jar`. 
+The example is using `hedera-cryptolib-0.1.0.jar`, a jar compiled from a private repo: at the moment the jar is located in `did-sdk-java/examples/appnet-api-server/src/main/resources/jars/x86/hedera-cryptolib-0.3.0.jar` and it's working only on x86 architecture. 
 
 [did-method-spec]: https://github.com/hashgraph/did-method
 [postman]: https://www.postman.com/
