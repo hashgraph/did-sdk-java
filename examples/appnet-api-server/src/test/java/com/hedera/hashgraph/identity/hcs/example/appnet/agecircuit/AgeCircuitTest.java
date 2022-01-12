@@ -7,6 +7,7 @@ import com.hedera.hashgraph.identity.hcs.example.appnet.agecircuit.mapper.AgeCir
 import com.hedera.hashgraph.identity.hcs.example.appnet.agecircuit.model.VerifyAgePublicInput;
 import com.hedera.hashgraph.identity.hcs.example.appnet.agecircuit.provider.ZkSnarkAgeProverProvider;
 import com.hedera.hashgraph.identity.hcs.example.appnet.agecircuit.provider.ZkSnarkAgeVerifierProvider;
+import com.hedera.hashgraph.identity.hcs.example.appnet.agecircuit.utils.ProvingSystemUtils;
 import com.hedera.hashgraph.identity.hcs.example.appnet.dto.BirthDate;
 import com.hedera.hashgraph.identity.hcs.example.appnet.marshaller.DrivingLicenseZeroKnowledgeVcMarshaller;
 import com.hedera.hashgraph.identity.hcs.example.appnet.vc.*;
@@ -122,7 +123,7 @@ class AgeCircuitTest {
         DrivingLicenseVpGenerator generator = new DrivingLicenseVpGenerator(ageProverProvider);
 
         // Create the temporary keys for the test
-        ProvingSystem.generateDLogKeys(1 << 17, 1 << 15);
+        ProvingSystemUtils.generateDLogKeys();
         AgeCircuitProof.setup(provingKeyPath, verificationKeyPath);
 
         // Act
@@ -209,7 +210,7 @@ class AgeCircuitTest {
         DrivingLicenseVpGenerator generator = new DrivingLicenseVpGenerator(ageProverProvider);
 
         // Create the temporary keys for the test
-        ProvingSystem.generateDLogKeys(1 << 17, 1 << 15);
+        ProvingSystemUtils.generateDLogKeys();
         AgeCircuitProof.setup(provingKeyPath, verificationKeyPath);
 
         // Act
@@ -296,7 +297,7 @@ class AgeCircuitTest {
         DrivingLicenseVpGenerator generator = new DrivingLicenseVpGenerator(ageProverProvider);
 
         // Create the temporary keys for the test
-        ProvingSystem.generateDLogKeys(1 << 17, 1 << 15);
+        ProvingSystemUtils.generateDLogKeys();
         AgeCircuitProof.setup(provingKeyPath, verificationKeyPath);
 
         // Act

@@ -1,5 +1,6 @@
 package com.hedera.hashgraph.identity.hcs.example.appnet;
 
+import com.hedera.hashgraph.identity.hcs.example.appnet.agecircuit.utils.ProvingSystemUtils;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.horizen.common.librustsidechains.InitializationException;
 import io.horizenlabs.agecircuit.AgeCircuitProof;
@@ -20,7 +21,7 @@ public class ZeroKnowledgeKeyGenerator {
     private static final Logger log = LoggerFactory.getLogger(ZeroKnowledgeKeyGenerator.class);
 
     public static void main(String[] args) throws InitializationException, AgeCircuitProofException {
-        ProvingSystem.generateDLogKeys(1 << 17, 1 << 15);
+        ProvingSystemUtils.generateDLogKeys();
         Dotenv dotenv = Dotenv.configure().load();
 
         String provingKeyPath = dotenv.get("PROVING_KEY_PATH");

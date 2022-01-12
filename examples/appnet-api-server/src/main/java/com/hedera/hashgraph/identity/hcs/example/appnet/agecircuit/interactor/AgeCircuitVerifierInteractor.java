@@ -1,6 +1,7 @@
 package com.hedera.hashgraph.identity.hcs.example.appnet.agecircuit.interactor;
 
 import com.hedera.hashgraph.identity.hcs.example.appnet.agecircuit.model.AgeCircuitVerifyPublicInput;
+import com.hedera.hashgraph.identity.hcs.example.appnet.agecircuit.utils.ProvingSystemUtils;
 import com.hedera.hashgraph.zeroknowledge.circuit.interactor.CircuitVerifierInteractor;
 import io.horizen.common.librustsidechains.InitializationException;
 import io.horizenlabs.agecircuit.AgeCircuitProof;
@@ -11,7 +12,7 @@ public class AgeCircuitVerifierInteractor implements CircuitVerifierInteractor<A
     @Override
     public boolean verifyProof(AgeCircuitVerifyPublicInput publicInput) {
         try {
-            ProvingSystem.generateDLogKeys(1 << 17, 1 << 15);
+            ProvingSystemUtils.generateDLogKeys();
 
             return AgeCircuitProof.verifyProof(
                     publicInput.getProof(), publicInput.getCurrentYear(), publicInput.getCurrentMonth(), publicInput.getCurrentDay(),
@@ -19,9 +20,9 @@ public class AgeCircuitVerifierInteractor implements CircuitVerifierInteractor<A
                     publicInput.getChallenge(), publicInput.getDocumentId(), publicInput.getVerificationKeyPath()
             );
         } catch (InitializationException e) {
-            throw new IllegalStateException("", e);
+            throw new IllegalStateException("Cannot initialize age circuit", e);
         } catch (AgeCircuitProofException e) {
-            throw new IllegalArgumentException("", e);
+            throw new IllegalArgumentException("Cannot verify proof using age circuit", e);
         }
     }
 }
