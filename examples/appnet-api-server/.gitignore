@@ -3,6 +3,8 @@
 
 # Package Files #
 *.jar
+### Excluding hedera-cryptolib jar ###
+!hedera-cryptolib-0.3.0.jar
 *.war
 *.ear
 

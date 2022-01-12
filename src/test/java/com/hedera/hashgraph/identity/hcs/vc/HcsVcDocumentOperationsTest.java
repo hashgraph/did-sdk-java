@@ -39,7 +39,7 @@ class HcsVcDocumentOperationsTest extends NetworkReadyTestBase {
     // sendDidTransaction(owner, owner.generateDidDocument().toJson(), op, EXPECT_NO_ERROR);
 
     // Create an example Verifiable Credential.
-    vc = new HcsVcDocumentBase<DemoAccessCredential>();
+    vc = new HcsVcDocument<>();
     vc.setIssuer(issuer);
     vc.setIssuanceDate(Instant.now());
     vc.addCredentialSubject(new DemoAccessCredential(owner.toDid(), true, false, false));

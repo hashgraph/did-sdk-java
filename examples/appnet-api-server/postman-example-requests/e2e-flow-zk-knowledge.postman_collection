@@ -1,0 +1,1334 @@
+{
+	"info": {
+		"_postman_id": "2c3d1605-db8f-4fe3-969b-1a54cc91bb5e",
+		"name": "DiD SDK - e2e flow zk knowledge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0.zk DEMO - Generate AUTHORITY schnorr key pair",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"authoritySecretKey\", postman.getResponseHeader(\"schnorrSecretKey\"));",
+							"pm.collectionVariables.set(\"authorityPublicKey\", postman.getResponseHeader(\"schnorrPublicKey\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/demo/get-schnorr-key-pair",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"get-schnorr-key-pair"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "0.zk DEMO - Generate HOLDER schnorr key pair",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"holderSecretKey\", postman.getResponseHeader(\"schnorrSecretKey\"));",
+							"pm.collectionVariables.set(\"holderPublicKey\", postman.getResponseHeader(\"schnorrPublicKey\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/demo/get-schnorr-key-pair",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"get-schnorr-key-pair"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1. DEMO - Generate DID for Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"issuerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"issuerDid\", jsonData.id);",
+							"pm.collectionVariables.set(\"authorityPublicKeyBase58\", jsonData.publicKey[0].publicKeyBase58);",
+							"",
+							"pm.test(\"Issuer's private key is present\", function () {",
+							"    pm.response.to.have.header(\"privateKey\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1.zk DEMO - Generate DID for Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"issuerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"issuerDid\", jsonData.id);",
+							"pm.collectionVariables.set(\"authorityPublicKeyBase58\", jsonData.publicKey[1].publicKeyBase58);",
+							"",
+							"pm.test(\"Issuer's private key is present\", function () {",
+							"    pm.response.to.have.header(\"privateKey\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "schnorrPublicKey",
+						"value": "{{authorityPublicKey}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-did-zk",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-did-zk"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. DID - CREATE message for Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{issuerDidDocument}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. DEMO - Sign CREATE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. DID - SUBMIT Issuer's DID Document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. DID  - RESOLVE Issuer's DID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6. DEMO - Generate DID for Owner",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"ownerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
+							"pm.collectionVariables.set(\"ownerDidDocument\", responseBody);",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"ownerDid\", jsonData.id);",
+							"",
+							"pm.test(\"Owner's private key is present\", function () {",
+							"    pm.response.to.have.header(\"privateKey\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6.zk DEMO - Generate DID with ZK for Owner",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"ownerPrivateKey\", postman.getResponseHeader(\"privateKey\"));",
+							"pm.collectionVariables.set(\"ownerDidDocument\", responseBody);",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"ownerDid\", jsonData.id);",
+							"pm.collectionVariables.set(\"ownerPublicKeyBase58\", jsonData.publicKey[1].publicKeyBase58);",
+							"",
+							"pm.test(\"Owner's private key is present\", function () {",
+							"    pm.response.to.have.header(\"privateKey\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "schnorrPublicKey",
+						"value": "{{holderPublicKey}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-did-zk",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-did-zk"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7. DEMO - Generate Driving License document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"drivingLicense\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"issuer\": \"{{issuerDid}}\",\n\t\"owner\": \"{{ownerDid}}\",\n\t\"firstName\": \"John\",\n\t\"lastName\": \"Doe\",\n\t\"drivingLicenseCategories\": [\"A\", \"B1\", \"T\"],\n    \"birthDate\": {\n        \"day\": 1,\n        \"month\": 1,\n        \"year\": 1970\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-driving-license",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-driving-license"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7.zk DEMO - Generate ZK Driving License document",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"drivingLicense\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "schnorrSecretKey",
+						"value": "{{authoritySecretKey}}",
+						"type": "text"
+					},
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"issuer\": \"{{issuerDid}}\",\n\t\"owner\": \"{{ownerDid}}\",\n\t\"firstName\": \"Alice\",\n\t\"lastName\": \"Doe\",\n\t\"drivingLicenseCategories\": [\"A\", \"B1\", \"T\"],\n    \"birthDate\": {\n        \"day\": 1,\n        \"month\": 1,\n        \"year\": 1970\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-zk-driving-license",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-zk-driving-license"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8. DEMO - Get ZK Driving License credential hash",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"credentialHash\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{drivingLicense}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/get-credential-hash",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"get-credential-hash"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8.zk DEMO - Get ZK Driving License credential hash",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"credentialHash\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{drivingLicense}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/get-zk-credential-hash",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"get-zk-credential-hash"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9. VC - create ISSUE message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10. DEMO - sign ISSUE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "{{issuerPrivateKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-vc-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-vc-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11. VC - SUBMIT issuance message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12. VC - RESOLVE driving license status",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "13. VC - create REVOKE message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "14. DEMO - sign REVOKE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"vcMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "{{issuerPrivateKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-vc-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-vc-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "15. VC - SUBMIT revocation message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{vcMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/vc-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "16. VC - RESOLVE driving license status after revocation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/vc/{{credentialHash}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"vc",
+						"{{credentialHash}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "17. DID - UPDATE message for Issuer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(pm.collectionVariables.get(\"issuerDidDocument\"));",
+							"pm.collectionVariables.set(\"issuerDidPublicKeyPart\", JSON.stringify(jsonData.publicKey));",
+							"pm.collectionVariables.set(\"issuerDidAuthenticationPart\", JSON.stringify(jsonData.authentication));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": {{issuerDidAuthenticationPart}},\r\n    \"service\": [{\r\n    \t\"id\": \"#test-service\",\r\n    \t\"type\": \"VerifiableCredentialService\",\r\n    \t\"serviceEndpoint\": \"https://example.appnet.com/vc/\"\r\n    }]\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "18. DEMO - Sign UPDATE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"value": "{{issuerPrivateKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "19. DID - SUBMIT Issuer's updated DID Document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "20. DID  - RESOLVE Issuer's DID after update",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "21. DID - DELETE message for Issuer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(pm.collectionVariables.get(\"issuerDidDocument\"));",
+							"pm.collectionVariables.set(\"issuerDidPublicKeyPart\", JSON.stringify(jsonData.publicKey));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"@context\": \"https://www.w3.org/ns/did/v1\",\r\n    \"id\": \"{{issuerDid}}\",\r\n    \"publicKey\": {{issuerDidPublicKeyPart}},\r\n    \"authentication\": []\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "22. DEMO - Sign DELETE message  by Issuer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"didMessage\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "privateKey",
+						"type": "text",
+						"value": "{{issuerPrivateKey}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/sign-did-message",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"sign-did-message"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "23. DID - SUBMIT Issuer's document deletion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{didMessage}}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did-submit",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did-submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "24. DID  - RESOLVE Issuer's DID after delete should fail (allow a few seconds for message propagation)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"issuerDidDocument\", responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"did\": \"{{issuerDid}}\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/did",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"did"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "25.zk VP - Get driver above age presentation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"drivingPresentation\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "schnorrSecretKey",
+						"value": "{{holderSecretKey}}",
+						"type": "text"
+					},
+					{
+						"key": "holderPublicKey",
+						"value": "{{ownerPublicKeyBase58}}",
+						"type": "text"
+					},
+					{
+						"key": "authorityPublicKey",
+						"value": "{{authorityPublicKeyBase58}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"verifiableCredential\": {{drivingLicense}},\n    \"challenge\": \"fake-challenge\",\n    \"ageThreshold\": 18,\n    \"dayLabel\": \"day\",\n    \"monthLabel\": \"month\",\n    \"yearLabel\": \"year\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/generate-driver-above-age-presentation",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"generate-driver-above-age-presentation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "26.zk VP - Get ZK Driving License credential hash",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"presentationCredentialHash\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{drivingPresentation}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/get-presentation-credential-hash",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"get-presentation-credential-hash"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "27.zk VP - Verify presentation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"presentationCredentialHash\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "holderPublicKey",
+						"value": "{{ownerPublicKeyBase58}}",
+						"type": "text"
+					},
+					{
+						"key": "authorityPublicKey",
+						"value": "{{authorityPublicKeyBase58}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"presentation\": {{drivingPresentation}},\n    \"challenge\": \"fake-challenge\",\n    \"ageThreshold\": 18\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/demo/verify-presentation",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"demo",
+						"verify-presentation"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5050"
+		},
+		{
+			"key": "issuerPrivateKey",
+			"value": "302e020100300506032b6570042204200b07de39fa8c7b8b47bf07d716bfde937b28f22de34743be27242eb187580d2a"
+		},
+		{
+			"key": "issuerDid",
+			"value": "did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087"
+		},
+		{
+			"key": "issuerDidDocument",
+			"value": ""
+		},
+		{
+			"key": "didMessage",
+			"value": "{\"mode\":\"plain\",\"message\":{\"operation\":\"delete\",\"did\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087\",\"didDocumentBase64\":\"ew0KICAgICJAY29udGV4dCI6ICJodHRwczovL3d3dy53My5vcmcvbnMvZGlkL3YxIiwNCiAgICAiaWQiOiAiZGlkOmhlZGVyYTp0ZXN0bmV0OjhIR3pRN1NHNEVWSG8zQWFqRUhmaksxeDhjQ3hReGd2N2Q1QjJxVzRjWWJ6O2hlZGVyYTp0ZXN0bmV0OmZpZD0wLjAuMTkwODciLA0KICAgICJwdWJsaWNLZXkiOiBbeyJpZCI6ImRpZDpoZWRlcmE6dGVzdG5ldDo4SEd6UTdTRzRFVkhvM0FhakVIZmpLMXg4Y0N4UXhndjdkNUIycVc0Y1liejtoZWRlcmE6dGVzdG5ldDpmaWQ9MC4wLjE5MDg3I2RpZC1yb290LWtleSIsInR5cGUiOiJFZDI1NTE5VmVyaWZpY2F0aW9uS2V5MjAxOCIsImNvbnRyb2xsZXIiOiJkaWQ6aGVkZXJhOnRlc3RuZXQ6OEhHelE3U0c0RVZIbzNBYWpFSGZqSzF4OGNDeFF4Z3Y3ZDVCMnFXNGNZYno7aGVkZXJhOnRlc3RuZXQ6ZmlkPTAuMC4xOTA4NyIsInB1YmxpY0tleUJhc2U1OCI6IkVBbmRSdG1tSkFGYkRpRVNSd2FuNU1jV3hVUnR1VllTUkRmTGtNSzduRlJMIn1dLA0KICAgICJhdXRoZW50aWNhdGlvbiI6IFtdDQp9\",\"timestamp\":\"2020-09-02T14:11:27.633751Z\"},\"signature\":\"3iUoftSjL8Lght9tIhEWzvJ6sbdV46qieFb322zkcltzhQnJ4gKsiJX9wdN4NrRR3dpJl1EuUo0QHsy+LmxcCg==\"}"
+		},
+		{
+			"key": "ownerDid",
+			"value": "did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087"
+		},
+		{
+			"key": "ownerDidDocument",
+			"value": "{\"@context\":\"https://www.w3.org/ns/did/v1\",\"id\":\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087\",\"publicKey\":[{\"id\":\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087#did-root-key\",\"type\":\"Ed25519VerificationKey2018\",\"controller\":\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087\",\"publicKeyBase58\":\"C3NwvC1NGMJcbSxWziugANwWtUo71WhKyShcqnRB8JDH\"}],\"authentication\":[\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087#did-root-key\"]}"
+		},
+		{
+			"key": "ownerPrivateKey",
+			"value": "302e020100300506032b657004220420b9b7745538b06ff0ea7208d1c08403b6215a4ecc2a529241807b16dbf30b4046"
+		},
+		{
+			"key": "drivingLicense",
+			"value": "{\"@context\":[\"https://www.w3.org/2018/credentials/v1\"],\"id\":\"https://example.appnet.com/driving-license/129e7efa-8b22-4150-b6ff-4399d72d2a36\",\"type\":[\"VerifiableCredential\",\"DrivingLicense\"],\"credentialSchema\":{\"id\":\"http://localhost:5050/driving-license-schema.json\",\"type\":\"JsonSchemaValidator2018\"},\"credentialSubject\":[{\"id\":\"did:hedera:testnet:AFscy6cQYq2UrN4r9UhPvcUy1NXsMJ1v2Gb8H9AUvPaJ;hedera:testnet:fid=0.0.19087\",\"firstName\":\"John\",\"lastName\":\"Doe\",\"drivingLicenseCategories\":[\"A\",\"B1\",\"T\"]}],\"issuer\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087\",\"issuanceDate\":\"2020-09-02T14:07:11.570489Z\",\"proof\":{\"type\":\"Ed25519Signature2018\",\"creator\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087\",\"created\":\"2020-09-02T14:07:11.571589Z\",\"proofPurpose\":\"assertionMethod\",\"verificationMethod\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087#did-root-key\",\"jws\":\"eyJjcml0IjpbImI2NCJdLCJiNjQiOmZhbHNlLCJhbGciOiJFZERTQSJ9..ZUDbXbKpMdj3pb2YW69tmFKhMwb4Idjc1XOPb7bdZJ3olujff3Wpgrrc4rVN2oCdVYz2tC2hZ_bxFNaSknQiCQ\"}}"
+		},
+		{
+			"key": "drivingLicenseHash",
+			"value": ""
+		},
+		{
+			"key": "credentialHash",
+			"value": "GJpzpyaGQT5XKohkKEEdbac21XVYppQqRMScX4ubJHTD"
+		},
+		{
+			"key": "vcMessage",
+			"value": "{\"mode\":\"plain\",\"message\":{\"operation\":\"revoke\",\"credentialHash\":\"GJpzpyaGQT5XKohkKEEdbac21XVYppQqRMScX4ubJHTD\",\"timestamp\":\"2020-09-02T14:10:01.597758Z\"},\"signature\":\"cCvrPTid6CP9APIPu/5kwjM1YPuhk8NKwKL5z29Ng4QPmVi/DsVoZ4Re017a2pMe1wRp1UUL3+Gn5Oq2XsATAw==\"}"
+		},
+		{
+			"key": "issuerDidAuthenticationPart",
+			"value": "[\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087#did-root-key\"]"
+		},
+		{
+			"key": "issuerDidPublicKeyPart",
+			"value": "[{\"id\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087#did-root-key\",\"type\":\"Ed25519VerificationKey2018\",\"controller\":\"did:hedera:testnet:8HGzQ7SG4EVHo3AajEHfjK1x8cCxQxgv7d5B2qW4cYbz;hedera:testnet:fid=0.0.19087\",\"publicKeyBase58\":\"EAndRtmmJAFbDiESRwan5McWxURtuVYSRDfLkMK7nFRL\"}]"
+		},
+		{
+			"key": "drivingPresentation",
+			"value": ""
+		},
+		{
+			"key": "presentationCredentialHash",
+			"value": ""
+		},
+		{
+			"key": "holderSecretKey",
+			"value": ""
+		},
+		{
+			"key": "holderPublicKey",
+			"value": ""
+		},
+		{
+			"key": "authoritySecretKey",
+			"value": ""
+		},
+		{
+			"key": "authorityPublicKey",
+			"value": ""
+		},
+		{
+			"key": "ownerPublicKeyBase58",
+			"value": ""
+		},
+		{
+			"key": "authorityPublicKeyBase58",
+			"value": ""
+		}
+	]
+}
