@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.hedera.hashgraph.identity.hcs.vc.HcsVcDocumentBase;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
+
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class DrivingLicenseDocument extends HcsVcDocumentBase<DrivingLicense> {
   private static final String JSON_PROPERTY_CREDENTIAL_SUBJECT = "credentialSubject";
   private static final String JSON_PROPERTY_PROOF = "proof";
   private static final String[] JSON_PROPERTIES_ORDER = {"@context", "id", "type", "credentialSchema",
-      "credentialSubject", "issuer", "issuanceDate", "proof"};
+          "credentialSubject", "issuer", "issuanceDate", "proof"};
   @Expose
   private CredentialSchema credentialSchema;
 

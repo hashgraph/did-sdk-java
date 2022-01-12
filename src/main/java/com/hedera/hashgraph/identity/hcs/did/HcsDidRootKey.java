@@ -1,6 +1,5 @@
 package com.hedera.hashgraph.identity.hcs.did;
 
-import com.google.gson.annotations.Expose;
 import com.hedera.hashgraph.sdk.PublicKey;
 import org.bitcoinj.core.Base58;
 
@@ -8,21 +7,13 @@ import org.bitcoinj.core.Base58;
  * Represents a root key of HCS Identity DID.
  * That is a public key of type Ed25519VerificationKey2018 compatible with a single publicKey entry of a DID Document.
  */
-public class HcsDidRootKey {
+public final class HcsDidRootKey extends HcsDidRootKeyBase {
   public static final String DID_ROOT_KEY_NAME = "#did-root-key";
   public static final String DID_ROOT_KEY_TYPE = "Ed25519VerificationKey2018";
 
-  @Expose(serialize = true, deserialize = true)
-  private String id;
-
-  @Expose(serialize = true, deserialize = true)
-  private String type;
-
-  @Expose(serialize = true, deserialize = true)
-  private String controller;
-
-  @Expose(serialize = true, deserialize = true)
-  private String publicKeyBase58;
+  private HcsDidRootKey(final String id, final String type, final String controller, final String publicKeyBase58) {
+    super(id, type, controller, publicKeyBase58);
+  }
 
   /**
    * Creates a {@link HcsDidRootKey} object from the given {@link HcsDid} DID and it's root public key.
@@ -45,28 +36,12 @@ public class HcsDidRootKey {
       throw new IllegalArgumentException("The specified DID does not correspond to the given DID root key");
     }
 
-    HcsDidRootKey result = new HcsDidRootKey();
-    result.controller = did.toDid();
-    result.id = result.controller + DID_ROOT_KEY_NAME;
-    result.publicKeyBase58 = Base58.encode(didRootKey.toBytes());
-    result.type = DID_ROOT_KEY_TYPE;
+    String controller = did.toDid();
+    String id = controller + DID_ROOT_KEY_NAME;
+    String publicKeyBase58 = Base58.encode(didRootKey.toBytes());
 
-    return result;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public String getController() {
-    return controller;
-  }
-
-  public String getPublicKeyBase58() {
-    return publicKeyBase58;
+    return new HcsDidRootKey(
+            id, DID_ROOT_KEY_TYPE, controller, publicKeyBase58
+    );
   }
 }

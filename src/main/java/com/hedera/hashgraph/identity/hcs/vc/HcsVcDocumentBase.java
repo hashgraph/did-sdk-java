@@ -2,7 +2,6 @@ package com.hedera.hashgraph.identity.hcs.vc;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.hash.Hashing;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -11,11 +10,9 @@ import com.hedera.hashgraph.identity.hcs.did.HcsDid;
 import com.hedera.hashgraph.identity.utils.JsonUtils;
 import com.hedera.hashgraph.identity.utils.SingleToArrayTypeAdapterFactory;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import org.bitcoinj.core.Base58;
+
 import org.threeten.bp.Instant;
 
 /**
@@ -25,13 +22,13 @@ import org.threeten.bp.Instant;
  * mandatory attributes from the VC specification and Hedera HCS DID method specification point of view. Applications
  * shall extend it with any VC document properties or custom properties they require.
  */
-public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumentHashBase {
+public abstract class HcsVcDocumentBase<T extends CredentialSubject> extends HcsDocumentHashBase {
 
-  @Expose(serialize = true, deserialize = false)
+  @Expose(deserialize = false)
   @SerializedName(HcsVcDocumentJsonProperties.CONTEXT)
   protected List<String> context;
 
-  @Expose(serialize = true, deserialize = true)
+  @Expose
   @SerializedName(HcsVcDocumentJsonProperties.CREDENTIAL_SUBJECT)
   @JsonAdapter(SingleToArrayTypeAdapterFactory.class)
   protected List<T> credentialSubject;
@@ -49,13 +46,15 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
    * Please note this conversion respects only the fields of the base VC document. All other fields are ignored.
    *
    * @param <U>                    The type of the credential subject.
+   * @param <E>                    The type of the vc document.
    * @param json                   The VC document as JSON string.
    * @param credentialSubjectClass The type of the credential subject inside.
    * @return The {@link HcsVcDocumentBase} object.
    */
-  public static <U extends CredentialSubject> HcsVcDocumentBase<U> fromJson(final String json,
+  public static <U extends CredentialSubject, E extends HcsVcDocumentBase<U>> HcsVcDocumentBase<U> fromJson(final String json,
+                                                                            final Class<E> vcDocumentClass,
                                                                             final Class<U> credentialSubjectClass) {
-    Type envelopeType = TypeToken.getParameterized(HcsVcDocumentBase.class, credentialSubjectClass).getType();
+    Type envelopeType = TypeToken.getParameterized(vcDocumentClass, credentialSubjectClass).getType();
     return JsonUtils.getGson().fromJson(json, envelopeType);
   }
 
@@ -66,31 +65,6 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
    */
   public String toJson() {
     return JsonUtils.getGson().toJson(this);
-  }
-
-  /**
-   * Constructs a credential hash that uniquely identifies this verifiable credential.
-   * This is not a credential ID, but a hash composed of the properties included in HcsVcDocumentHashBase class
-   * (excluding issuer name).
-   * Credential hash is used to find the credential on Hedera VC registry.
-   * Due to the nature of the VC document the hash taken from the base mandatory fields in this class
-   * and shall produce a unique constant.
-   * W3C specification defines ID field of a verifiable credential as not mandatory, however Hedera requires issuers to
-   * define this property for each VC.
-   *
-   * @return The credential hash uniquely identifying this verifiable credential.
-   */
-  public final String toCredentialHash() {
-    LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-    map.put(HcsVcDocumentJsonProperties.ID, this.id);
-    map.put(HcsVcDocumentJsonProperties.TYPE, this.type);
-    map.put(HcsVcDocumentJsonProperties.ISSUER, this.issuer.getId());
-    map.put(HcsVcDocumentJsonProperties.ISSUANCE_DATE, this.issuanceDate);
-
-    String json = JsonUtils.getGson().toJson(map);
-    byte[] hash = Hashing.sha256().hashBytes(json.getBytes(StandardCharsets.UTF_8)).asBytes();
-
-    return Base58.encode(hash);
   }
 
   /**
@@ -142,10 +116,12 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
     return context;
   }
 
+  @Override
   public String getId() {
     return id;
   }
 
+  @Override
   public void setId(final String id) {
     this.id = id;
   }
@@ -158,6 +134,7 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
     return issuer;
   }
 
+  @Override
   public void setIssuer(final Issuer issuer) {
     this.issuer = issuer;
   }
@@ -174,6 +151,7 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
     return issuanceDate;
   }
 
+  @Override
   public void setIssuanceDate(final Instant issuanceDate) {
     this.issuanceDate = issuanceDate;
   }
@@ -182,4 +160,11 @@ public class HcsVcDocumentBase<T extends CredentialSubject> extends HcsVcDocumen
     return credentialSubject;
   }
 
+  public void setCredentialSubject(final List<T> credentialSubject) {
+    this.credentialSubject = credentialSubject;
+  }
+
+  public void setContext(final List<String> context) {
+    this.context = context;
+  }
 }

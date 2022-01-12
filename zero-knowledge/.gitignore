@@ -1,0 +1,8 @@
+### Java ###
+*.class
+
+### Output directories ###
+/build/
+
+### Excluding sc-common-cryptolib jar ###
+!sc-common-cryptolib-0.1.0.jar
