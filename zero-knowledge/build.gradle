@@ -16,7 +16,7 @@ dependencies {
     implementation 'com.google.guava:guava:30.1.1-android'
     testImplementation 'junit:junit:4.13.1'
 
-    compile files('build/libs/sc-common-cryptolib-0.1.0.jar')
+    compile files('./src/main/resources/jars/x86/sc-common-cryptolib-0.1.0.jar')
 
     testImplementation 'org.mockito:mockito-inline:4.0.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:4.0.0'

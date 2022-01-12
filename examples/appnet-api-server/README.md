@@ -83,7 +83,7 @@ them. To run the demo, run just once the main in `/examples/appnet-api-server/sr
 12. The merchant is sent the presentation, where no user's personal data is included, and can verify the proof telling whether the user is telling the truth or not -> `27.zk VP - Verify presentation`.
 
 ## Dependencies
-The example is using `hedera-cryptolib-0.1.0.jar`, a jar compiled from a private repo: at the moment the jar can only be compiled to run on Linux and Windows on an x86 processor. 
+The example is using `hedera-cryptolib-0.1.0.jar`, a jar compiled from a private repo: at the moment the jar is located in `did-sdk-java/examples/appnet-api-server/src/main/resources/jars/x86/hedera-cryptolib-0.3.0.jar`. 
 
 [did-method-spec]: https://github.com/hashgraph/did-method
 [postman]: https://www.postman.com/

@@ -26,7 +26,7 @@ repositories {
 dependencies {
     implementation rootProject
     implementation project(':zero-knowledge')
-    compile files('build/libs/hedera-cryptolib-0.3.0.jar')
+    compile files('./src/main/resources/jars/x86/hedera-cryptolib-0.3.0.jar')
     implementation group: 'com.hedera.hashgraph', name: 'sdk-jdk7', version: '2.0.5'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.15.6'
