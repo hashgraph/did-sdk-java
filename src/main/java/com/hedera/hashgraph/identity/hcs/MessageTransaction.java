@@ -2,23 +2,16 @@ package com.hedera.hashgraph.identity.hcs;
 
 import com.google.common.base.Strings;
 import com.hedera.hashgraph.identity.utils.Validator;
-import com.hedera.hashgraph.sdk.Client;
-import com.hedera.hashgraph.sdk.Hbar;
-import com.hedera.hashgraph.sdk.PrecheckStatusException;
-import com.hedera.hashgraph.sdk.PrivateKey;
-import com.hedera.hashgraph.sdk.TopicId;
-import com.hedera.hashgraph.sdk.TopicMessageSubmitTransaction;
-import com.hedera.hashgraph.sdk.Transaction;
-import com.hedera.hashgraph.sdk.TransactionId;
-import com.hedera.hashgraph.sdk.TransactionResponse;
+import com.hedera.hashgraph.sdk.*;
+import java8.util.function.BiFunction;
+import org.threeten.bp.Instant;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java8.util.function.BiFunction;
-import org.threeten.bp.Instant;
 
 public abstract class MessageTransaction<T extends Message> {
 
@@ -247,6 +240,10 @@ public abstract class MessageTransaction<T extends Message> {
       tx.setMaxTransactionFee(this.maxTransactionFee);
     }
 
+    return getTransactionId(client, tx);
+  }
+
+  private TransactionId getTransactionId(final Client client, final TopicMessageSubmitTransaction tx) {
     TransactionId transactionId = null;
     try {
       TransactionResponse response;
