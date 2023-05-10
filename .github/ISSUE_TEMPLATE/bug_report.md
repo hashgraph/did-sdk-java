@@ -9,7 +9,7 @@ assignees: ''
 
 <!--  Thanks for submitting a bug report!  Before submitting:
 1. Try searching the existing issues to see if your issue has already been reported
-2. Try asking on our Discord group (https://discordapp.com/invite/FFb9YFX)
+2. Try asking on our Discord group (https://hedera.com/discord)
 3. If you're reporting a security vulnerability, please email security@hedera.com instead of opening an issue
 -->
 
